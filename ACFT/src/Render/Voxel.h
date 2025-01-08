@@ -3,16 +3,25 @@
 
 #include "Texture.h"
 
-class Voxel
+namespace ACFT 
 {
-public:
-	Voxel(const std::string& texture_filepath);
-	~Voxel() = default;
+	class Voxel
+	{
+	public:
+		enum class Side
+		{
+			front = 0, back, left, right, up, down
+		};
 
+		Voxel(const std::string& texture_filepath, float length);
+		~Voxel() = default;
 
-private:
-	float length;
-	Texture texture;
-};
+		inline float GetLength() const { return length; };
+
+	private:
+		float length;
+		Texture texture;
+	};
+}
 
 #endif

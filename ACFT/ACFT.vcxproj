@@ -73,12 +73,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin-int\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(IncludePath);$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(IncludePath);$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin-int\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(IncludePath);$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(IncludePath);$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,6 +151,7 @@
     <ClCompile Include="src\Entry.cpp" />
     <ClCompile Include="src\Log\Logger.cpp" />
     <ClCompile Include="src\Render\Renderer.cpp" />
+    <ClCompile Include="src\Render\Shader.cpp" />
     <ClCompile Include="src\Render\Texture.cpp" />
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
     <ClCompile Include="src\Render\Voxel.cpp" />
@@ -167,12 +168,15 @@
     <ClInclude Include="src\Block\Block.h" />
     <ClInclude Include="src\Log\Logger.h" />
     <ClInclude Include="src\Render\Renderer.h" />
+    <ClInclude Include="src\Render\Shader.h" />
     <ClInclude Include="src\Render\Texture.h" />
     <ClInclude Include="src\Render\VertexBuffer.h" />
+    <ClInclude Include="src\Render\VertexBufferLayout.h" />
     <ClInclude Include="src\Render\Voxel.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\Util\Timer.h" />
     <ClInclude Include="src\Render\VertexArray.h" />
+    <ClInclude Include="src\Util\Vec.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic.shader" />

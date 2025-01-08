@@ -61,3 +61,15 @@ namespace ACFT
 		return ACFT_NORMAL;
 	}
 }
+
+void GLClearError()
+{
+	while (glGetError() != GL_NO_ERROR);
+}
+
+void GLLogCall() {
+	GLenum err;
+	while ((err = glGetError())) {
+		ACFT_GL_LOG("Error occured: {}", err);
+	}
+}

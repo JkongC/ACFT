@@ -15,11 +15,14 @@ namespace ACFT
 		static ACFT_ERROR_CODE EndGame();
 
 	public:
-		static GLFWwindow* gameWindow;
+		inline static GLFWwindow* GetGameWindow() { return gameWindow; };
 
 	private:
 		static ACFT_ERROR_CODE InitWindow();
 		static ACFT_ERROR_CODE GameLoop();
+
+	private:
+		static GLFWwindow* gameWindow;
 	};
 
 
@@ -28,5 +31,13 @@ namespace ACFT
 //Error Code
 #define ACFT_NORMAL 0
 #define ACFT_ERROR -1
+
+//OpenGL Things
+void GLClearError();
+void GLLogCall();
+
+#define GLCall(x) GLClearError();\
+					x;\
+					GLLogCall()
 
 #endif

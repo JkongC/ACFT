@@ -51,6 +51,9 @@
     <ClCompile Include="src\Render\VertexArray.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Render\Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -84,6 +87,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Render\VertexArray.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Vec.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\VertexBufferLayout.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,8 +2,11 @@
 
 #include "Voxel.h"
 
-Voxel::Voxel(const std::string& texture_filepath)
-	: texture(texture_filepath)
+namespace ACFT
 {
+	Voxel::Voxel(const std::string& texture_filepath, float length)
+		: texture(texture_filepath), length(length)
+	{
 
+	}
 }
