@@ -13,11 +13,6 @@ namespace ACFT
 		GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), data, GL_STATIC_DRAW));
 	}
 
-	IndexBuffer::~IndexBuffer()
-	{
-		GLCall(glDeleteBuffers(1, &ib_id));
-	}
-
 	void IndexBuffer::Bind() const
 	{
 		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib_id));

@@ -13,11 +13,6 @@ namespace ACFT
 		shader_id = CreateShader();
 	}
 
-	Shader::~Shader()
-	{
-		GLCall(glDeleteProgram(shader_id));
-	}
-
 	void Shader::Bind() const
 	{
 		GLCall(glUseProgram(shader_id));

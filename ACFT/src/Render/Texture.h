@@ -9,6 +9,8 @@ namespace ACFT {
 		Texture(const std::string& file);
 		~Texture();
 
+		void Bind() const;
+
 	private:
 		unsigned int texture_id;
 		unsigned char* local_buffer;

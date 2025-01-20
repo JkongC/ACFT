@@ -7,6 +7,8 @@ namespace ACFT
 
 	constexpr int WindowWidth = 1280;
 	constexpr int WindowHeight = 960;
+	constexpr int FramesPerSecond = 120;
+	constexpr int MsPerFrame = (int)(1000 / FramesPerSecond);
 
 	class Game
 	{
@@ -36,6 +38,10 @@ namespace ACFT
 void GLClearError();
 void GLLogCall();
 
+//Math Consts
+constexpr float PI = glm::pi<float>();
+
+//OpenGL Debug Macros
 #define GLCall(x) GLClearError();\
 					x;\
 					GLLogCall()

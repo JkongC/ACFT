@@ -14,16 +14,24 @@ namespace ACFT
 			front = 0, back, left, right, up, down
 		};
 
-		Block(Voxel& voxel, Vec3i pos);
+		Block(glm::ivec3 pos);
 		~Block() = default;
 
-		void OnRender();
+		void Tick();
 
-		inline Voxel& GetVoxel() { return voxel; }
+		void UpdateSideVisibility(const glm::vec3& camera_pos);
+
+		inline const Voxel<VoxelVertexType::normalCube>& GetVoxel() const { return voxel; }
 		inline float GetLength() const { return voxel.GetLength(); };
+		inline const glm::ivec3& GetPos() const { return pos; }
+		inline const std::vector<bool> GetRenderFlag() const { return render_flag; }
 	private:
-		Voxel& voxel;
-		Vec3i pos;
+		Voxel<VoxelVertexType::normalCube> voxel;
+		glm::ivec3 pos;
+
+		std::vector<bool> render_flag;
+
+		static std::array<glm::vec3, 6> side_center;
 	};
 }
 

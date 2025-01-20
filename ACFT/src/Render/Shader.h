@@ -12,7 +12,6 @@ namespace ACFT
 	{
 	public:
 		Shader(const std::string& filepath);
-		~Shader();
 
 		void Bind() const;
 		void Unbind() const;

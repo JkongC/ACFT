@@ -7,7 +7,6 @@ namespace ACFT
 	{
 	public:
 		IndexBuffer(const unsigned int* data, unsigned int count);
-		~IndexBuffer();
 
 		void Bind() const;
 		void Unbind() const;

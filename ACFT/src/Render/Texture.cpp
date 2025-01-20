@@ -9,7 +9,7 @@
 namespace ACFT
 {
 	Texture::Texture(const std::string& file)
-		:file_path(file), local_buffer(nullptr), width(0), height(0), BPP(0)
+		:file_path(file), local_buffer(nullptr), width(0), height(0), BPP(0), texture_id(0)
 	{
 		stbi_set_flip_vertically_on_load(1);
 		local_buffer = stbi_load(file.c_str(), &width, &height, &BPP, 4);
@@ -33,5 +33,10 @@ namespace ACFT
 	Texture::~Texture()
 	{
 		GLCall(glDeleteTextures(1, &texture_id));
+	}
+
+	void Texture::Bind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, texture_id);
 	}
 }

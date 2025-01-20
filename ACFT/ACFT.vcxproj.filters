@@ -33,16 +33,10 @@
     <ClCompile Include="src\Log\Logger.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\Voxel.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\Render\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Block\Block.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\VertexBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Render\IndexBuffer.cpp">
@@ -52,6 +46,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Render\Shader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\VertexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\Vertex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Event\Event.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,6 +102,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Render\VertexBufferLayout.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\Vertex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Direction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Event\Event.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

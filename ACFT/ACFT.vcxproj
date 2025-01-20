@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Event\Event.cpp" />
+    <ClCompile Include="src\Render\Camera.cpp" />
     <ClCompile Include="src\Render\IndexBuffer.cpp" />
     <ClCompile Include="src\ACFT.cpp" />
     <ClCompile Include="src\Block\Block.cpp" />
@@ -153,8 +155,8 @@
     <ClCompile Include="src\Render\Renderer.cpp" />
     <ClCompile Include="src\Render\Shader.cpp" />
     <ClCompile Include="src\Render\Texture.cpp" />
+    <ClCompile Include="src\Render\Vertex.cpp" />
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
-    <ClCompile Include="src\Render\Voxel.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -163,6 +165,8 @@
     <ClCompile Include="src\Render\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Event\Event.h" />
+    <ClInclude Include="src\Render\Camera.h" />
     <ClInclude Include="src\Render\IndexBuffer.h" />
     <ClInclude Include="src\ACFT.h" />
     <ClInclude Include="src\Block\Block.h" />
@@ -170,10 +174,12 @@
     <ClInclude Include="src\Render\Renderer.h" />
     <ClInclude Include="src\Render\Shader.h" />
     <ClInclude Include="src\Render\Texture.h" />
+    <ClInclude Include="src\Render\Vertex.h" />
     <ClInclude Include="src\Render\VertexBuffer.h" />
     <ClInclude Include="src\Render\VertexBufferLayout.h" />
     <ClInclude Include="src\Render\Voxel.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Util\Direction.h" />
     <ClInclude Include="src\Util\Timer.h" />
     <ClInclude Include="src\Render\VertexArray.h" />
     <ClInclude Include="src\Util\Vec.h" />

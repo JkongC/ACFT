@@ -19,6 +19,11 @@ namespace ACFT
 		return elapsed.count();
 	}
 
+	void NormalTimer::Flush()
+	{
+		this->last = std::chrono::high_resolution_clock::now();
+	}
+
 
 	ScopedTimer::ScopedTimer()
 	{

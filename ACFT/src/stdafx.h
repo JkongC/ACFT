@@ -5,6 +5,8 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <initializer_list>
+#include <cmath>
 
 #include <Windows.h>
 
