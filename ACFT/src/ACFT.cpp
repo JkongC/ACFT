@@ -5,6 +5,7 @@
 #include "Log/Logger.h"
 #include "Block/Block.h"
 #include "Render/Renderer.h"
+#include "Event/EventManager.h"
 
 namespace ACFT
 {
@@ -17,6 +18,10 @@ namespace ACFT
 		
 		if (InitWindow() == ACFT_ERROR)
 			return ACFT_ERROR;
+
+		glfwSetCursorPosCallback(gameWindow, MousePosCallback);
+		glfwSetMouseButtonCallback(gameWindow, MouseButtonCallback);
+		glfwSetKeyCallback(gameWindow, KeyCallback);
 
 		if (GameLoop() == ACFT_ERROR)
 			return ACFT_ERROR;
@@ -98,4 +103,30 @@ void GLLogCall() {
 #if 0
 	__debugbreak();
 #endif
+}
+
+void MousePosCallback(GLFWwindow* window, double xpos, double ypos)
+{
+	ACFT::InputEvent event(ACFT::Event::Type::mouse_move);
+	event.xpos = xpos;
+	event.ypos = ypos;
+	ACFT::EventManager::GetInstance().Trigger(event);
+}
+
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	bool press = action == GLFW_PRESS;
+	ACFT::InputEvent event(press ? ACFT::Event::Type::mouse_keydown : ACFT::Event::Type::mouse_keyup);
+	event.keycode = button;
+	event.down = press;
+	ACFT::EventManager::GetInstance().Trigger(event);
+}
+
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	bool press = action == GLFW_PRESS;
+	ACFT::InputEvent event(press ? ACFT::Event::Type::key_press : ACFT::Event::Type::key_release);
+	event.keycode = key;
+	event.down = press;
+	ACFT::EventManager::GetInstance().Trigger(event);
 }

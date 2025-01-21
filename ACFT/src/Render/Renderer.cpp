@@ -55,7 +55,7 @@ namespace ACFT
 
 		const auto& render_flag = block.GetRenderFlag();
 
-		for (int side = 0; side < 6; side++)
+		for (int side = 0; side < render_flag.size(); side++)
 		{
 			if (render_flag[side])
 			{
@@ -76,9 +76,12 @@ namespace ACFT
 		int count;
 		if ((count = vb->GetCount()) != 0){
 			shader->SetUniformMat4f("u_MVP", Camera::GetInstance().GetVP());
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(Vertex), vb->GetBuffer()));
 			GLCall(glDrawElements(GL_TRIANGLES, 6 * sides_should_render, GL_UNSIGNED_INT, nullptr));
 			vb->ClearBuffer();
+			sides_should_render = 0;
 		}
 	}
 }

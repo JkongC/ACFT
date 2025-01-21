@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Event\Event.cpp" />
+    <ClCompile Include="src\Event\EventManager.cpp" />
     <ClCompile Include="src\Render\Camera.cpp" />
     <ClCompile Include="src\Render\IndexBuffer.cpp" />
     <ClCompile Include="src\ACFT.cpp" />
@@ -166,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Event\Event.h" />
+    <ClInclude Include="src\Event\EventManager.h" />
     <ClInclude Include="src\Render\Camera.h" />
     <ClInclude Include="src\Render\IndexBuffer.h" />
     <ClInclude Include="src\ACFT.h" />

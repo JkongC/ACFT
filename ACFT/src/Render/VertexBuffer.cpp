@@ -23,7 +23,7 @@ namespace ACFT
 		GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 	}
 
-	bool VertexBuffer::PushVertex(Vertex&& vertex)
+	bool VertexBuffer::PushVertex(Vertex vertex)
 	{
 		if (vertex_count == maxVerteciesPerDraw)
 			return false;

@@ -16,7 +16,7 @@ namespace ACFT
 
 		void Unbind() const;
 
-		bool PushVertex(Vertex&& vertex);
+		bool PushVertex(Vertex vertex);
 
 		void ClearBuffer();
 

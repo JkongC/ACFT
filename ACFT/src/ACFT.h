@@ -27,7 +27,12 @@ namespace ACFT
 		static GLFWwindow* gameWindow;
 	};
 
-
+	class Hash
+	{
+	public:
+		virtual std::size_t GetHash() = 0;
+		virtual bool operator==(const Hash& other) { return this == &other; }
+	};
 }
 
 //Error Code
@@ -37,6 +42,11 @@ namespace ACFT
 //OpenGL Things
 void GLClearError();
 void GLLogCall();
+
+//OpenGL Callbacks
+void MousePosCallback(GLFWwindow* window, double xpos, double ypos);
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 //Math Consts
 constexpr float PI = glm::pi<float>();

@@ -1,9 +1,11 @@
 #ifndef ACFT_CAMERA_H_
 #define ACFT_CAMERA_H_
 
+#include "Event/EventManager.h"
+
 namespace ACFT 
 {
-	class Camera
+	class Camera : public EventListener
 	{
 	public:
 		static inline Camera& GetInstance()
@@ -15,6 +17,8 @@ namespace ACFT
 		void UpdateAllVec();
 
 		glm::mat4 GetVP();
+
+		void HandleEvent(const Event& event);
 
 	public:
 		inline const float& GetYaw() const { return yaw; }
@@ -31,7 +35,7 @@ namespace ACFT
 		inline glm::vec3 GetRightVec() { return right; }
 
 	private:
-		Camera() : yaw(PI / 2), pitch(0.0), pos(0.0f, 0.0f, 2.0f), looking(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f) {}
+		Camera();
 		Camera(const Camera&) = delete;
 		Camera(Camera&&) = delete;
 
@@ -42,6 +46,16 @@ namespace ACFT
 		glm::vec3 looking;
 		glm::vec3 up;
 		glm::vec3 right;
+
+		double mouse_xpos;
+		double mouse_ypos;
+
+		bool lock_mouse = false;
+
+		bool W_pressed = false;
+		bool A_pressed = false;
+		bool S_pressed = false;
+		bool D_pressed = false;
 	};
 }
 

@@ -7,6 +7,8 @@
 #include <string>
 #include <initializer_list>
 #include <cmath>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <Windows.h>
 

@@ -60,6 +60,9 @@
     <ClCompile Include="src\Event\Event.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Event\EventManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -114,6 +117,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Event\Event.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Event\EventManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
