@@ -6,6 +6,7 @@
 #include "Block/Block.h"
 #include "Render/Renderer.h"
 #include "Event/EventManager.h"
+#include "Tick/Tick.h"
 
 namespace ACFT
 {
@@ -59,12 +60,15 @@ namespace ACFT
 
 	ACFT_ERROR_CODE Game::GameLoop()
 	{
-		Block block({0, 0, -2});
+		Block block_1({0, 0, -2});
+		Block block_2({2, 0, -2});
 		
 		Camera& camera = Camera::GetInstance();
 		camera.SetPos(camera.GetPos() + glm::vec3(0.0f, 2.0f, 0.0f));
 		camera.SetPitch(camera.GetPitch() - PI / 10.0f);
 		BlockRenderer& block_renderer = BlockRenderer::GetInstance();
+
+		TickManager& tick_manager = TickManager::GetInstance();
 		
 		NormalTimer timer;
 		int ms_to_sleep;
@@ -73,8 +77,11 @@ namespace ACFT
 			
 			timer.Flush();
 			
-			block.Tick();
-			block_renderer.Draw(block);
+			tick_manager.TickLogic();
+			block_1.Tick();
+			block_renderer.Draw(block_1);
+			block_2.Tick();
+			block_renderer.Draw(block_2);
 			block_renderer.Flush();
 			
 			glfwSwapBuffers(gameWindow);

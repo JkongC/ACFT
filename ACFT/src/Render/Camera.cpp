@@ -7,28 +7,52 @@
 namespace ACFT
 {
 	Camera::Camera()
-		: yaw(PI / 2), pitch(0.0), pos(0.0f, 0.0f, 2.0f),
-		looking(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f),
-		mouse_xpos((double)WindowWidth / 2.0), mouse_ypos((double)WindowHeight / 2.0)
+		: yaw(PI / 2), pitch(0.0), last_yaw(yaw), last_pitch(pitch), pos(0.0f, 0.0f, 2.0f)
+		, looking(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f)
+		, mouse_xpos((double)WindowWidth / 2.0), mouse_ypos((double)WindowHeight / 2.0)
 	{
 		EventSubscribe(Event::Type::mouse_move);
 		EventSubscribe(Event::Type::mouse_keyup);
 		EventSubscribe(Event::Type::key_release);
+
+		TickManager::GetInstance().AddLogicTicker(this);
+	}
+
+	Camera::~Camera()
+	{
+		EventUnsubscribe(Event::Type::mouse_move);
+		EventUnsubscribe(Event::Type::mouse_keyup);
+		EventUnsubscribe(Event::Type::key_release);
 	}
 	
 	void Camera::UpdateAllVec()
 	{
-		if (this->yaw > 2 * PI) this->yaw -= 2 * PI;
-		if (this->yaw < 0.0f) this->yaw += 2 * PI;
-		this->pitch = std::clamp(this->pitch, -PI / 2, PI / 2);
+		float delta_time = TickManager::GetInstance().GetTimeDelta();
 		
-		this->looking = GetVec3fFromYP(this->yaw, this->pitch);
+		while (this->yaw > 2 * PI)
+		{
+			this->yaw -= 2 * PI;
+			this->last_yaw -= 2 * PI;
+		}
+
+		while (this->yaw < 0.0f)
+		{
+			this->yaw += 2 * PI;
+			this->last_yaw += 2 * PI;
+		}
+
+		this->pitch = std::clamp(this->pitch, -PI / 2, PI / 2);
+
+		float lerp_yaw = last_yaw + (yaw - last_yaw) * (delta_time/ LogicMSPT);
+		float lerp_pitch = last_pitch + (pitch - last_pitch) * (delta_time / LogicMSPT);
+		
+		this->looking = GetVec3fFromYP(lerp_yaw, lerp_pitch);
 		if (pitch > 0)
 		{
-			this->up = GetVec3fFromYP(-this->yaw, PI / 2 - this->pitch);
+			this->up = GetVec3fFromYP(-lerp_yaw, PI / 2 - lerp_pitch);
 		}
 		else {
-			this->up = GetVec3fFromYP(this->yaw, this->pitch + PI / 2);
+			this->up = GetVec3fFromYP(lerp_yaw, lerp_pitch + PI / 2);
 		}
 		this->right = glm::normalize(glm::cross(this->looking, this->up));
 	}
@@ -114,5 +138,11 @@ namespace ACFT
 		default:
 			break;
 		}
+	}
+
+	void Camera::TickLogic(float delta)
+	{
+		last_yaw = yaw;
+		last_pitch = pitch;
 	}
 }

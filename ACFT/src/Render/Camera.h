@@ -2,10 +2,11 @@
 #define ACFT_CAMERA_H_
 
 #include "Event/EventManager.h"
+#include "Tick/Tick.h"
 
 namespace ACFT 
 {
-	class Camera : public EventListener
+	class Camera : public EventListener, public LogicTicker
 	{
 	public:
 		static inline Camera& GetInstance()
@@ -18,7 +19,9 @@ namespace ACFT
 
 		glm::mat4 GetVP();
 
-		void HandleEvent(const Event& event);
+		void HandleEvent(const Event& event) override;
+
+		void TickLogic(float delta);
 
 	public:
 		inline const float& GetYaw() const { return yaw; }
@@ -36,11 +39,15 @@ namespace ACFT
 
 	private:
 		Camera();
+		~Camera();
 		Camera(const Camera&) = delete;
 		Camera(Camera&&) = delete;
 
 		float yaw;
 		float pitch;
+
+		float last_yaw;
+		float last_pitch;
 
 		glm::vec3 pos;
 		glm::vec3 looking;

@@ -10,7 +10,10 @@ namespace ACFT
 		~NormalTimer() = default;
 
 		int GetElapsed();
+		int GetElapsedAndFlush();
 		void Flush();
+
+		void Decline(int decline);
 	
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> last;

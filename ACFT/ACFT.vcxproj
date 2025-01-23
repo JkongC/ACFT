@@ -162,6 +162,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Tick\TickManager.cpp" />
     <ClCompile Include="src\Util\Timer.cpp" />
     <ClCompile Include="src\Render\VertexArray.cpp" />
   </ItemGroup>
@@ -181,6 +182,8 @@
     <ClInclude Include="src\Render\VertexBufferLayout.h" />
     <ClInclude Include="src\Render\Voxel.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Tick\Tick.h" />
+    <ClInclude Include="src\Tick\TickManager.h" />
     <ClInclude Include="src\Util\Direction.h" />
     <ClInclude Include="src\Util\Timer.h" />
     <ClInclude Include="src\Render\VertexArray.h" />

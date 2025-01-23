@@ -32,19 +32,19 @@ namespace ACFT
 			{
 				int keycode;
 				bool down;
-			};
+			}; //Key
 
 			struct
 			{
 				double xpos;
 				double ypos;
-			};
+			}; //Mouse Move
 
 			struct
 			{
 				double xoffset;
 				double yoffset;
-			};
+			}; //Mouse Scroll
 		};
 
 	};
