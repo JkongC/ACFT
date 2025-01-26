@@ -3,10 +3,11 @@
 
 #include "Render/Voxel.h"
 #include "Util/Vec.h"
+#include "Tick/Tick.h"
 
 namespace ACFT
 {
-	class Block
+	class Block : virtual public LogicTicker
 	{
 	public:
 		enum class Side
@@ -17,19 +18,15 @@ namespace ACFT
 		Block(glm::ivec3 pos);
 		~Block() = default;
 
-		void Tick();
-
-		void UpdateSideVisibility(const glm::vec3& camera_pos);
+		void TickLogic(float delta);
 
 		inline const Voxel<VoxelVertexType::normalCube>& GetVoxel() const { return voxel; }
 		inline float GetLength() const { return voxel.GetLength(); };
 		inline const glm::ivec3& GetPos() const { return pos; }
-		inline const std::vector<bool> GetRenderFlag() const { return render_flag; }
+		inline constexpr int GetSideCount() const { return 6; }
 	private:
 		Voxel<VoxelVertexType::normalCube> voxel;
 		glm::ivec3 pos;
-
-		std::vector<bool> render_flag;
 
 		static std::array<glm::vec3, 6> side_center;
 	};

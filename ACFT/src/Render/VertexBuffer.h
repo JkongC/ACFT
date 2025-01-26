@@ -5,8 +5,6 @@
 
 namespace ACFT
 {
-	constexpr int maxVerteciesPerDraw = 6 * 300;
-	
 	class VertexBuffer
 	{
 	public:

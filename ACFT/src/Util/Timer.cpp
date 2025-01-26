@@ -12,6 +12,7 @@ namespace ACFT
 
 	int NormalTimer::GetElapsed()
 	{
+		std::lock_guard<std::mutex> lock(mtx);
 		auto now = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<int, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(now - this->last);
 
@@ -20,6 +21,7 @@ namespace ACFT
 	
 	int NormalTimer::GetElapsedAndFlush()
 	{
+		std::lock_guard<std::mutex> lock(mtx);
 		auto now = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<int, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(now - this->last);
 
@@ -34,6 +36,7 @@ namespace ACFT
 
 	void NormalTimer::Decline(int decline)
 	{
+		std::lock_guard<std::mutex> lock(mtx);
 		std::chrono::duration<int, std::milli> should_decline(decline);
 		this->last += should_decline;
 	}

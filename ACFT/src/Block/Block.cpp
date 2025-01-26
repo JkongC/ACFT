@@ -17,25 +17,13 @@ namespace ACFT
 	};
 	
 	Block::Block(glm::ivec3 pos)
-		:voxel("resources/acacia_log.png", 1.0f, VoxelVertexType::fullBlock), pos(pos), render_flag(6)
+		:voxel("resources/acacia_log.png", 1.0f, VoxelVertexType::fullBlock), pos(pos)
 	{
-		for (int i = 0; i < 5; i++)
-		{
-			render_flag[i] = true;
-		}
 
 	}
 
-	void Block::Tick()
+	void Block::TickLogic(float delta)
 	{
-		UpdateSideVisibility(Camera::GetInstance().GetPos());
-	}
-
-	void Block::UpdateSideVisibility(const glm::vec3& camera_pos)
-	{
-		for (int i = 0; i < 6; i++)
-		{
-			render_flag[i] = glm::dot(camera_pos - (Block::side_center[i] + pos), side_center[i]) > 0;
-		}
+		
 	}
 }

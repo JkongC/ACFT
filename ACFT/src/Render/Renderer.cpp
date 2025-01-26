@@ -12,20 +12,12 @@ namespace ACFT
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-		unsigned int index[36] = {
-			0, 1, 2, 
-			1, 2, 3
-		};
+		GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+		GLCall(glClearDepth(1.0));
+		GLCall(glEnable(GL_DEPTH_TEST));
+		GLCall(glDepthFunc(GL_LESS));
 
-		for (int i = 1; i <= 5; i++)
-		{
-			for (int j = 0; j <= 5; j++)
-			{
-				index[6 * i + j] = index[j] + 4 * i;
-			}
-		}
-
-		this->ib = std::make_unique<IndexBuffer>(index, 36);
+		this->ib = std::make_unique<IndexBuffer>();
 
 		this->vb = std::make_unique<VertexBuffer>();
 
@@ -53,21 +45,16 @@ namespace ACFT
 		ib->Bind();
 		vb->Bind();
 
-		const auto& render_flag = block.GetRenderFlag();
-
-		for (int side = 0; side < render_flag.size(); side++)
+		for (int side = 0; side < block.GetSideCount(); side++)
 		{
-			if (render_flag[side])
+			if (vb->GetCount() + 4 > maxVerteciesPerDraw)
+				Flush();
+
+			for (int vertex = 0; vertex < 4; vertex++)
 			{
-				if (vb->GetCount() + 4 > maxVerteciesPerDraw)
-					Flush();
-				
-				for (int vertex = 0; vertex < 4; vertex++)
-				{
-					vb->PushVertex(vertices.vertices[4 * side + vertex] + block.GetPos());
-				}
-				sides_should_render++;
+				vb->PushVertex(vertices.vertices[4 * side + vertex] + block.GetPos());
 			}
+			sides_should_render++;
 		}
 	}
 
@@ -75,13 +62,29 @@ namespace ACFT
 	{
 		int count;
 		if ((count = vb->GetCount()) != 0){
-			shader->SetUniformMat4f("u_MVP", Camera::GetInstance().GetVP());
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			Camera& cam = Camera::GetInstance();
+			
+			shader->SetUniformMat4f("u_MVP", cam.GetVP());
+			shader->SetUniformVec3f("u_campos", cam.GetPos());
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, count * sizeof(Vertex), vb->GetBuffer()));
 			GLCall(glDrawElements(GL_TRIANGLES, 6 * sides_should_render, GL_UNSIGNED_INT, nullptr));
 			vb->ClearBuffer();
 			sides_should_render = 0;
 		}
+	}
+
+
+	BackgroundRenderer::BackgroundRenderer()
+	{
+		GLCall(glEnable(GL_BLEND));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+		GLCall(glEnable(GL_DEPTH_TEST));
+		GLCall(glDepthFunc(GL_LESS));
+
+		this->shader = std::make_unique<Shader>("shader/background.shader");
+
+		shader->Bind();
 	}
 }

@@ -8,7 +8,7 @@ namespace ACFT
 	public:
 		enum class Type
 		{
-			key_press = 0, key_release, 
+			key_press = 0, key_release, key_repeat,
 			mouse_move, mouse_keydown, mouse_keyup,
 			mouse_scroll
 		};

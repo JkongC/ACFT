@@ -5,18 +5,12 @@ layout(location = 0) in vec4 position;
 layout(location = 1) in vec2 texCoord;
 
 out vec2 v_TexCoord;
-out float distance;
 
 uniform mat4 u_MVP;
-uniform vec3 u_campos;
 
 void main(){
 	gl_Position = u_MVP * position;
 	v_TexCoord = texCoord;
-
-	vec3 pos3 = position.xyz;
-	vec3 dist_vec = pos3 - u_campos;
-	distance = length(dist_vec);
 }
 
 
@@ -26,15 +20,13 @@ void main(){
 layout(location = 0) out vec4 color;
 
 in vec2 v_TexCoord;
-in float distance;
 
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
 
 vec4 fog(vec4 prevColor){
 	vec4 fogColor = vec4(0.6, 0.8, 0.9, 1.0);
-	fogColor.xyz *= 0.85;
-	return mix(prevColor, fogColor, min(max((distance - 20) / 6, 0.0), 1.0));
+	return mix(prevColor, fogColor, max((gl_FragCoord.z - 0.9) / 0.1, 0.0));
 }
 
 void main(){

@@ -66,6 +66,9 @@
     <ClCompile Include="src\Tick\TickManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Tick\Tick.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -134,5 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic.shader" />
+    <None Include="shader\background.shader" />
   </ItemGroup>
 </Project>

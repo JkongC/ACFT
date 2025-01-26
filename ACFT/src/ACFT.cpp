@@ -11,22 +11,34 @@
 namespace ACFT
 {
 	GLFWwindow* Game::gameWindow = nullptr;
+	std::atomic<bool> Game::running = true;
+
+	void* block_1;
+	void* block_2;
+	void* block_3;
+
+	bool windowCreated = false;
+	std::condition_variable renderReady;
+	std::mutex mtx;
 	
 	ACFT_ERROR_CODE Game::InitGame()
 	{
 		ACFT::Logger::Init();
 		ACFT_LOG_INFO("Launching Game...");
+
+		std::thread render_thread(RenderThread);
+
+		std::unique_lock<std::mutex> lock(mtx);
 		
-		if (InitWindow() == ACFT_ERROR)
-			return ACFT_ERROR;
-
-		glfwSetCursorPosCallback(gameWindow, MousePosCallback);
-		glfwSetMouseButtonCallback(gameWindow, MouseButtonCallback);
-		glfwSetKeyCallback(gameWindow, KeyCallback);
-
+		while (!windowCreated)
+		{
+			renderReady.wait(lock);
+		}
+		
 		if (GameLoop() == ACFT_ERROR)
 			return ACFT_ERROR;
 
+		render_thread.join();
 		return ACFT_NORMAL;
 	}
 
@@ -60,41 +72,80 @@ namespace ACFT
 
 	ACFT_ERROR_CODE Game::GameLoop()
 	{
-		Block block_1({0, 0, -2});
-		Block block_2({2, 0, -2});
-		
 		Camera& camera = Camera::GetInstance();
 		camera.SetPos(camera.GetPos() + glm::vec3(0.0f, 2.0f, 0.0f));
 		camera.SetPitch(camera.GetPitch() - PI / 10.0f);
-		BlockRenderer& block_renderer = BlockRenderer::GetInstance();
 
 		TickManager& tick_manager = TickManager::GetInstance();
 		
 		NormalTimer timer;
 		int ms_to_sleep;
-		
 		while (!glfwWindowShouldClose(gameWindow)) {
 			
 			timer.Flush();
 			
 			tick_manager.TickLogic();
-			block_1.Tick();
-			block_renderer.Draw(block_1);
-			block_2.Tick();
-			block_renderer.Draw(block_2);
-			block_renderer.Flush();
+			//block_renderer.Draw(*(Block*)block_1);
+			//block_renderer.Draw(*(Block*)block_2);
+			//block_renderer.Flush();
 			
+			//glfwSwapBuffers(gameWindow);
+			
+			if ((ms_to_sleep = LogicMSPT - timer.GetElapsed()) > 0)
+				Sleep(ms_to_sleep);
+		}
+
+		running = false;
+		return ACFT_NORMAL;
+	}
+
+	void Game::RenderThread()
+	{
+		if (InitWindow() == ACFT_ERROR)
+		{
+			ACFT_LOG_ERROR("Failed to create the window!");
+			running = false;
+			return;
+		}
+
+		block_1 = new Block({ 0, 0, -2 });
+		block_2 = new Block({ 2, 0, -2 });
+
+		{
+			std::lock_guard<std::mutex> lg(mtx);
+			windowCreated = true;
+		}
+		renderReady.notify_all();
+		
+		glfwSetCursorPosCallback(gameWindow, MousePosCallback);
+		glfwSetMouseButtonCallback(gameWindow, MouseButtonCallback);
+		glfwSetKeyCallback(gameWindow, KeyCallback);
+		
+		BlockRenderer& block_renderer = BlockRenderer::GetInstance();
+		
+		NormalTimer timer;
+		int ms_to_sleep;
+		while (running)
+		{
+			timer.Flush();
+
+			block_renderer.Draw(*(Block*)block_1);
+			block_renderer.Draw(*(Block*)block_2);
+			block_renderer.Flush();
+
 			glfwSwapBuffers(gameWindow);
 
 			glfwPollEvents();
-
 			
 			if ((ms_to_sleep = MsPerFrame - timer.GetElapsed()) > 0)
 				Sleep(ms_to_sleep);
 		}
 
-		return ACFT_NORMAL;
+		delete (Block*)block_1;
+		delete (Block*)block_2;
+		delete (Block*)block_3;
 	}
+
 }
 
 void GLClearError()
@@ -106,10 +157,11 @@ void GLLogCall() {
 	GLenum err;
 	while ((err = glGetError())) {
 		ACFT_GL_LOG("Error occured: {}", err);
-	}
+
 #if 0
-	__debugbreak();
+		__debugbreak();
 #endif
+	}
 }
 
 void MousePosCallback(GLFWwindow* window, double xpos, double ypos)
@@ -131,9 +183,23 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	bool press = action == GLFW_PRESS;
-	ACFT::InputEvent event(press ? ACFT::Event::Type::key_press : ACFT::Event::Type::key_release);
+	ACFT::Event::Type type;
+	switch (action)
+	{
+	case GLFW_PRESS:
+		type = ACFT::Event::Type::key_press;
+		break;
+	case GLFW_RELEASE:
+		type = ACFT::Event::Type::key_release;
+		break;
+	case GLFW_REPEAT:
+		type = ACFT::Event::Type::key_repeat;
+		break;
+	default:
+		break;
+	}
+	ACFT::InputEvent event(type);
 	event.keycode = key;
-	event.down = press;
+	event.down = type == ACFT::Event::Type::key_press || type == ACFT::Event::Type::key_repeat;
 	ACFT::EventManager::GetInstance().Trigger(event);
 }

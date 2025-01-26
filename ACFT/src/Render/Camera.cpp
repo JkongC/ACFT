@@ -14,8 +14,7 @@ namespace ACFT
 		EventSubscribe(Event::Type::mouse_move);
 		EventSubscribe(Event::Type::mouse_keyup);
 		EventSubscribe(Event::Type::key_release);
-
-		TickManager::GetInstance().AddLogicTicker(this);
+		EventSubscribe(Event::Type::key_press);
 	}
 
 	Camera::~Camera()
@@ -23,6 +22,7 @@ namespace ACFT
 		EventUnsubscribe(Event::Type::mouse_move);
 		EventUnsubscribe(Event::Type::mouse_keyup);
 		EventUnsubscribe(Event::Type::key_release);
+		EventUnsubscribe(Event::Type::key_press);
 	}
 	
 	void Camera::UpdateAllVec()
@@ -117,16 +117,16 @@ namespace ACFT
 				switch (input.keycode)
 				{
 				case GLFW_KEY_W:
-					W_pressed = true;
+					W_pressed = false;
 					break;
 				case GLFW_KEY_A:
-					A_pressed = true;
+					A_pressed = false;
 					break;
 				case GLFW_KEY_S:
-					S_pressed = true;
+					S_pressed = false;
 					break;
 				case GLFW_KEY_D:
-					D_pressed = true;
+					D_pressed = false;
 					break;
 				default:
 					break;
@@ -134,6 +134,28 @@ namespace ACFT
 			}
 		}
 			break;
+
+		case Event::Type::key_press:
+		{
+			const InputEvent& input = static_cast<const InputEvent&>(event);
+			switch (input.keycode)
+			{
+			case GLFW_KEY_W:
+				W_pressed = true;
+				break;
+			case GLFW_KEY_A:
+				A_pressed = true;
+				break;
+			case GLFW_KEY_S:
+				S_pressed = true;
+				break;
+			case GLFW_KEY_D:
+				D_pressed = true;
+				break;
+			default:
+				break;
+			}
+		}
 
 		default:
 			break;
@@ -144,5 +166,45 @@ namespace ACFT
 	{
 		last_yaw = yaw;
 		last_pitch = pitch;
+
+		glm::vec3 move(0.0f, 0.0f, 0.0f);
+		bool moved_1 = false;
+		bool moved_2 = false;
+
+		if (W_pressed ^ S_pressed)
+		{
+			glm::vec3 front = GetVec3fFromYP(yaw, 0.0f);
+			if (W_pressed)
+			{
+				move += (front / 100.0f) *= delta;
+			}
+			else
+			{
+				move -= (front / 100.0f) *= delta;
+			}
+			moved_1 = true;
+		}
+		
+		if (A_pressed ^ D_pressed)
+		{
+			if (A_pressed)
+			{
+				move -= (right / 100.0f) *= delta;
+			}
+			else
+			{
+				move += (right / 100.0f) *= delta;
+			}
+			moved_2 = true;
+		}
+
+		if (moved_1 && moved_2)
+		{
+			pos += (move /= sqrt(2));
+		}
+		else if (moved_1 || moved_2)
+		{
+			pos += move;
+		}
 	}
 }

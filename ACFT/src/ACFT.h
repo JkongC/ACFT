@@ -7,8 +7,10 @@ namespace ACFT
 
 	constexpr int WindowWidth = 1280;
 	constexpr int WindowHeight = 960;
-	constexpr int FramesPerSecond = 120;
+	constexpr int FramesPerSecond = 300;
 	constexpr int MsPerFrame = (int)(1000 / FramesPerSecond);
+
+	constexpr int maxVerteciesPerDraw = 6 * 300;
 
 	class Game
 	{
@@ -18,13 +20,16 @@ namespace ACFT
 
 	public:
 		inline static GLFWwindow* GetGameWindow() { return gameWindow; };
+		static bool GameRunning() { return running; }
 
 	private:
 		static ACFT_ERROR_CODE InitWindow();
 		static ACFT_ERROR_CODE GameLoop();
+		static void RenderThread();
 
 	private:
 		static GLFWwindow* gameWindow;
+		static std::atomic<bool> running;
 	};
 
 	class Hash

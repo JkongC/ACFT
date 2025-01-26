@@ -6,7 +6,7 @@
 
 namespace ACFT 
 {
-	class Camera : public EventListener, public LogicTicker
+	class Camera : public EventListener, virtual public LogicTicker
 	{
 	public:
 		static inline Camera& GetInstance()
