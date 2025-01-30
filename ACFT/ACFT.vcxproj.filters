@@ -69,6 +69,12 @@
     <ClCompile Include="src\Tick\Tick.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Controller\InputQuery.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\RenderQueue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -132,6 +138,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Tick\TickManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Controller\InputQuery.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\RenderCommand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Render\RenderQueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

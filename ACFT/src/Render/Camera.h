@@ -15,8 +15,6 @@ namespace ACFT
 			return g_Camera;
 		}
 
-		void UpdateAllVec();
-
 		glm::mat4 GetVP();
 
 		void HandleEvent(const Event& event) override;
@@ -24,11 +22,17 @@ namespace ACFT
 		void TickLogic(float delta);
 
 	public:
-		inline const float& GetYaw() const { return yaw; }
-		inline void SetYaw(const float& new_yaw) { yaw = new_yaw; }
+		inline const float& GetYaw(std::memory_order order = std::memory_order_seq_cst) const { return yaw.load(order); }
+		inline void SetYaw(const float& new_yaw, std::memory_order order = std::memory_order_seq_cst) { yaw.store(new_yaw, order); }
 
-		inline const float& GetPitch() const { return pitch; }
-		inline void SetPitch(const float& new_pitch) { pitch = new_pitch; }
+		inline const float& GetPitch(std::memory_order order = std::memory_order_seq_cst) const { return pitch.load(order); }
+		inline void SetPitch(const float& new_pitch, std::memory_order order = std::memory_order_seq_cst) { pitch.store(new_pitch, order); }
+
+		inline const float& GetPreviousYaw(std::memory_order order = std::memory_order_seq_cst) const { return prev_yaw.load(order); }
+		inline void SetPreviousYaw(const float& new_yaw, std::memory_order order = std::memory_order_seq_cst) { prev_yaw.store(new_yaw, order); }
+
+		inline const float& GetPreviousPitch(std::memory_order order = std::memory_order_seq_cst) const { return prev_pitch.load(order); }
+		inline void SetPreviousPitch(const float& new_pitch, std::memory_order order = std::memory_order_seq_cst) { prev_pitch.store(new_pitch, order); }
 
 		inline const glm::vec3& GetPos() const { return pos; }
 		inline void SetPos(const glm::vec3& new_pos) { pos = new_pos; }
@@ -37,17 +41,25 @@ namespace ACFT
 		inline glm::vec3 GetUpVec() { return up; }
 		inline glm::vec3 GetRightVec() { return right; }
 
+		inline float GetSpeed() { return glm::length(axis_speed); }
+
 	private:
 		Camera();
 		~Camera();
 		Camera(const Camera&) = delete;
 		Camera(Camera&&) = delete;
 
-		float yaw;
-		float pitch;
+		void UpdateAllVec();
 
-		float last_yaw;
-		float last_pitch;
+		void UpdateAllKeyFlags();
+
+	private:
+
+		std::atomic<float> yaw;
+		std::atomic<float> pitch;
+
+		std::atomic<float> prev_yaw;
+		std::atomic<float> prev_pitch;
 
 		glm::vec3 pos;
 		glm::vec3 looking;
@@ -63,6 +75,18 @@ namespace ACFT
 		bool A_pressed = false;
 		bool S_pressed = false;
 		bool D_pressed = false;
+		bool Space_pressed = false;
+		bool Shift_pressed = false;
+
+		glm::vec3 speed;
+		glm::vec3 axis_speed;
+
+		//Consts
+		const float max_horizontal_speed = 0.04f;
+		const float max_vertical_speed = 0.015f;
+		const float launch_acceleration = 0.00005f;
+		const float friction_acceleration = 0.00007f;
+		const float brake_acceleration = 0.00009f;
 	};
 }
 

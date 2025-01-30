@@ -29,7 +29,7 @@ namespace ACFT
 		{
 			for (auto& ticker : this->logic_tickers)
 			{
-				ticker->TickLogic(elapsed);
+				ticker->TickLogic(LogicMSPT);
 			}
 		}
 	}

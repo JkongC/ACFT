@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <array>
+#include <deque>
 #include <memory>
 #include <string>
 #include <initializer_list>

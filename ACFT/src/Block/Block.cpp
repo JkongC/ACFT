@@ -19,7 +19,6 @@ namespace ACFT
 	Block::Block(glm::ivec3 pos)
 		:voxel("resources/acacia_log.png", 1.0f, VoxelVertexType::fullBlock), pos(pos)
 	{
-
 	}
 
 	void Block::TickLogic(float delta)

@@ -30,10 +30,7 @@ namespace ACFT
 
 		std::unique_lock<std::mutex> lock(mtx);
 		
-		while (!windowCreated)
-		{
-			renderReady.wait(lock);
-		}
+		renderReady.wait(lock, [&]() -> bool {return windowCreated;});
 		
 		if (GameLoop() == ACFT_ERROR)
 			return ACFT_ERROR;
@@ -79,7 +76,6 @@ namespace ACFT
 		TickManager& tick_manager = TickManager::GetInstance();
 		
 		NormalTimer timer;
-		int ms_to_sleep;
 		while (!glfwWindowShouldClose(gameWindow)) {
 			
 			timer.Flush();
@@ -90,9 +86,9 @@ namespace ACFT
 			//block_renderer.Flush();
 			
 			//glfwSwapBuffers(gameWindow);
-			
-			if ((ms_to_sleep = LogicMSPT - timer.GetElapsed()) > 0)
-				Sleep(ms_to_sleep);
+
+			if (!running)
+				return ACFT_ERROR;
 		}
 
 		running = false;
@@ -112,7 +108,7 @@ namespace ACFT
 		block_2 = new Block({ 2, 0, -2 });
 
 		{
-			std::lock_guard<std::mutex> lg(mtx);
+			std::lock_guard<std::mutex> lock(mtx);
 			windowCreated = true;
 		}
 		renderReady.notify_all();
@@ -124,10 +120,13 @@ namespace ACFT
 		BlockRenderer& block_renderer = BlockRenderer::GetInstance();
 		
 		NormalTimer timer;
-		int ms_to_sleep;
 		while (running)
 		{
-			timer.Flush();
+			float elapsed = timer.GetElapsed();
+			if (elapsed < MsPerFrame)
+				continue;
+			else
+				timer.Decline(MsPerFrame);
 
 			block_renderer.Draw(*(Block*)block_1);
 			block_renderer.Draw(*(Block*)block_2);
@@ -137,8 +136,6 @@ namespace ACFT
 
 			glfwPollEvents();
 			
-			if ((ms_to_sleep = MsPerFrame - timer.GetElapsed()) > 0)
-				Sleep(ms_to_sleep);
 		}
 
 		delete (Block*)block_1;

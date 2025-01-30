@@ -5,10 +5,18 @@ namespace ACFT
 {	
 	inline glm::vec3 GetVec3fFromYP(float yaw, float pitch)
 	{
-		float x = cos(yaw);
-		float z = -sin(yaw);
-		float y = sqrt(x * x + z * z) * tan(pitch);
-		return glm::normalize(glm::vec3(x, y, z));
+		float x = glm::cos(pitch) * glm::cos(yaw);
+		float y = glm::sin(pitch);
+		float z = -glm::cos(pitch) * glm::sin(yaw);
+		return glm::vec3(x, y, z);
+	}
+
+	inline glm::vec3 GetVec3fFromYP(float yaw, float pitch, float length)
+	{
+		float x = glm::cos(pitch) * glm::cos(yaw);
+		float y = glm::sin(pitch);
+		float z = -glm::cos(pitch) * glm::sin(yaw);
+		return glm::vec3(x, y, z) * length;
 	}
 
 	inline float Vec3Dotfi(const glm::vec3& fvec, const glm::ivec3& ivec)

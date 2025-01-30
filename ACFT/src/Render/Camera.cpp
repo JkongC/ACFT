@@ -3,13 +3,15 @@
 #include "ACFT.h"
 #include "Util/Vec.h"
 #include "Camera.h"
+#include "Controller/InputQuery.h"
 
 namespace ACFT
 {
 	Camera::Camera()
-		: yaw(PI / 2), pitch(0.0), last_yaw(yaw), last_pitch(pitch), pos(0.0f, 0.0f, 2.0f)
+		: yaw(PI / 2), pitch(0.0), prev_yaw(yaw.load()), prev_pitch(pitch.load()), pos(0.0f, 0.0f, 2.0f)
 		, looking(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f)
 		, mouse_xpos((double)WindowWidth / 2.0), mouse_ypos((double)WindowHeight / 2.0)
+		, speed(0.0f, 0.0f ,0.0f), axis_speed(0.0f, 0.0f, 0.0f)
 	{
 		EventSubscribe(Event::Type::mouse_move);
 		EventSubscribe(Event::Type::mouse_keyup);
@@ -28,33 +30,37 @@ namespace ACFT
 	void Camera::UpdateAllVec()
 	{
 		float delta_time = TickManager::GetInstance().GetTimeDelta();
+
+		float pitch_ins = GetPitch();
+		pitch_ins = std::clamp(pitch_ins, -PI / 2, PI / 2);
+
+		float yaw_prev = GetPreviousYaw();
+		float pitch_prev = GetPreviousPitch();
 		
-		while (this->yaw > 2 * PI)
-		{
-			this->yaw -= 2 * PI;
-			this->last_yaw -= 2 * PI;
-		}
+		float lerp_yaw = yaw_prev + (yaw - yaw_prev) * (delta_time / LogicMSPT);
+		float lerp_pitch = pitch_prev + (pitch_ins - pitch_prev) * (delta_time / LogicMSPT);
 
-		while (this->yaw < 0.0f)
-		{
-			this->yaw += 2 * PI;
-			this->last_yaw += 2 * PI;
-		}
-
-		this->pitch = std::clamp(this->pitch, -PI / 2, PI / 2);
-
-		float lerp_yaw = last_yaw + (yaw - last_yaw) * (delta_time/ LogicMSPT);
-		float lerp_pitch = last_pitch + (pitch - last_pitch) * (delta_time / LogicMSPT);
+		lerp_pitch = std::clamp(lerp_pitch, -PI / 2, PI / 2);
 		
 		this->looking = GetVec3fFromYP(lerp_yaw, lerp_pitch);
-		if (pitch > 0)
+		if (lerp_pitch > 0)
 		{
-			this->up = GetVec3fFromYP(-lerp_yaw, PI / 2 - lerp_pitch);
+			this->up = GetVec3fFromYP(lerp_yaw + PI, PI / 2 - lerp_pitch);
 		}
 		else {
 			this->up = GetVec3fFromYP(lerp_yaw, lerp_pitch + PI / 2);
 		}
 		this->right = glm::normalize(glm::cross(this->looking, this->up));
+	}
+
+	void Camera::UpdateAllKeyFlags()
+	{
+		W_pressed = Input::IsKeyDown(ACFT_KEY_W);
+		A_pressed = Input::IsKeyDown(ACFT_KEY_A);
+		S_pressed = Input::IsKeyDown(ACFT_KEY_S);
+		D_pressed = Input::IsKeyDown(ACFT_KEY_D);
+		Shift_pressed = Input::IsKeyDown(ACFT_KEY_LEFT_SHIFT);
+		Space_pressed = Input::IsKeyDown(ACFT_KEY_SPACE);
 	}
 
 	glm::mat4 Camera::GetVP()
@@ -76,10 +82,31 @@ namespace ACFT
 				break;
 			const InputEvent& input = static_cast<const InputEvent&>(event);
 
-			this->yaw -= (input.xpos - this->mouse_xpos) / 800.0;
+			float yaw_prev = GetYaw();
+			float pitch_prev = GetPitch();
+
+			float yaw_after = yaw_prev - (input.xpos - this->mouse_xpos) / 800.0;
+			float pitch_after = pitch_prev - (input.ypos - this->mouse_ypos) / 800.0;
+
+			while (yaw_after > 2 * PI)
+			{
+				yaw_after -= 2 * PI;
+				this->prev_yaw -= 2 * PI;
+			}
+
+			while (yaw_after < 0.0f)
+			{
+				yaw_after += 2 * PI;
+				this->prev_yaw += 2 * PI;
+			}
+
+			SetYaw(yaw_after);
 			this->mouse_xpos = input.xpos;
 
-			this->pitch -= (input.ypos - this->mouse_ypos) / 800.0;
+			if (pitch_after < PI / 2 && pitch_after > -PI / 2)
+			{
+				SetPitch(pitch_after);
+			}
 			this->mouse_ypos = input.ypos;
 		}
 			break;
@@ -103,59 +130,17 @@ namespace ACFT
 
 		case Event::Type::key_release:
 		{
-			if (!lock_mouse)
-				break;
 			const InputEvent& input = static_cast<const InputEvent&>(event);
 
 			if (input.keycode == GLFW_KEY_ESCAPE)
 			{
+				if (!lock_mouse)
+					break;
 				lock_mouse = false;
 				glfwSetInputMode(Game::GetGameWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			}
-			else
-			{
-				switch (input.keycode)
-				{
-				case GLFW_KEY_W:
-					W_pressed = false;
-					break;
-				case GLFW_KEY_A:
-					A_pressed = false;
-					break;
-				case GLFW_KEY_S:
-					S_pressed = false;
-					break;
-				case GLFW_KEY_D:
-					D_pressed = false;
-					break;
-				default:
-					break;
-				}
-			}
 		}
 			break;
-
-		case Event::Type::key_press:
-		{
-			const InputEvent& input = static_cast<const InputEvent&>(event);
-			switch (input.keycode)
-			{
-			case GLFW_KEY_W:
-				W_pressed = true;
-				break;
-			case GLFW_KEY_A:
-				A_pressed = true;
-				break;
-			case GLFW_KEY_S:
-				S_pressed = true;
-				break;
-			case GLFW_KEY_D:
-				D_pressed = true;
-				break;
-			default:
-				break;
-			}
-		}
 
 		default:
 			break;
@@ -164,47 +149,94 @@ namespace ACFT
 
 	void Camera::TickLogic(float delta)
 	{
-		last_yaw = yaw;
-		last_pitch = pitch;
+		prev_yaw = GetYaw();
+		prev_pitch = GetPitch();
 
-		glm::vec3 move(0.0f, 0.0f, 0.0f);
-		bool moved_1 = false;
-		bool moved_2 = false;
+		UpdateAllKeyFlags();
 
-		if (W_pressed ^ S_pressed)
+		bool x_accelerating = false;
+		bool y_accelerating = false;
+		bool z_accelerating = false;
+		glm::vec3 delta_axis(0.0f, 0.0f, 0.0f);
+
+		if (W_pressed ^ S_pressed && glm::length(speed) < max_horizontal_speed)
 		{
-			glm::vec3 front = GetVec3fFromYP(yaw, 0.0f);
 			if (W_pressed)
 			{
-				move += (front / 100.0f) *= delta;
+				delta_axis.z -= (axis_speed.z > 0.0f ? brake_acceleration : launch_acceleration) * delta;
 			}
 			else
 			{
-				move -= (front / 100.0f) *= delta;
+				delta_axis.z += (axis_speed.z < 0.0f ? brake_acceleration : launch_acceleration) * delta;
 			}
-			moved_1 = true;
+			z_accelerating = true;
 		}
-		
-		if (A_pressed ^ D_pressed)
+
+		if (A_pressed ^ D_pressed && glm::length(speed) < max_horizontal_speed)
 		{
 			if (A_pressed)
 			{
-				move -= (right / 100.0f) *= delta;
+				delta_axis.x -= (axis_speed.x > 0.0f ? brake_acceleration : launch_acceleration) * delta;
 			}
 			else
 			{
-				move += (right / 100.0f) *= delta;
+				delta_axis.x += (axis_speed.x < 0.0f ? brake_acceleration : launch_acceleration) * delta;
 			}
-			moved_2 = true;
+			x_accelerating = true;
 		}
 
-		if (moved_1 && moved_2)
+		if (Space_pressed ^ Shift_pressed)
 		{
-			pos += (move /= sqrt(2));
+			if (Space_pressed)
+			{
+				delta_axis.y += (axis_speed.y < 0 ? brake_acceleration : launch_acceleration) * delta;
+			}
+			else
+			{
+				delta_axis.y -= (axis_speed.y > 0 ? brake_acceleration : launch_acceleration) * delta;
+			}
+			y_accelerating = true;
 		}
-		else if (moved_1 || moved_2)
+
+		int accelerating_axis_count = x_accelerating + y_accelerating + z_accelerating;
+		if (accelerating_axis_count)
 		{
-			pos += move;
+			delta_axis /= static_cast<float>(glm::sqrt(accelerating_axis_count));
+			axis_speed += delta_axis;
+
+			if (!x_accelerating && glm::abs(axis_speed.x) > friction_acceleration * delta)
+			{
+				axis_speed.x -= (axis_speed.x > 0 ? friction_acceleration : -friction_acceleration) * delta;
+			}
+
+			if (!z_accelerating && glm::abs(axis_speed.z) > friction_acceleration * delta)
+			{
+				axis_speed.z -= (axis_speed.z > 0 ? friction_acceleration : -friction_acceleration) * delta;
+			}
+
+			if (!y_accelerating && glm::abs(axis_speed.y) > friction_acceleration * delta)
+			{
+				axis_speed.y -= (axis_speed.y > 0 ? friction_acceleration : -friction_acceleration) * delta;
+			}
 		}
+
+		if (!accelerating_axis_count && glm::length(axis_speed) != 0.0f)
+		{
+			glm::vec3 reverse_i = glm::normalize(-axis_speed);
+			if (glm::dot(axis_speed + reverse_i * friction_acceleration * delta, axis_speed) <= 0.0f)
+			{
+				axis_speed = glm::zero<glm::vec3>();
+			}
+			else
+			{
+				axis_speed += reverse_i * friction_acceleration * delta;
+			}
+		}
+
+		speed = glm::zero<glm::vec3>();
+		speed.y = axis_speed.y;
+		speed += GetVec3fFromYP(yaw + PI, 0.0f, axis_speed.z);
+		speed += GetVec3fFromYP(yaw - PI / 2, 0.0f, axis_speed.x);
+		pos += speed;
 	}
 }
