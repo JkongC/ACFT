@@ -6,6 +6,6 @@
 
 int main()
 {
-	ACFT::Game::InitGame();
-	return ACFT::Game::EndGame();;
+	ACFT::Game::Init();
+	return ACFT::Game::End();
 }

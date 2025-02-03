@@ -5,6 +5,15 @@ namespace ACFT
 {
 	using ACFT_ERROR_CODE = int;
 
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+
+	template<typename T, class... Args>
+	inline Ref<T> MakeRef(Args&&... args)
+	{
+		return std::make_shared<T>(std::forward<Args>(args)...);
+	}
+
 	constexpr int WindowWidth = 1280;
 	constexpr int WindowHeight = 960;
 	constexpr int FramesPerSecond = 300;
@@ -15,12 +24,14 @@ namespace ACFT
 	class Game
 	{
 	public:
-		static ACFT_ERROR_CODE InitGame();
-		static ACFT_ERROR_CODE EndGame();
+		static ACFT_ERROR_CODE Init();
+		static ACFT_ERROR_CODE End();
 
 	public:
 		inline static GLFWwindow* GetGameWindow() { return gameWindow; };
-		static bool GameRunning() { return running; }
+		inline static bool IsGameRunning() { return running; }
+		static bool IsRenderThread();
+		inline static void StopGame() { running = false; }
 
 	private:
 		static ACFT_ERROR_CODE InitWindow();
@@ -29,7 +40,7 @@ namespace ACFT
 
 	private:
 		static GLFWwindow* gameWindow;
-		static std::atomic<bool> running;
+		static inline std::atomic<bool> running = true;
 	};
 
 	class Hash

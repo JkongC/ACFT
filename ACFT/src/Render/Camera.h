@@ -82,11 +82,11 @@ namespace ACFT
 		glm::vec3 axis_speed;
 
 		//Consts
-		const float max_horizontal_speed = 0.04f;
+		const float max_horizontal_speed = 0.03f;
 		const float max_vertical_speed = 0.015f;
-		const float launch_acceleration = 0.00005f;
-		const float friction_acceleration = 0.00007f;
-		const float brake_acceleration = 0.00009f;
+		const float launch_acceleration = 0.00006f;
+		const float friction_acceleration = 0.00008f;
+		const float brake_acceleration = 0.0001f;
 	};
 }
 

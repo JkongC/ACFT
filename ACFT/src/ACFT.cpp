@@ -11,20 +11,22 @@
 namespace ACFT
 {
 	GLFWwindow* Game::gameWindow = nullptr;
-	std::atomic<bool> Game::running = true;
+	static thread_local bool is_render_thread = false;
 
 	void* block_1;
 	void* block_2;
 	void* block_3;
 
-	bool windowCreated = false;
-	std::condition_variable renderReady;
-	std::mutex mtx;
+	static bool windowCreated = false;
+	static std::condition_variable renderReady;
+	static std::mutex mtx;
 	
-	ACFT_ERROR_CODE Game::InitGame()
+	ACFT_ERROR_CODE Game::Init()
 	{
 		ACFT::Logger::Init();
 		ACFT_LOG_INFO("Launching Game...");
+
+		ScopedTimer<float, second> game_time([](float elapsed) -> void {ACFT_LOG_TRACE("Game ran for {} s.", elapsed);});
 
 		std::thread render_thread(RenderThread);
 
@@ -39,7 +41,7 @@ namespace ACFT
 		return ACFT_NORMAL;
 	}
 
-	ACFT_ERROR_CODE Game::EndGame()
+	ACFT_ERROR_CODE Game::End()
 	{
 		ACFT_LOG_INFO("Closing Game...");
 		
@@ -64,7 +66,16 @@ namespace ACFT
 		if (glewInit() != GLEW_OK)
 			return ACFT_ERROR;
 
+		glfwSetCursorPosCallback(gameWindow, MousePosCallback);
+		glfwSetMouseButtonCallback(gameWindow, MouseButtonCallback);
+		glfwSetKeyCallback(gameWindow, KeyCallback);
+
 		return ACFT_NORMAL;
+	}
+
+	bool Game::IsRenderThread()
+	{
+		return is_render_thread;
 	}
 
 	ACFT_ERROR_CODE Game::GameLoop()
@@ -97,6 +108,8 @@ namespace ACFT
 
 	void Game::RenderThread()
 	{
+		is_render_thread = true;
+		
 		if (InitWindow() == ACFT_ERROR)
 		{
 			ACFT_LOG_ERROR("Failed to create the window!");
@@ -112,10 +125,6 @@ namespace ACFT
 			windowCreated = true;
 		}
 		renderReady.notify_all();
-		
-		glfwSetCursorPosCallback(gameWindow, MousePosCallback);
-		glfwSetMouseButtonCallback(gameWindow, MouseButtonCallback);
-		glfwSetKeyCallback(gameWindow, KeyCallback);
 		
 		BlockRenderer& block_renderer = BlockRenderer::GetInstance();
 		

@@ -2,18 +2,20 @@
 #define ACFT_RENDERQUEUE_H_
 
 #include "RenderCommand.h"
+#include "Util/LockfreeQueue.h"
 
 namespace ACFT
 {
 	class RenderQueue
 	{
 	public:
-		void AddCommand(const RenderCommand& command);
-		const RenderCommand& FetchCommand();
+		RenderQueue();
+		
+		void PushCommand(Ref<RenderCommand> command);
+		std::optional<Ref<RenderCommand>> FetchCommand();
 
 	private:
-		std::deque<RenderCommand> command_queue;
-		std::mutex mtx;
+		LockfreeQueue<RenderCommand> command_queue;
 
 	};
 }

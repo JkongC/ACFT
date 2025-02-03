@@ -156,10 +156,12 @@
     <ClCompile Include="src\Log\Logger.cpp" />
     <ClCompile Include="src\Render\Renderer.cpp" />
     <ClCompile Include="src\Render\RenderQueue.cpp" />
+    <ClCompile Include="src\Render\RenderSystem.cpp" />
     <ClCompile Include="src\Render\Shader.cpp" />
     <ClCompile Include="src\Render\Texture.cpp" />
     <ClCompile Include="src\Render\Vertex.cpp" />
     <ClCompile Include="src\Render\VertexBuffer.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -181,16 +183,20 @@
     <ClInclude Include="src\Render\RenderCommand.h" />
     <ClInclude Include="src\Render\Renderer.h" />
     <ClInclude Include="src\Render\RenderQueue.h" />
+    <ClInclude Include="src\Render\RenderSystem.h" />
     <ClInclude Include="src\Render\Shader.h" />
     <ClInclude Include="src\Render\Texture.h" />
     <ClInclude Include="src\Render\Vertex.h" />
     <ClInclude Include="src\Render\VertexBuffer.h" />
     <ClInclude Include="src\Render\VertexBufferLayout.h" />
     <ClInclude Include="src\Render\Voxel.h" />
+    <ClInclude Include="src\ResourceManager.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\Tick\Tick.h" />
     <ClInclude Include="src\Tick\TickManager.h" />
     <ClInclude Include="src\Util\Direction.h" />
+    <ClInclude Include="src\Util\LockfreeQueue.h" />
+    <ClInclude Include="src\Util\Node.h" />
     <ClInclude Include="src\Util\Timer.h" />
     <ClInclude Include="src\Render\VertexArray.h" />
     <ClInclude Include="src\Util\Vec.h" />

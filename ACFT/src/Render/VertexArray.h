@@ -5,6 +5,11 @@ namespace ACFT
 {
 	class VertexBufferLayout;
 
+	enum VertexArrayType
+	{
+		block = 0
+	};
+
 	class VertexArray
 	{
 	public:
@@ -14,20 +19,8 @@ namespace ACFT
 
 		void Unbind() const;
 
-		void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
-		{
-			Bind();
-			vb.Bind();
-			const auto& elements = layout.GetElements();
-			unsigned offset = 0;
-			for (unsigned int i = 0; i < elements.size(); i++) {
-				const auto& element = elements[i];
-				GLCall(glEnableVertexAttribArray(i));
-				GLCall(glVertexAttribPointer(i, element.count, element.type,
-					element.normalized, layout.GetStride(), (const void*)offset));
-				offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
-			}
-		}
+		void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) const;
+
 	private:
 		unsigned int va_id;
 	};

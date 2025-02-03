@@ -132,7 +132,7 @@ namespace ACFT
 		{
 			const InputEvent& input = static_cast<const InputEvent&>(event);
 
-			if (input.keycode == GLFW_KEY_ESCAPE)
+			if (input.keycode == ACFT_KEY_ESCAPE)
 			{
 				if (!lock_mouse)
 					break;
@@ -151,6 +151,7 @@ namespace ACFT
 	{
 		prev_yaw = GetYaw();
 		prev_pitch = GetPitch();
+		static float cached_yaw = prev_yaw;
 
 		UpdateAllKeyFlags();
 
@@ -159,7 +160,8 @@ namespace ACFT
 		bool z_accelerating = false;
 		glm::vec3 delta_axis(0.0f, 0.0f, 0.0f);
 
-		if (W_pressed ^ S_pressed && glm::length(speed) < max_horizontal_speed)
+		glm::vec2 horizontal(axis_speed.x, axis_speed.z);
+		if (W_pressed ^ S_pressed && glm::length(horizontal) < max_horizontal_speed)
 		{
 			if (W_pressed)
 			{
@@ -172,7 +174,7 @@ namespace ACFT
 			z_accelerating = true;
 		}
 
-		if (A_pressed ^ D_pressed && glm::length(speed) < max_horizontal_speed)
+		if (A_pressed ^ D_pressed && glm::length(horizontal) < max_horizontal_speed)
 		{
 			if (A_pressed)
 			{
@@ -185,7 +187,7 @@ namespace ACFT
 			x_accelerating = true;
 		}
 
-		if (Space_pressed ^ Shift_pressed)
+		if (Space_pressed ^ Shift_pressed && glm::abs(axis_speed.y) < max_vertical_speed)
 		{
 			if (Space_pressed)
 			{
@@ -218,6 +220,8 @@ namespace ACFT
 			{
 				axis_speed.y -= (axis_speed.y > 0 ? friction_acceleration : -friction_acceleration) * delta;
 			}
+
+			cached_yaw = prev_yaw;
 		}
 
 		if (!accelerating_axis_count && glm::length(axis_speed) != 0.0f)
@@ -235,8 +239,16 @@ namespace ACFT
 
 		speed = glm::zero<glm::vec3>();
 		speed.y = axis_speed.y;
-		speed += GetVec3fFromYP(yaw + PI, 0.0f, axis_speed.z);
-		speed += GetVec3fFromYP(yaw - PI / 2, 0.0f, axis_speed.x);
+		if (accelerating_axis_count)
+		{
+			speed += GetVec3fFromYP(yaw + PI, 0.0f, axis_speed.z);
+			speed += GetVec3fFromYP(yaw - PI / 2, 0.0f, axis_speed.x);
+		}
+		else
+		{
+			speed += GetVec3fFromYP(cached_yaw + PI, 0.0f, axis_speed.z);
+			speed += GetVec3fFromYP(cached_yaw - PI / 2, 0.0f, axis_speed.x);
+		}
 		pos += speed;
 	}
 }

@@ -24,14 +24,13 @@ namespace ACFT
 
 		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height,
 			0, GL_RGBA, GL_UNSIGNED_BYTE, local_buffer));
-		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
-
-		if (local_buffer)
-			stbi_image_free(local_buffer);
 	}
 
 	Texture::~Texture()
 	{
+		if (local_buffer)
+			stbi_image_free(local_buffer);
+
 		GLCall(glDeleteTextures(1, &texture_id));
 	}
 

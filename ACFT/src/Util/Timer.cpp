@@ -40,17 +40,4 @@ namespace ACFT
 		std::chrono::duration<int, std::milli> should_decline(decline);
 		this->last += should_decline;
 	}
-
-
-	ScopedTimer::ScopedTimer()
-	{
-		this->start = std::chrono::high_resolution_clock::now();
-	}
-
-	ScopedTimer::~ScopedTimer()
-	{
-		auto now = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<int, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(now - this->start);
-		ACFT_LOG_INFO("Time elapsed: {} ms.", elapsed.count());
-	}
 }

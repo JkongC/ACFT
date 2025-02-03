@@ -5,12 +5,19 @@
 
 namespace ACFT
 {
-	void RenderQueue::AddCommand(const RenderCommand& command)
+	RenderQueue::RenderQueue()
+		: command_queue()
 	{
+
+	}
+	
+	void RenderQueue::PushCommand(Ref<RenderCommand> command)
+	{
+		command_queue.Push(command);
 	}
 
-	const RenderCommand& RenderQueue::FetchCommand()
+	std::optional<Ref<RenderCommand>> RenderQueue::FetchCommand()
 	{
-		return *(RenderCommand*)0;
+		return command_queue.Pop();
 	}
 }
