@@ -51,14 +51,16 @@ namespace ACFT
 
 	void RenderSystem::StartFrame()
 	{
-		GetInstance().command_buffer = new std::vector<RenderCommand>();
+		auto& cmd_buffer = GetInstance().command_buffer;
+		cmd_buffer = new std::vector<RenderCommand>();
+		cmd_buffer->reserve(10);
 
 		glm::mat4 mvp = Camera::GetInstance().GetVP();
 		glm::vec3 campos = Camera::GetInstance().GetPos();
 		NORMALCALL(
 			GLCall(glUniformMatrix4fv(GetInstance().global_shader.GetUniformLocation("u_MVP"), 1, GL_FALSE, &mvp[0][0]));
-		GLCall(glUniform3fv(GetInstance().global_shader.GetUniformLocation("u_campos"), 1, &campos.x));
-		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+			GLCall(glUniform3fv(GetInstance().global_shader.GetUniformLocation("u_campos"), 1, &campos.x));
+			GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 		, =
 			)
 	}
