@@ -5,31 +5,36 @@
 
 namespace ACFT
 {
-	template<typename T>
+	template<typename T, template <typename> typename NodeType>
+		requires std::is_same_v<NodeType<T>, Ref<T>> || std::is_same_v<NodeType<T>, Scope<T>>
 	class LockfreeQueue
 	{
+		using InnerNodeType = std::conditional_t<
+			std::is_same_v<NodeType<T>,Ref<T>>,
+			AtomicRefNode<T>,
+			AtomicScopeNode<T>>;
 	public:
 		LockfreeQueue()
 		{
-			AtomicNode<T>* dummy = new AtomicNode<T>();
+			InnerNodeType* dummy = new InnerNodeType();
 			head.store(dummy);
 			tail.store(dummy);
 		}
 
 		~LockfreeQueue()
 		{
-			while (AtomicNode<T>* old_head = head.load())
+			while (InnerNodeType* old_head = head.load())
 			{
 				head.store(old_head->next.load());
 				delete old_head;
 			}
 		}
 
-		void Push(const Ref<T>& item)
+		void Push(NodeType<T> item)
 		{
-			AtomicNode<T>* new_node = new AtomicNode<T>(item);
-			AtomicNode<T>* old_tail = nullptr;
-			AtomicNode<T>* old_next = nullptr;
+			InnerNodeType* new_node = new InnerNodeType(std::move(item));
+			InnerNodeType* old_tail = nullptr;
+			InnerNodeType* old_next = nullptr;
 
 			while (true)
 			{
@@ -55,11 +60,11 @@ namespace ACFT
 			}
 		}
 
-		std::optional<Ref<T>> Pop()
+		std::optional<NodeType<T>> Pop()
 		{
-			AtomicNode<T>* old_head = nullptr;
-			AtomicNode<T>* old_tail = nullptr;
-			AtomicNode<T>* next = nullptr;
+			InnerNodeType* old_head = nullptr;
+			InnerNodeType* old_tail = nullptr;
+			InnerNodeType* next = nullptr;
 
 			while (true)
 			{
@@ -78,7 +83,7 @@ namespace ACFT
 					}
 					else
 					{
-						Ref<T>& result = next->item;
+						NodeType<T>& result = next->item;
 						if (head.compare_exchange_weak(old_head, next))
 						{
 							delete old_head;
@@ -91,8 +96,8 @@ namespace ACFT
 		}
 
 	private:
-		std::atomic<AtomicNode<T>*> head;
-		std::atomic<AtomicNode<T>*> tail;
+		std::atomic<InnerNodeType*> head;
+		std::atomic<InnerNodeType*> tail;
 
 		std::atomic<int> command_count = 0;
 	};

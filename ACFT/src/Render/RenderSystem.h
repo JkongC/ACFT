@@ -79,7 +79,7 @@ namespace ACFT
 
 	private:
 		RenderQueue render_queue;
-		std::vector<RenderCommand>* command_buffer;
+		std::vector<RenderCommand> command_buffer;
 
 		std::unordered_map<VertexArrayType, VertexArray> varray_list;
 

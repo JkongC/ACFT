@@ -51,9 +51,7 @@ namespace ACFT
 
 	void RenderSystem::StartFrame()
 	{
-		auto& cmd_buffer = GetInstance().command_buffer;
-		cmd_buffer = new std::vector<RenderCommand>();
-		cmd_buffer->reserve(10);
+		GetInstance().command_buffer.reserve(10);
 
 		glm::mat4 mvp = Camera::GetInstance().GetVP();
 		glm::vec3 campos = Camera::GetInstance().GetPos();
@@ -61,27 +59,27 @@ namespace ACFT
 			GLCall(glUniformMatrix4fv(GetInstance().global_shader.GetUniformLocation("u_MVP"), 1, GL_FALSE, &mvp[0][0]));
 			GLCall(glUniform3fv(GetInstance().global_shader.GetUniformLocation("u_campos"), 1, &campos.x));
 			GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-		, =
-			)
+			, =
+		)
 	}
 
 	void RenderSystem::FlushFrame()
 	{
 		NORMALCALL(
 			GetInstance().varray_list[VertexArrayType::normal].Bind();
-		VertexPack & vertices = GetInstance().local_vertex_buffer;
-		GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-		GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * 1.5, GL_UNSIGNED_INT, nullptr));
-		vertices.Clear();
-			)
+			VertexPack & vertices = GetInstance().local_vertex_buffer;
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
+			GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * 1.5, GL_UNSIGNED_INT, nullptr));
+			vertices.Clear();
+		)
 	}
 
 	void RenderSystem::EndFrame()
 	{
 		FlushFrame();
 		RENDERCALL(glfwSwapBuffers(Game::GetGameWindow()));
-		auto& cmd_buffer = *GetInstance().command_buffer;
-		GetInstance().render_queue.PushCommand(MakeRef<RenderCommand>(std::move([cmds = std::move(cmd_buffer)]() -> void
+		auto& cmd_buffer = GetInstance().command_buffer;
+		GetInstance().render_queue.PushCommand(std::move(MakeScope<RenderCommand>([cmds = std::move(cmd_buffer)]() mutable -> void
 			{
 				for (const auto& cmd : cmds)
 				{
@@ -95,20 +93,20 @@ namespace ACFT
 		NORMALCALL(
 			VertexPack & vertices = GetInstance().local_vertex_buffer;
 
-		if (_vertices->GetCount() > maxVerteciesPerDraw - vertices.GetCount())
-		{
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-			GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
-			vertices.Clear();
-		}
+			if (_vertices->GetCount() > maxVerteciesPerDraw - vertices.GetCount())
+			{
+				GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
+				GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
+				vertices.Clear();
+			}
 
-		auto& buffer = _vertices->GetBuffer();
-		for (int i = 0; i < _vertices->GetCount(); i++)
-		{
-			vertices.Push(buffer[i]);
-		}
-		, =
-			)
+			auto& buffer = _vertices->GetBuffer();
+			for (int i = 0; i < _vertices->GetCount(); i++)
+			{
+				vertices.Push(buffer[i]);
+			}
+			, =
+		)
 	}
 
 	int RenderSystem::GetCurrentVertexCount()
@@ -133,7 +131,7 @@ namespace ACFT
 
 	void RenderSystem::RecordDrawCall(const RenderCommand& draw_call)
 	{
-		GetInstance().command_buffer->push_back(draw_call);
+		GetInstance().command_buffer.push_back(draw_call);
 	}
 
 	void RenderSystem::GlGenBuffers(GLsizei count, GLuint* id)
@@ -322,7 +320,7 @@ namespace ACFT
 	}
 
 	RenderSystem::RenderSystem()
-		: render_queue(), varray_list(), global_shader("shader/basic.shader"), global_ibo(), global_buffer(), command_buffer(nullptr)
+		: render_queue(), varray_list(), global_shader("shader/basic.shader"), global_ibo(), global_buffer(), command_buffer()
 	{
 		varray_list.try_emplace(VertexArrayType::normal);
 		VertexBufferLayout layout;

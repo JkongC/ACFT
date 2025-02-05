@@ -11,13 +11,13 @@ namespace ACFT
 
 	}
 	
-	void RenderQueue::PushCommand(Ref<RenderCommand> command)
+	void RenderQueue::PushCommand(Scope<RenderCommand> command)
 	{
-		command_queue.Push(command);
+		command_queue.Push(std::move(command));
 	}
 
-	std::optional<Ref<RenderCommand>> RenderQueue::FetchCommand()
+	std::optional<Scope<RenderCommand>> RenderQueue::FetchCommand()
 	{
-		return command_queue.Pop();
+		return std::move(command_queue.Pop());
 	}
 }

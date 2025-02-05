@@ -4,18 +4,35 @@
 namespace ACFT
 {
 	template<typename T>
-	struct AtomicNode
+	struct AtomicRefNode
 	{
 		Ref<T> item;
-		std::atomic<AtomicNode*> next;
+		std::atomic<AtomicRefNode<T>*> next;
 
-		AtomicNode()
+		AtomicRefNode()
 			: item(nullptr), next(nullptr) 
 		{}
 		
-		AtomicNode(const Ref<T>& _item)
+		AtomicRefNode(const Ref<T>& _item)
 			: item(_item), next(nullptr)
 		{}
+	};
+
+	template<typename T>
+	struct AtomicScopeNode
+	{
+		Scope<T> item;
+		std::atomic<AtomicScopeNode<T>*> next;
+
+		AtomicScopeNode()
+			: item(nullptr), next(nullptr)
+		{
+		}
+
+		AtomicScopeNode(Scope<T>&& _item)
+			: item(std::move(_item)), next(nullptr)
+		{
+		}
 	};
 }
 

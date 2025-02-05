@@ -11,11 +11,11 @@ namespace ACFT
 	public:
 		RenderQueue();
 		
-		void PushCommand(Ref<RenderCommand> command);
-		std::optional<Ref<RenderCommand>> FetchCommand();
+		void PushCommand(Scope<RenderCommand> command);
+		std::optional<Scope<RenderCommand>> FetchCommand();
 
 	private:
-		LockfreeQueue<RenderCommand> command_queue;
+		LockfreeQueue<RenderCommand, Scope> command_queue;
 
 	};
 }
