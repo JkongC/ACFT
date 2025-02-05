@@ -8,15 +8,24 @@ namespace ACFT
 	template<typename T>
 	using Ref = std::shared_ptr<T>;
 
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
 	template<typename T, class... Args>
 	inline Ref<T> MakeRef(Args&&... args)
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
+	template<typename T, class... Args>
+	inline Scope<T> MakeScope(Args&&... args)
+	{
+		return std::make_unique<T>(std::forward<Args>(args)...);
+	}
+
 	constexpr int WindowWidth = 1280;
 	constexpr int WindowHeight = 960;
-	constexpr int FramesPerSecond = 300;
+	constexpr int FramesPerSecond = 180;
 	constexpr int MsPerFrame = (int)(1000 / FramesPerSecond);
 
 	constexpr int maxVerteciesPerDraw = 6 * 300;

@@ -5,6 +5,8 @@
 #include "Log/Logger.h"
 #include "Block/Block.h"
 #include "Render/Renderer.h"
+#include "Render/RenderSystem.h"
+#include "ResourceManager.h"
 #include "Event/EventManager.h"
 #include "Tick/Tick.h"
 
@@ -17,9 +19,11 @@ namespace ACFT
 	void* block_2;
 	void* block_3;
 
-	static bool windowCreated = false;
-	static std::condition_variable renderReady;
+	static bool render_ready = false;
+	static std::condition_variable init_finished;
 	static std::mutex mtx;
+
+	static std::binary_semaphore should_poll_render_calls(0);
 	
 	ACFT_ERROR_CODE Game::Init()
 	{
@@ -32,7 +36,7 @@ namespace ACFT
 
 		std::unique_lock<std::mutex> lock(mtx);
 		
-		renderReady.wait(lock, [&]() -> bool {return windowCreated;});
+		init_finished.wait(lock, [&]() -> bool {return render_ready;});
 		
 		if (GameLoop() == ACFT_ERROR)
 			return ACFT_ERROR;
@@ -85,19 +89,36 @@ namespace ACFT
 		camera.SetPitch(camera.GetPitch() - PI / 10.0f);
 
 		TickManager& tick_manager = TickManager::GetInstance();
+
+		auto& rd = RenderSystem::GetInstance();
 		
 		NormalTimer timer;
+		int frame_count = 0;
 		while (!glfwWindowShouldClose(gameWindow)) {
-			
-			timer.Flush();
-			
 			tick_manager.TickLogic();
-			//block_renderer.Draw(*(Block*)block_1);
-			//block_renderer.Draw(*(Block*)block_2);
-			//block_renderer.Flush();
-			
-			//glfwSwapBuffers(gameWindow);
 
+			while (timer.GetElapsed() > MsPerFrame)
+			{
+				timer.Decline(MsPerFrame);
+				frame_count++;
+			}
+
+			for (int i = 0; i < frame_count; i++)
+			{
+				RenderSystem::StartFrame();
+
+				BlockRenderer::Render(*(Block*)block_1);
+				BlockRenderer::Render(*(Block*)block_2);
+				BlockRenderer::Render(*(Block*)block_3);
+
+				RenderSystem::GlfwPollEvents();
+
+				RenderSystem::EndFrame();
+				should_poll_render_calls.release();
+			}
+			
+			frame_count = 0;
+			
 			if (!running)
 				return ACFT_ERROR;
 		}
@@ -117,57 +138,54 @@ namespace ACFT
 			return;
 		}
 
+		RenderSystem::Init();
+		ResourceManager::Init();
+
+		ResourceManager::CreateTexture("acacia_log", "resources/acacia_log.png");
+
 		block_1 = new Block({ 0, 0, -2 });
 		block_2 = new Block({ 2, 0, -2 });
+		block_3 = new Block({-1, 1, -3});
 
 		{
 			std::lock_guard<std::mutex> lock(mtx);
-			windowCreated = true;
+			render_ready = true;
 		}
-		renderReady.notify_all();
+		init_finished.notify_all();
+
+		auto& rd = RenderSystem::GetInstance();
 		
-		BlockRenderer& block_renderer = BlockRenderer::GetInstance();
-		
-		NormalTimer timer;
 		while (running)
 		{
-			float elapsed = timer.GetElapsed();
-			if (elapsed < MsPerFrame)
-				continue;
-			else
-				timer.Decline(MsPerFrame);
-
-			block_renderer.Draw(*(Block*)block_1);
-			block_renderer.Draw(*(Block*)block_2);
-			block_renderer.Flush();
-
-			glfwSwapBuffers(gameWindow);
-
-			glfwPollEvents();
+			should_poll_render_calls.acquire();
 			
+			while (RenderSystem::PollCommand());
 		}
 
 		delete (Block*)block_1;
 		delete (Block*)block_2;
 		delete (Block*)block_3;
+
+		ResourceManager::Shutdown();
+		RenderSystem::Shutdown();
 	}
 
 }
 
 void GLClearError()
 {
-	while (glGetError() != GL_NO_ERROR);
+	//while (glGetError() != GL_NO_ERROR);
 }
 
 void GLLogCall() {
-	GLenum err;
-	while ((err = glGetError())) {
+	/*GLenum err;
+	while (err = glGetError()) {
 		ACFT_GL_LOG("Error occured: {}", err);
 
-#if 0
+#if 1
 		__debugbreak();
 #endif
-	}
+	}*/
 }
 
 void MousePosCallback(GLFWwindow* window, double xpos, double ypos)
@@ -202,6 +220,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		type = ACFT::Event::Type::key_repeat;
 		break;
 	default:
+		__debugbreak();
 		break;
 	}
 	ACFT::InputEvent event(type);

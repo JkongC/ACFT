@@ -4,17 +4,18 @@
 namespace ACFT
 {
 	class VertexBufferLayout;
+	class RenderSystem;
 
 	enum VertexArrayType
 	{
-		block = 0
+		normal = 0
 	};
 
 	class VertexArray
 	{
 	public:
 		VertexArray();
-
+		
 		void Bind() const;
 
 		void Unbind() const;

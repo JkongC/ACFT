@@ -16,6 +16,10 @@ namespace ACFT
 		void Bind() const;
 		void Unbind() const;
 
+		inline unsigned int GetID() const { return shader_id; }
+
+		unsigned int GetUniformLocation(const std::string& name) const;
+
 		void SetUniform1i(const std::string& name, int value);
 		void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
 		void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
@@ -24,7 +28,6 @@ namespace ACFT
 		ShaderSources ParseShader();
 		unsigned int CompileShader(unsigned int type, const std::string& source);
 		unsigned int CreateShader();
-		unsigned int GetUniformLocation(const std::string& name) const;
 
 
 		unsigned int shader_id;

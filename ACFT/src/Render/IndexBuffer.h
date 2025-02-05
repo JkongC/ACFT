@@ -6,7 +6,6 @@ namespace ACFT
 	class IndexBuffer
 	{
 	public:
-		IndexBuffer();
 
 		void Bind() const;
 		void Unbind() const;
@@ -19,6 +18,10 @@ namespace ACFT
 		unsigned int count;
 
 		std::array<unsigned int, maxVerteciesPerDraw * 2> local_buffer;
+
+	private:
+		friend class RenderSystem;
+		IndexBuffer();
 	};
 }
 

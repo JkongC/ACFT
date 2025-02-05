@@ -2,6 +2,7 @@
 
 #include "ACFT.h"
 #include "IndexBuffer.h"
+#include "RenderSystem.h"
 
 namespace ACFT
 {
@@ -17,9 +18,9 @@ namespace ACFT
 			}
 		}
 		
-		GLCall(glGenBuffers(1, &ib_id));
-		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib_id));
-		GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), local_buffer.data(), GL_STATIC_DRAW));
+		RenderSystem::GlGenBuffers(1, &ib_id);
+		RenderSystem::GlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib_id);
+		RenderSystem::GlBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), local_buffer.data(), GL_STATIC_DRAW);
 	}
 
 	void IndexBuffer::Bind() const

@@ -8,7 +8,7 @@
 namespace ACFT
 {
 	Camera::Camera()
-		: yaw(PI / 2), pitch(0.0), prev_yaw(yaw.load()), prev_pitch(pitch.load()), pos(0.0f, 0.0f, 2.0f)
+		: yaw(PI / 2), pitch(0.0), prev_yaw(yaw), prev_pitch(pitch), pos(0.0f, 0.0f, 2.0f)
 		, looking(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f)
 		, mouse_xpos((double)WindowWidth / 2.0), mouse_ypos((double)WindowHeight / 2.0)
 		, speed(0.0f, 0.0f ,0.0f), axis_speed(0.0f, 0.0f, 0.0f)

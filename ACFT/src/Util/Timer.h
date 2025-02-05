@@ -24,7 +24,6 @@ namespace ACFT
 	
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> last;
-		std::mutex mtx;
 	};
 
 	template<typename type, typename period>

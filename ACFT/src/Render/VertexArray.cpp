@@ -4,22 +4,23 @@
 #include "VertexBufferLayout.h"
 #include "VertexBuffer.h"
 #include "VertexArray.h"
+#include "RenderSystem.h"
 
 namespace ACFT
 {
 	VertexArray::VertexArray()
 	{
-		GLCall(glGenVertexArrays(1, &va_id));
+		RenderSystem::GlGenVertexArrays(1, &va_id);
 	}
 
 	void VertexArray::Bind() const
 	{
-		GLCall(glBindVertexArray(va_id));
+		RenderSystem::GlBindVertexArray(va_id);
 	}
 
 	void VertexArray::Unbind() const
 	{
-		GLCall(glBindVertexArray(0));
+		RenderSystem::GlBindVertexArray(0);
 	}
 
 	void VertexArray::AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) const
@@ -30,9 +31,9 @@ namespace ACFT
 		unsigned offset = 0;
 		for (unsigned int i = 0; i < elements.size(); i++) {
 			const auto& element = elements[i];
-			GLCall(glEnableVertexAttribArray(i));
-			GLCall(glVertexAttribPointer(i, element.count, element.type,
-				element.normalized, layout.GetStride(), (const void*)offset));
+			RenderSystem::GlEnableVertexAttribArray(i);
+			RenderSystem::GlVertexAttribPointer(i, element.count, element.type,
+				element.normalized, layout.GetStride(), (const void*)offset);
 			offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
 		}
 	}

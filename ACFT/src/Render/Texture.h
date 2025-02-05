@@ -11,6 +11,8 @@ namespace ACFT {
 
 		void Bind() const;
 
+		inline unsigned int GetID() const { return texture_id; }
+
 	private:
 		unsigned int texture_id;
 		unsigned char* local_buffer;

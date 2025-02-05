@@ -46,6 +46,15 @@ namespace ACFT
 		return std::nullopt;
 	}
 
+	unsigned int ResourceManager::GetTextureID(const std::string& name)
+	{
+		auto& tex_map = GetInstance().textures;
+		if (tex_map.find(name) != tex_map.end())
+		{
+			return tex_map[name]->GetID();
+		}
+	}
+
 	void ResourceManager::RemoveTexture(const std::string& name)
 	{
 		auto& tex_map = GetInstance().textures;

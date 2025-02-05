@@ -22,17 +22,17 @@ namespace ACFT
 		void TickLogic(float delta);
 
 	public:
-		inline const float& GetYaw(std::memory_order order = std::memory_order_seq_cst) const { return yaw.load(order); }
-		inline void SetYaw(const float& new_yaw, std::memory_order order = std::memory_order_seq_cst) { yaw.store(new_yaw, order); }
+		inline const float& GetYaw(std::memory_order order = std::memory_order_seq_cst) const { return yaw; }
+		inline void SetYaw(const float& new_yaw, std::memory_order order = std::memory_order_seq_cst) { yaw = new_yaw; }
 
-		inline const float& GetPitch(std::memory_order order = std::memory_order_seq_cst) const { return pitch.load(order); }
-		inline void SetPitch(const float& new_pitch, std::memory_order order = std::memory_order_seq_cst) { pitch.store(new_pitch, order); }
+		inline const float& GetPitch(std::memory_order order = std::memory_order_seq_cst) const { return pitch; }
+		inline void SetPitch(const float& new_pitch, std::memory_order order = std::memory_order_seq_cst) { pitch = new_pitch; }
 
-		inline const float& GetPreviousYaw(std::memory_order order = std::memory_order_seq_cst) const { return prev_yaw.load(order); }
-		inline void SetPreviousYaw(const float& new_yaw, std::memory_order order = std::memory_order_seq_cst) { prev_yaw.store(new_yaw, order); }
+		inline const float& GetPreviousYaw(std::memory_order order = std::memory_order_seq_cst) const { return prev_yaw; }
+		inline void SetPreviousYaw(const float& new_yaw, std::memory_order order = std::memory_order_seq_cst) { prev_yaw = new_yaw; }
 
-		inline const float& GetPreviousPitch(std::memory_order order = std::memory_order_seq_cst) const { return prev_pitch.load(order); }
-		inline void SetPreviousPitch(const float& new_pitch, std::memory_order order = std::memory_order_seq_cst) { prev_pitch.store(new_pitch, order); }
+		inline const float& GetPreviousPitch(std::memory_order order = std::memory_order_seq_cst) const { return prev_pitch; }
+		inline void SetPreviousPitch(const float& new_pitch, std::memory_order order = std::memory_order_seq_cst) { prev_pitch = new_pitch; }
 
 		inline const glm::vec3& GetPos() const { return pos; }
 		inline void SetPos(const glm::vec3& new_pos) { pos = new_pos; }
@@ -55,11 +55,11 @@ namespace ACFT
 
 	private:
 
-		std::atomic<float> yaw;
-		std::atomic<float> pitch;
+		float yaw;
+		float pitch;
 
-		std::atomic<float> prev_yaw;
-		std::atomic<float> prev_pitch;
+		float prev_yaw;
+		float prev_pitch;
 
 		glm::vec3 pos;
 		glm::vec3 looking;

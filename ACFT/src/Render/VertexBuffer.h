@@ -14,19 +14,8 @@ namespace ACFT
 
 		void Unbind() const;
 
-		bool PushVertex(Vertex vertex);
-
-		void ClearBuffer();
-
-	public:
-		inline const int& GetCount() const { return vertex_count; }
-		inline Vertex* GetBuffer() { return vertices.data(); }
-
 	private:
 		unsigned int vb_id;
-
-		unsigned int vertex_count = 0;
-		std::array<Vertex, maxVerteciesPerDraw> vertices;
 	};
 }
 

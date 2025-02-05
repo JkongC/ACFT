@@ -12,6 +12,7 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
+#include <semaphore>
 #include <condition_variable>
 #include <unordered_map>
 #include <unordered_set>

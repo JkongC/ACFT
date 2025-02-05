@@ -43,6 +43,7 @@ namespace ACFT
 						if (old_tail->next.compare_exchange_weak(old_next, new_node))
 						{
 							tail.compare_exchange_weak(old_tail, new_node);
+							command_count++;
 							return;
 						}
 					}
@@ -81,6 +82,7 @@ namespace ACFT
 						if (head.compare_exchange_weak(old_head, next))
 						{
 							delete old_head;
+							command_count--;
 							return std::move(result);
 						}
 					}
@@ -91,6 +93,8 @@ namespace ACFT
 	private:
 		std::atomic<AtomicNode<T>*> head;
 		std::atomic<AtomicNode<T>*> tail;
+
+		std::atomic<int> command_count = 0;
 	};
 }
 
