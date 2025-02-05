@@ -52,26 +52,26 @@ namespace ACFT
 	void RenderSystem::StartFrame()
 	{
 		GetInstance().command_buffer = new std::vector<RenderCommand>();
-		
+
 		glm::mat4 mvp = Camera::GetInstance().GetVP();
 		glm::vec3 campos = Camera::GetInstance().GetPos();
 		NORMALCALL(
 			GLCall(glUniformMatrix4fv(GetInstance().global_shader.GetUniformLocation("u_MVP"), 1, GL_FALSE, &mvp[0][0]));
-			GLCall(glUniform3fv(GetInstance().global_shader.GetUniformLocation("u_campos"), 1, &campos.x));
-			GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-			, =
-		)
+		GLCall(glUniform3fv(GetInstance().global_shader.GetUniformLocation("u_campos"), 1, &campos.x));
+		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+		, =
+			)
 	}
 
 	void RenderSystem::FlushFrame()
 	{
 		NORMALCALL(
 			GetInstance().varray_list[VertexArrayType::normal].Bind();
-			VertexPack& vertices = GetInstance().local_vertex_buffer;
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-			GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * 1.5, GL_UNSIGNED_INT, nullptr));
-			vertices.Clear();
-		)
+		VertexPack & vertices = GetInstance().local_vertex_buffer;
+		GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
+		GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * 1.5, GL_UNSIGNED_INT, nullptr));
+		vertices.Clear();
+			)
 	}
 
 	void RenderSystem::EndFrame()
@@ -93,20 +93,20 @@ namespace ACFT
 		NORMALCALL(
 			VertexPack & vertices = GetInstance().local_vertex_buffer;
 
-			if (_vertices->GetCount() > maxVerteciesPerDraw - vertices.GetCount())
-			{
-				GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-				GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
-				vertices.Clear();
-			}
+		if (_vertices->GetCount() > maxVerteciesPerDraw - vertices.GetCount())
+		{
+			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
+			GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
+			vertices.Clear();
+		}
 
-			auto& buffer = _vertices->GetBuffer();
-			for (int i = 0; i < _vertices->GetCount(); i++)
-			{
-				vertices.Push(buffer[i]);
-			}
-			, =
-		)
+		auto& buffer = _vertices->GetBuffer();
+		for (int i = 0; i < _vertices->GetCount(); i++)
+		{
+			vertices.Push(buffer[i]);
+		}
+		, =
+			)
 	}
 
 	int RenderSystem::GetCurrentVertexCount()

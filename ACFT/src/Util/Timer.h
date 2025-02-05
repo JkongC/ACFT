@@ -1,7 +1,7 @@
 #ifndef ACFT_TIMER_H_
 #define ACFT_TIMER_H_
 
-namespace ACFT 
+namespace ACFT
 {
 	using nanosecond = std::nano;
 	using millisecond = std::milli;
@@ -9,7 +9,7 @@ namespace ACFT
 
 	template<typename type, typename period>
 	concept Duration_Convertible = std::is_arithmetic_v<type> && std::_Is_ratio_v<period>;
-	
+
 	class NormalTimer
 	{
 	public:
@@ -21,7 +21,7 @@ namespace ACFT
 		void Flush();
 
 		void Decline(int decline);
-	
+
 	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> last;
 	};
@@ -32,7 +32,7 @@ namespace ACFT
 	{
 	public:
 		ScopedTimer() = delete;
-		
+
 		ScopedTimer(std::function<void(type)> _callback)
 			: callback(_callback)
 		{

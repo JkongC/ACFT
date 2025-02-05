@@ -17,7 +17,7 @@ namespace ACFT
 
 		return elapsed.count();
 	}
-	
+
 	int NormalTimer::GetElapsedAndFlush()
 	{
 		auto now = std::chrono::high_resolution_clock::now();

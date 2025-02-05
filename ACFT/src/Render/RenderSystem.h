@@ -8,7 +8,7 @@
 #include "Renderer.h"
 
 namespace ACFT
-{	
+{
 	class RenderSystem
 	{
 	public:
@@ -26,7 +26,7 @@ namespace ACFT
 		static int GetCurrentVertexCount();
 
 		static bool PollCommand();
-		
+
 	public:
 		//Be extremely cautious when calling those funcions
 		//that write things to variables in non-render threads.
