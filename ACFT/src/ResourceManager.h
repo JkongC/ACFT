@@ -14,7 +14,7 @@ namespace ACFT
 
 		static void CreateTexture(const std::string& name, const std::string& filepath);
 		static std::optional<Ref<Texture>> GetTexture(const std::string& name);
-		static unsigned int GetTextureID(const std::string& name);
+		static std::optional<unsigned int> GetTextureID(const std::string& name);
 		static void RemoveTexture(const std::string& name);
 
 	private:

@@ -15,11 +15,15 @@ namespace ACFT
 			return g_Camera;
 		}
 
-		glm::mat4 GetVP();
+		glm::mat4 GetViewMatrix() const;
+
+		glm::mat4 GetProjectionMatrix();
 
 		void HandleEvent(const Event& event) override;
 
 		void TickLogic(float delta);
+
+		inline bool ShouldUpdateMatrices() const { return should_update_mat; }
 
 	public:
 		inline const float& GetYaw(std::memory_order order = std::memory_order_seq_cst) const { return yaw; }
@@ -37,11 +41,11 @@ namespace ACFT
 		inline const glm::vec3& GetPos() const { return pos; }
 		inline void SetPos(const glm::vec3& new_pos) { pos = new_pos; }
 
-		inline glm::vec3 GetLookingVec() { return looking; }
-		inline glm::vec3 GetUpVec() { return up; }
-		inline glm::vec3 GetRightVec() { return right; }
+		inline glm::vec3 GetLookingVec() const { return looking; }
+		inline glm::vec3 GetUpVec() const { return up; }
+		inline glm::vec3 GetRightVec() const { return right; }
 
-		inline float GetSpeed() { return glm::length(axis_speed); }
+		inline float GetSpeed() const { return glm::length(axis_speed); }
 
 	private:
 		Camera();
@@ -69,7 +73,9 @@ namespace ACFT
 		double mouse_xpos;
 		double mouse_ypos;
 
-		bool lock_mouse = false;
+		std::atomic<bool> should_update_mat = true;
+
+		std::atomic<bool> lock_mouse = false;
 
 		bool W_pressed = false;
 		bool A_pressed = false;
@@ -82,10 +88,10 @@ namespace ACFT
 		glm::vec3 axis_speed;
 
 		//Consts
-		const float max_horizontal_speed = 0.03f;
+		const float max_horizontal_speed = 0.04f;
 		const float max_vertical_speed = 0.015f;
 		const float launch_acceleration = 0.00006f;
-		const float friction_acceleration = 0.00008f;
+		const float friction_acceleration = 0.000065f;
 		const float brake_acceleration = 0.0001f;
 	};
 }

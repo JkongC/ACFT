@@ -10,18 +10,19 @@ namespace ACFT
 		this->last = std::chrono::high_resolution_clock::now();
 	}
 
-	int NormalTimer::GetElapsed()
+	float NormalTimer::GetElapsed()
 	{
 		auto now = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<int, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(now - this->last);
+		std::chrono::duration<float, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - this->last);
 
+		this->last = now;
 		return elapsed.count();
 	}
 
-	int NormalTimer::GetElapsedAndFlush()
+	float NormalTimer::GetElapsedAndFlush()
 	{
 		auto now = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<int, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<int, std::milli>>(now - this->last);
+		std::chrono::duration<float, std::milli> elapsed = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - this->last);
 
 		this->last = now;
 		return elapsed.count();
@@ -32,9 +33,9 @@ namespace ACFT
 		this->last = std::chrono::high_resolution_clock::now();
 	}
 
-	void NormalTimer::Decline(int decline)
+	void NormalTimer::Decline(float decline)
 	{
-		std::chrono::duration<int, std::milli> should_decline(decline);
-		this->last += should_decline;
+		//std::chrono::duration<float, std::milli> should_decline(decline);
+		//this->last += should_decline;
 	}
 }

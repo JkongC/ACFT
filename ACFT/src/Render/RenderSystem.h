@@ -23,9 +23,14 @@ namespace ACFT
 		static void EndFrame();
 
 		static void PushVertex(const Ref<VertexPack>& _vertices);
+		static void PushVertex(const VertexPack& _vertices);
 		static int GetCurrentVertexCount();
 
 		static bool PollCommand();
+		
+		//Temporary
+		static void BindGlobalShader();
+		static void BindSkyShader();
 
 	public:
 		//Be extremely cautious when calling those funcions
@@ -80,6 +85,7 @@ namespace ACFT
 	private:
 		RenderQueue render_queue;
 		std::vector<RenderCommand> command_buffer;
+		inline static const int cmdBufferReserveSize = 6;
 
 		std::unordered_map<VertexArrayType, VertexArray> varray_list;
 
@@ -87,14 +93,24 @@ namespace ACFT
 		IndexBuffer global_ibo;
 		VertexBuffer global_buffer;
 
+		Shader sky_shader;
+
 		VertexPack local_vertex_buffer;
+
+		struct alignas(16) UniformBuffer
+		{
+			alignas(16) glm::mat4 view;
+			alignas(16) glm::mat4 proj;
+			alignas(16) glm::vec3 cam_pos;
+		} internal_ubo;
+		unsigned int ubo_id;
 
 	private:
 		RenderSystem();
 		RenderSystem(const RenderSystem&) = delete;
 		RenderSystem(RenderSystem&&) = delete;
 
-		static void RecordDrawCall(const RenderCommand& draw_call);
+		static void RecordDrawCall(RenderCommand&& draw_call);
 	};
 }
 

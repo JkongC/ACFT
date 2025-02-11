@@ -15,8 +15,6 @@ namespace ACFT
 	class BlockRenderer
 	{
 	public:
-		~BlockRenderer() = default;
-
 		static void Render(const Block& block);
 
 	private:
@@ -25,20 +23,15 @@ namespace ACFT
 		BlockRenderer(const BlockRenderer&) = delete;
 	};
 
-	class BackgroundRenderer
+	class SkyRenderer
 	{
 	public:
-		static BackgroundRenderer& GetInstance()
-		{
-			static BackgroundRenderer renderer;
-			return renderer;
-		}
+		static void Render();
+
 	private:
-		std::unique_ptr<Shader> shader;
-		
-		BackgroundRenderer();
-		BackgroundRenderer(BackgroundRenderer&&) = delete;
-		BackgroundRenderer(const BackgroundRenderer&) = delete;
+		SkyRenderer();
+		SkyRenderer(SkyRenderer&&) = delete;
+		SkyRenderer(const SkyRenderer&) = delete;
 	};
 }
 

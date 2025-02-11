@@ -1,43 +1,52 @@
 #shader vertex
-#version 330 core
+#version 420 core
 
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec2 texCoord;
 
 out vec2 v_TexCoord;
-out float distance;
 
-uniform mat4 u_MVP;
-uniform vec3 u_campos;
+layout(std140, binding = 0) uniform basic
+{
+	mat4 view;
+	mat4 proj;
+	vec3 cam_pos;
+};
 
-void main(){
-	gl_Position = u_MVP * position;
+void main()
+{
+	gl_Position = proj * view * position;
 	v_TexCoord = texCoord;
-
-	vec3 pos3 = position.xyz;
-	vec3 dist_vec = pos3 - u_campos;
-	distance = length(dist_vec);
 }
 
 
 #shader fragment
-#version 330 core
+#version 420 core
 
 layout(location = 0) out vec4 color;
 
 in vec2 v_TexCoord;
-in float distance;
 
-uniform vec4 u_Color;
 uniform sampler2D u_Texture;
 
-vec4 fog(vec4 prevColor){
-	vec4 fogColor = vec4(0.6, 0.8, 0.9, 1.0);
-	fogColor.xyz *= 0.85;
-	return mix(prevColor, fogColor, min(max((distance - 20) / 6, 0.0), 1.0));
+uniform float numerator;
+uniform float denominator_1;
+uniform float denominator_2;
+
+float get_viewspace_z()
+{
+	float z_ndc = gl_FragCoord.z * 2.0 - 1.0;
+	return -numerator / (denominator_1 - z_ndc * denominator_2);
 }
 
-void main(){
+vec4 fog(vec4 prevColor)
+{
+	vec4 fogColor = vec4(0.51, 0.68, 0.76, 1.0);
+	return mix(prevColor, fogColor, min(max(-(get_viewspace_z() + 20) / 6, 0.0), 1.0));
+}
+
+void main()
+{
 	vec4 texColor = texture(u_Texture, v_TexCoord);
 	texColor = fog(texColor);
 	color = texColor;

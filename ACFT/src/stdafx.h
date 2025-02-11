@@ -10,6 +10,7 @@
 #include <string>
 #include <initializer_list>
 #include <cmath>
+#include <limits>
 #include <thread>
 #include <mutex>
 #include <semaphore>

@@ -28,12 +28,12 @@ namespace ACFT
 		Bind();
 		vb.Bind();
 		const auto& elements = layout.GetElements();
-		unsigned offset = 0;
+		uintptr_t offset = 0;
 		for (unsigned int i = 0; i < elements.size(); i++) {
 			const auto& element = elements[i];
 			RenderSystem::GlEnableVertexAttribArray(i);
 			RenderSystem::GlVertexAttribPointer(i, element.count, element.type,
-				element.normalized, layout.GetStride(), (const void*)offset);
+				element.normalized, layout.GetStride(), reinterpret_cast<const void*>(offset));
 			offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
 		}
 	}

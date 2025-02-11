@@ -51,47 +51,65 @@ namespace ACFT
 
 	void RenderSystem::StartFrame()
 	{
-		GetInstance().command_buffer.reserve(10);
+		UniformBuffer& ubo = GetInstance().internal_ubo;
+		auto& cmd_buffer = GetInstance().command_buffer;
+		Camera& camera = Camera::GetInstance();
 
-		glm::mat4 mvp = Camera::GetInstance().GetVP();
-		glm::vec3 campos = Camera::GetInstance().GetPos();
-		NORMALCALL(
-			GLCall(glUniformMatrix4fv(GetInstance().global_shader.GetUniformLocation("u_MVP"), 1, GL_FALSE, &mvp[0][0]));
-			GLCall(glUniform3fv(GetInstance().global_shader.GetUniformLocation("u_campos"), 1, &campos.x));
-			GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-			, =
-		)
+		cmd_buffer.reserve(cmdBufferReserveSize);
+
+		RenderSystem::BindGlobalShader();
+
+		if (camera.ShouldUpdateMatrices())
+		{
+			NORMALCALL(
+				ubo.view = camera.GetViewMatrix();
+				ubo.proj = camera.GetProjectionMatrix();
+				ubo.cam_pos = camera.GetPos();
+
+				GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformBuffer), &ubo));
+				GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+				, &
+			)
+		}
+		else
+		{
+			NORMALCALL(
+				GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformBuffer), &ubo));
+				GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+				, &
+			)
+		}
 	}
 
 	void RenderSystem::FlushFrame()
 	{
 		NORMALCALL(
-			GetInstance().varray_list[VertexArrayType::normal].Bind();
-			VertexPack & vertices = GetInstance().local_vertex_buffer;
+			VertexPack& vertices = GetInstance().local_vertex_buffer;
 			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-			GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * 1.5, GL_UNSIGNED_INT, nullptr));
+			GLCall(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertices.GetCount() * 1.5), GL_UNSIGNED_INT, nullptr));
 			vertices.Clear();
 		)
 	}
 
 	void RenderSystem::EndFrame()
 	{
-		FlushFrame();
-		RENDERCALL(glfwSwapBuffers(Game::GetGameWindow()));
 		auto& cmd_buffer = GetInstance().command_buffer;
-		GetInstance().render_queue.PushCommand(std::move(MakeScope<RenderCommand>([cmds = std::move(cmd_buffer)]() mutable -> void
+		GetInstance().render_queue.PushCommand(MakeScope<RenderCommand>([cmds = std::move(cmd_buffer)]() -> void
 			{
 				for (const auto& cmd : cmds)
 				{
 					cmd();
 				}
-			})));
+				FlushFrame();
+				glfwSwapBuffers(Game::GetGameWindow());
+				glfwPollEvents();
+			}));
 	}
 
 	void RenderSystem::PushVertex(const Ref<VertexPack>& _vertices)
 	{
 		NORMALCALL(
-			VertexPack & vertices = GetInstance().local_vertex_buffer;
+			VertexPack& vertices = GetInstance().local_vertex_buffer;
 
 			if (_vertices->GetCount() > maxVerteciesPerDraw - vertices.GetCount())
 			{
@@ -109,6 +127,27 @@ namespace ACFT
 		)
 	}
 
+	void RenderSystem::PushVertex(const VertexPack& _vertices)
+	{
+		NORMALCALL(
+			VertexPack & vertices = GetInstance().local_vertex_buffer;
+
+			if (_vertices.GetCount() > maxVerteciesPerDraw - vertices.GetCount())
+			{
+				GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
+				GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
+				vertices.Clear();
+			}
+
+			auto& buffer = _vertices.GetBuffer();
+			for (int i = 0; i < _vertices.GetCount(); i++)
+			{
+				vertices.Push(buffer[i]);
+			}
+			, &
+		)
+	}
+
 	int RenderSystem::GetCurrentVertexCount()
 	{
 		return GetInstance().local_vertex_buffer.GetCount();
@@ -118,8 +157,7 @@ namespace ACFT
 	{
 		if (Game::IsRenderThread())
 		{
-			auto command = GetInstance().render_queue.FetchCommand();
-			if (command)
+			if (auto command = GetInstance().render_queue.FetchCommand())
 			{
 				(*command.value())();
 				return true;
@@ -129,9 +167,23 @@ namespace ACFT
 		return false;
 	}
 
-	void RenderSystem::RecordDrawCall(const RenderCommand& draw_call)
+	void RenderSystem::BindGlobalShader()
 	{
-		GetInstance().command_buffer.push_back(draw_call);
+		NORMALCALL(
+			GetInstance().global_shader.Bind();
+		)
+	}
+
+	void RenderSystem::BindSkyShader()
+	{
+		NORMALCALL(
+			GetInstance().sky_shader.Bind();
+		)
+	}
+
+	void RenderSystem::RecordDrawCall(RenderCommand&& draw_call)
+	{
+		GetInstance().command_buffer.push_back(std::move(draw_call));
 	}
 
 	void RenderSystem::GlGenBuffers(GLsizei count, GLuint* id)
@@ -321,8 +373,10 @@ namespace ACFT
 
 	RenderSystem::RenderSystem()
 		: render_queue(), varray_list(), global_shader("shader/basic.shader"), global_ibo(), global_buffer(), command_buffer()
+		, internal_ubo(), ubo_id(), sky_shader("shader/sky.shader")
 	{
 		varray_list.try_emplace(VertexArrayType::normal);
+		varray_list[VertexArrayType::normal].Bind();
 		VertexBufferLayout layout;
 		layout.Push<float>(3);
 		layout.Push<float>(2);
@@ -331,11 +385,22 @@ namespace ACFT
 
 		global_shader.Bind();
 		global_ibo.Bind();
+		global_buffer.Bind();
 
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 		GLCall(glEnable(GL_DEPTH_TEST));
 		GLCall(glDepthFunc(GL_LESS));
+
+		GLCall(glCreateBuffers(1, &ubo_id));
+		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, ubo_id));
+		GLCall(glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformBuffer), nullptr, GL_DYNAMIC_DRAW));
+		GLCall(glUniform1f(global_shader.GetUniformLocation("numerator"), 2 * 0.1f * 100.0f));
+		GLCall(glUniform1f(global_shader.GetUniformLocation("denominator_1"), 100.0f + 0.1f));
+		GLCall(glUniform1f(global_shader.GetUniformLocation("denominator_2"), 100.0f - 0.1f));
+		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_id));
+
+		GLCall(glEnable(GL_CULL_FACE));
 	}
 }

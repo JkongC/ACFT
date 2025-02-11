@@ -37,7 +37,7 @@ namespace ACFT
 		return vertices.data();
 	}
 
-	std::array<Vertex, maxVerteciesPerDraw>& VertexPack::GetBuffer()
+	const std::array<Vertex, maxVerteciesPerDraw>& VertexPack::GetBuffer() const
 	{
 		return vertices;
 	}

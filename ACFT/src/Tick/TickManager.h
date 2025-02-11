@@ -36,6 +36,8 @@ namespace ACFT
 		NormalTimer logic_timer;
 		NormalTimer action_timer;
 
+		float logic_tick_accumulator = 0.0f;
+
 		std::unordered_set<LogicTicker*> logic_tickers;
 	};
 }

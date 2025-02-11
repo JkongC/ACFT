@@ -26,7 +26,7 @@ namespace ACFT
 	constexpr int WindowWidth = 1280;
 	constexpr int WindowHeight = 960;
 	constexpr int FramesPerSecond = 180;
-	constexpr int MsPerFrame = (int)(1000 / FramesPerSecond);
+	constexpr float MsPerFrame = 1000.0f / FramesPerSecond;
 
 	constexpr int maxVerteciesPerDraw = 6 * 300;
 

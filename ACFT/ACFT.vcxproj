@@ -117,12 +117,15 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,7 +146,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -187,6 +191,7 @@
     <ClInclude Include="src\Render\RenderQueue.h" />
     <ClInclude Include="src\Render\RenderSystem.h" />
     <ClInclude Include="src\Render\Shader.h" />
+    <ClInclude Include="src\Render\Sky\Sky.h" />
     <ClInclude Include="src\Render\Texture.h" />
     <ClInclude Include="src\Render\Vertex.h" />
     <ClInclude Include="src\Render\VertexBuffer.h" />
@@ -198,13 +203,14 @@
     <ClInclude Include="src\Tick\TickManager.h" />
     <ClInclude Include="src\Util\Direction.h" />
     <ClInclude Include="src\Util\LockfreeQueue.h" />
+    <ClInclude Include="src\Util\MathHelper.h" />
     <ClInclude Include="src\Util\Node.h" />
     <ClInclude Include="src\Util\Timer.h" />
     <ClInclude Include="src\Render\VertexArray.h" />
     <ClInclude Include="src\Util\Vec.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\background.shader" />
+    <None Include="shader\sky.shader" />
     <None Include="shader\basic.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

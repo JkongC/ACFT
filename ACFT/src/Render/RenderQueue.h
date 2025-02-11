@@ -11,7 +11,7 @@ namespace ACFT
 	public:
 		RenderQueue();
 		
-		void PushCommand(Scope<RenderCommand> command);
+		void PushCommand(Scope<RenderCommand>&& command);
 		std::optional<Scope<RenderCommand>> FetchCommand();
 
 	private:

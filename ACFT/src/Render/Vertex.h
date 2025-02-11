@@ -7,7 +7,7 @@ namespace ACFT
 	{
 		float position[3];
 		float tex_coord[2];
-		unsigned int tex_id;
+		unsigned int special_tag;
 
 		Vertex& operator+=(const glm::ivec3& pos);
 	};
@@ -17,13 +17,24 @@ namespace ACFT
 	class VertexPack
 	{
 	public:
+		inline VertexPack() : vertices() {};
+		
+		inline constexpr VertexPack(std::initializer_list<Vertex> list)
+			: vertices()
+		{
+			for (const Vertex& vtx : list)
+			{
+				vertices.at(count++) = vtx;
+			}
+		}
+
 		void Push(Vertex vertex);
 
 		int GetCount() const;
 
 		const void* GetRawBuffer() const;
 
-		std::array<Vertex, maxVerteciesPerDraw>& GetBuffer();
+		const std::array<Vertex, maxVerteciesPerDraw>& GetBuffer() const;
 
 		void Clear();
 

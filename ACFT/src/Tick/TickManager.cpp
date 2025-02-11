@@ -14,16 +14,14 @@ namespace ACFT
 	
 	void TickManager::TickLogic()
 	{
-		float elapsed = this->logic_timer.GetElapsed();
+		logic_tick_accumulator += this->logic_timer.GetElapsed();
 		int count_of_ticks = 0;
 
-		while (elapsed > LogicMSPT)
+		while (logic_tick_accumulator > LogicMSPT)
 		{
-			elapsed -= LogicMSPT;
+			logic_tick_accumulator -= LogicMSPT;
 			count_of_ticks++;
 		}
-
-		this->logic_timer.Decline(count_of_ticks * LogicMSPT);
 
 		for (; count_of_ticks > 0; count_of_ticks--)
 		{
@@ -41,8 +39,7 @@ namespace ACFT
 
 	float TickManager::GetTimeDelta()
 	{
-		float elapsed = logic_timer.GetElapsed();
-		return elapsed / LogicMSPT;
+		return logic_tick_accumulator / LogicMSPT;
 	}
 
 	void TickManager::AddLogicTicker(LogicTicker* ticker)

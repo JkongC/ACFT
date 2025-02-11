@@ -4,9 +4,15 @@
 #include "Util/Vec.h"
 #include "Camera.h"
 #include "Controller/InputQuery.h"
+#include "Util/MathHelper.h"
 
 namespace ACFT
 {
+	namespace
+	{
+		constexpr float sqrts[3] = { Sqrt<float>(1.0), Sqrt<float>(2.0), Sqrt<float>(3.0) };
+	}
+	
 	Camera::Camera()
 		: yaw(PI / 2), pitch(0.0), prev_yaw(yaw), prev_pitch(pitch), pos(0.0f, 0.0f, 2.0f)
 		, looking(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f), right(1.0f, 0.0f, 0.0f)
@@ -63,13 +69,16 @@ namespace ACFT
 		Space_pressed = Input::IsKeyDown(ACFT_KEY_SPACE);
 	}
 
-	glm::mat4 Camera::GetVP()
+	glm::mat4 Camera::GetViewMatrix() const
 	{
-		UpdateAllVec();
+		return glm::lookAt(this->pos, this->pos + this->looking, this->up);
+	}
 
-		glm::mat4 view = glm::lookAt(this->pos, this->pos + this->looking, this->up);
-		glm::mat4 perspective = glm::perspective(PI / 4, (float)WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
-		return perspective * view;
+	glm::mat4 Camera::GetProjectionMatrix()
+	{
+		static glm::mat4 proj = glm::perspective(glm::radians(45.0f), static_cast<float>(WindowWidth) / static_cast<float>(WindowHeight),
+			0.1f, 1000.0f);
+		return proj;
 	}
 
 	void Camera::HandleEvent(const Event& event)
@@ -85,8 +94,8 @@ namespace ACFT
 			float yaw_prev = GetYaw();
 			float pitch_prev = GetPitch();
 
-			float yaw_after = yaw_prev - (input.xpos - this->mouse_xpos) / 800.0;
-			float pitch_after = pitch_prev - (input.ypos - this->mouse_ypos) / 800.0;
+			float yaw_after = yaw_prev - static_cast<float>((input.xpos - this->mouse_xpos) / 800.0);
+			float pitch_after = pitch_prev - static_cast<float>((input.ypos - this->mouse_ypos) / 800.0);
 
 			while (yaw_after > 2 * PI)
 			{
@@ -108,6 +117,8 @@ namespace ACFT
 				SetPitch(pitch_after);
 			}
 			this->mouse_ypos = input.ypos;
+
+			should_update_mat = true;
 		}
 			break;
 
@@ -154,6 +165,7 @@ namespace ACFT
 		static float cached_yaw = prev_yaw;
 
 		UpdateAllKeyFlags();
+		UpdateAllVec();
 
 		bool x_accelerating = false;
 		bool y_accelerating = false;
@@ -203,7 +215,7 @@ namespace ACFT
 		int accelerating_axis_count = x_accelerating + y_accelerating + z_accelerating;
 		if (accelerating_axis_count)
 		{
-			delta_axis /= static_cast<float>(glm::sqrt(accelerating_axis_count));
+			delta_axis /= static_cast<float>(sqrts[accelerating_axis_count - 1]);
 			axis_speed += delta_axis;
 
 			if (!x_accelerating && glm::abs(axis_speed.x) > friction_acceleration * delta)
@@ -250,5 +262,8 @@ namespace ACFT
 			speed += GetVec3fFromYP(cached_yaw - PI / 2, 0.0f, axis_speed.x);
 		}
 		pos += speed;
+
+		if (glm::length(speed) != 0)
+			should_update_mat = true;
 	}
 }

@@ -167,9 +167,15 @@
     <ClInclude Include="src\ResourceManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="src\Render\Sky\Sky.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\MathHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\basic.shader" />
-    <None Include="shader\background.shader" />
+    <None Include="shader\sky.shader" />
   </ItemGroup>
 </Project>

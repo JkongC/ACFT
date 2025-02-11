@@ -11,7 +11,7 @@ namespace ACFT
 
 	}
 	
-	void RenderQueue::PushCommand(Scope<RenderCommand> command)
+	void RenderQueue::PushCommand(Scope<RenderCommand>&& command)
 	{
 		command_queue.Push(std::move(command));
 	}

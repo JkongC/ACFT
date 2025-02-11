@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "RenderSystem.h"
 #include "Log/Logger.h"
+#include "Sky/Sky.h"
 
 namespace ACFT
 {
@@ -27,16 +28,10 @@ namespace ACFT
 		RenderSystem::PushVertex(vertex_pack);
 	}
 
-	BackgroundRenderer::BackgroundRenderer()
+	void SkyRenderer::Render()
 	{
-		GLCall(glEnable(GL_BLEND));
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-		GLCall(glEnable(GL_DEPTH_TEST));
-		GLCall(glDepthFunc(GL_LESS));
-
-		this->shader = std::make_unique<Shader>("shader/background.shader");
-
-		shader->Bind();
+		RenderSystem::FlushFrame();
+		RenderSystem::BindSkyShader();
+		RenderSystem::PushVertex(sky_vertices);
 	}
 }

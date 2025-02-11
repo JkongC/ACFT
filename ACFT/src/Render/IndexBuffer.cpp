@@ -7,7 +7,7 @@
 namespace ACFT
 {
 	IndexBuffer::IndexBuffer()
-		:count(0), local_buffer({ 0, 1, 2, 1, 2, 3 })
+		:count(0), local_buffer({ 0, 1, 2, 2, 3, 0 })
 	{
 		for (int side = 1; side <= local_buffer.size() / 6 - 1; side++)
 		{

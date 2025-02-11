@@ -24,6 +24,7 @@ namespace ACFT
 	static std::mutex mtx;
 
 	static std::binary_semaphore should_poll_render_calls(0);
+	static std::binary_semaphore poll_finished(1);
 	
 	ACFT_ERROR_CODE Game::Init()
 	{
@@ -93,28 +94,33 @@ namespace ACFT
 		auto& rd = RenderSystem::GetInstance();
 		
 		NormalTimer timer;
+		float render_tick_accumulator = 0.0f;
 		int frame_count = 0;
 		while (!glfwWindowShouldClose(gameWindow)) {
 			tick_manager.TickLogic();
 
-			while (timer.GetElapsed() > MsPerFrame)
+			render_tick_accumulator += timer.GetElapsed();
+			while (render_tick_accumulator > MsPerFrame)
 			{
-				timer.Decline(MsPerFrame);
+				render_tick_accumulator -= MsPerFrame;
 				frame_count++;
 			}
 
 			for (int i = 0; i < frame_count; i++)
 			{
-				RenderSystem::StartFrame();
+				if (poll_finished.try_acquire())
+				{
+					RenderSystem::StartFrame();
 
-				BlockRenderer::Render(*(Block*)block_1);
-				BlockRenderer::Render(*(Block*)block_2);
-				BlockRenderer::Render(*(Block*)block_3);
+					BlockRenderer::Render(*(Block*)block_1);
+					BlockRenderer::Render(*(Block*)block_2);
+					BlockRenderer::Render(*(Block*)block_3);
 
-				RenderSystem::GlfwPollEvents();
+					SkyRenderer::Render();
 
-				RenderSystem::EndFrame();
-				should_poll_render_calls.release();
+					RenderSystem::EndFrame();
+					should_poll_render_calls.release();
+				}
 			}
 			
 			frame_count = 0;
@@ -160,6 +166,8 @@ namespace ACFT
 			should_poll_render_calls.acquire();
 			
 			while (RenderSystem::PollCommand());
+
+			poll_finished.release();
 		}
 
 		delete (Block*)block_1;
