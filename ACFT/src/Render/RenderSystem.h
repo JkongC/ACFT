@@ -29,8 +29,8 @@ namespace ACFT
 		static bool PollCommand();
 		
 		//Temporary
-		static void BindGlobalShader();
-		static void BindSkyShader();
+		static void BindGlobal();
+		static void BindSky();
 
 	public:
 		//Be extremely cautious when calling those funcions
@@ -88,12 +88,16 @@ namespace ACFT
 		inline static const int cmdBufferReserveSize = 6;
 
 		std::unordered_map<VertexArrayType, VertexArray> varray_list;
+		VertexArrayType current_vao = VertexArrayType::normal;
 
 		Shader global_shader;
 		IndexBuffer global_ibo;
 		VertexBuffer global_buffer;
+		glm::vec4 clear_color = {0.788f, 0.856f, 1.0f, 1.0f};
 
 		Shader sky_shader;
+		IndexBuffer sky_ibo;
+		VertexBuffer sky_buffer;
 
 		VertexPack local_vertex_buffer;
 
@@ -104,7 +108,6 @@ namespace ACFT
 			alignas(16) glm::vec3 cam_pos;
 		} internal_ubo;
 		unsigned int ubo_id;
-
 	private:
 		RenderSystem();
 		RenderSystem(const RenderSystem&) = delete;

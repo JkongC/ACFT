@@ -6,70 +6,21 @@
 
 namespace ACFT
 {
-	constexpr float sqrt3 = Sqrt<float>(3.0);
+	constexpr float sqrt2 = Sqrt<float>(2.0);
+	constexpr float disc_radius = 512.0f;
+	constexpr float disc_height = 16.0f;
 	
 	inline constexpr VertexPack sky_vertices
 	{
-		//Clockwise Side: 0
-		{-80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{-80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		//1
-		{80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 1},
-		{80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 1},
-		//2
-		{80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 1},
-		{80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 1},
-		{80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		//3
-		{80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{-80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{-80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		//4
-		{-80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{-80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{-80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 1},
-		{-80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 1},
-		//5
-		{-80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 1},
-		{-80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 1},
-		{-80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		{-80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 1},
-		//UP: 0
-		{0.0f, 80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{-80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 0},
-		//1
-		{0.0f, 80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{-80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 0},
-		//2
-		{0.0f, 80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{-80.0f, 80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{-80.0f * 2.0f, 80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{-80.0f, 80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 0},
-		//DOWN: 0
-		{0.0f, -80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{-80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 0},
-		//1
-		{0.0f, -80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{-80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 0},
-		//2
-		{0.0f, -80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{-80.0f, -80.0f, -80.0f * sqrt3, 0.0f, 0.0f, 0},
-		{-80.0f * 2.0f, -80.0f, 0.0f, 0.0f, 0.0f, 0},
-		{-80.0f, -80.0f, 80.0f * sqrt3, 0.0f, 0.0f, 0}
+		{0.0f, disc_height, 0.0f, 0.0f, 0.0f, 0}, //Center
+		{disc_radius, disc_height, 0.0f, 0.0f, 0.0f, 0},
+		{disc_radius / sqrt2, disc_height, -disc_radius / sqrt2, 0.0, 0.0, 0},
+		{0.0f, disc_height, -disc_radius, 0.0f, 0.0f, 0}, 
+		{-disc_radius / sqrt2, disc_height, -disc_radius / sqrt2, 0.0, 0.0, 0},
+		{-disc_radius, disc_height, 0.0f, 0.0f, 0.0f, 0},
+		{-disc_radius / sqrt2, disc_height, disc_radius / sqrt2, 0.0, 0.0, 0},
+		{0.0f, disc_height, disc_radius, 0.0f, 0.0f, 0},
+		{disc_radius / sqrt2, disc_height, disc_radius / sqrt2, 0.0, 0.0, 0},
 	};
 }
 

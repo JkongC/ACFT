@@ -3,6 +3,7 @@
 #include "ACFT.h"
 #include "Log/Logger.h"
 #include "RenderSystem.h"
+#include "Sky/Sky.h"
 
 #define RENDERCALL(function, ...) \
 if (!Game::IsRenderThread()) \
@@ -57,7 +58,7 @@ namespace ACFT
 
 		cmd_buffer.reserve(cmdBufferReserveSize);
 
-		RenderSystem::BindGlobalShader();
+		RenderSystem::BindGlobal();
 
 		if (camera.ShouldUpdateMatrices())
 		{
@@ -83,12 +84,46 @@ namespace ACFT
 
 	void RenderSystem::FlushFrame()
 	{
-		NORMALCALL(
-			VertexPack& vertices = GetInstance().local_vertex_buffer;
-			GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-			GLCall(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertices.GetCount() * 1.5), GL_UNSIGNED_INT, nullptr));
-			vertices.Clear();
-		)
+		if (!Game::IsRenderThread()) {
+			RecordDrawCall([]() -> void {
+				RenderSystem& render_system = GetInstance();
+				VertexPack& vertices = render_system.local_vertex_buffer;
+				GLsizei idx_count;
+				if (render_system.current_vao == VertexArrayType::normal) {
+				idx_count = static_cast<GLsizei>(vertices.GetCount() * 1.5);
+				GLClearError();
+				__glewBufferSubData(0x8892, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer());
+				GLLogCall();
+				GLClearError();
+				glDrawElements(0x0004, idx_count, 0x1405, nullptr);
+				GLLogCall();
+				vertices.Clear();
+			}
+			else {
+				idx_count = static_cast<GLsizei>(render_system.sky_ibo.GetCount()); GLClearError(); glDrawElements(0x0004, idx_count, 0x1405, nullptr); GLLogCall();
+			}});
+		}
+		else {
+			RenderSystem& render_system = GetInstance();
+			VertexPack& vertices = render_system.local_vertex_buffer;
+			GLsizei idx_count;
+			if (render_system.current_vao == VertexArrayType::normal) {
+				idx_count = static_cast<GLsizei>(vertices.GetCount() * 1.5);
+				GLClearError();
+				__glewBufferSubData(0x8892, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer());
+				GLLogCall();
+				GLClearError();
+				glDrawElements(0x0004, idx_count, 0x1405, nullptr);
+				GLLogCall();
+				vertices.Clear();
+			}
+			else {
+				idx_count = static_cast<GLsizei>(render_system.sky_ibo.GetCount());
+				GLClearError();
+				glDrawElements(0x0004, idx_count, 0x1405, nullptr);
+				GLLogCall();
+			}
+		}
 	}
 
 	void RenderSystem::EndFrame()
@@ -114,7 +149,7 @@ namespace ACFT
 			if (_vertices->GetCount() > maxVerteciesPerDraw - vertices.GetCount())
 			{
 				GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-				GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
+				GLCall(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertices.GetCount() * 1.5), GL_UNSIGNED_INT, nullptr));
 				vertices.Clear();
 			}
 
@@ -130,12 +165,12 @@ namespace ACFT
 	void RenderSystem::PushVertex(const VertexPack& _vertices)
 	{
 		NORMALCALL(
-			VertexPack & vertices = GetInstance().local_vertex_buffer;
+			VertexPack& vertices = GetInstance().local_vertex_buffer;
 
 			if (_vertices.GetCount() > maxVerteciesPerDraw - vertices.GetCount())
 			{
 				GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
-				GLCall(glDrawElements(GL_TRIANGLES, vertices.GetCount() * sizeof(Vertex), GL_UNSIGNED_INT, nullptr));
+				GLCall(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertices.GetCount() * 1.5), GL_UNSIGNED_INT, nullptr));
 				vertices.Clear();
 			}
 
@@ -167,17 +202,27 @@ namespace ACFT
 		return false;
 	}
 
-	void RenderSystem::BindGlobalShader()
+	void RenderSystem::BindGlobal()
 	{
 		NORMALCALL(
-			GetInstance().global_shader.Bind();
+			RenderSystem& render_system = GetInstance();
+			render_system.current_vao = VertexArrayType::normal;
+			render_system.varray_list[render_system.current_vao].Bind();
+			render_system.global_buffer.Bind();
+			render_system.global_shader.Bind();
+			GLCall(glEnable(GL_CULL_FACE));
 		)
 	}
 
-	void RenderSystem::BindSkyShader()
+	void RenderSystem::BindSky()
 	{
 		NORMALCALL(
-			GetInstance().sky_shader.Bind();
+			RenderSystem& render_system = GetInstance();
+			render_system.current_vao = VertexArrayType::sky;
+			render_system.varray_list[render_system.current_vao].Bind();
+			render_system.sky_buffer.Bind();
+			render_system.sky_shader.Bind();
+			GLCall(glDisable(GL_CULL_FACE));
 		)
 	}
 
@@ -373,19 +418,32 @@ namespace ACFT
 
 	RenderSystem::RenderSystem()
 		: render_queue(), varray_list(), global_shader("shader/basic.shader"), global_ibo(), global_buffer(), command_buffer()
-		, internal_ubo(), ubo_id(), sky_shader("shader/sky.shader")
+		, internal_ubo(), ubo_id()
+		, sky_shader("shader/sky.shader"), sky_ibo({0, 2, 1, 0, 3, 2, 0, 4, 3, 0, 5, 4, 
+			0, 6, 5, 0, 7, 6, 0, 8, 7, 0, 1, 8}, false), sky_buffer(sky_vertices)
 	{
-		varray_list.try_emplace(VertexArrayType::normal);
-		varray_list[VertexArrayType::normal].Bind();
-		VertexBufferLayout layout;
-		layout.Push<float>(3);
-		layout.Push<float>(2);
-		layout.Push<unsigned int>(1);
-		varray_list[VertexArrayType::normal].AddBuffer(global_buffer, layout);
+		{
+			varray_list.try_emplace(VertexArrayType::normal);
+			VertexBufferLayout layout;
+			layout.Push<float>(3);
+			layout.Push<float>(2);
+			layout.Push<unsigned int>(1);
+			varray_list[VertexArrayType::normal].AddBuffer(global_buffer, layout, global_ibo);
+		}
 
-		global_shader.Bind();
-		global_ibo.Bind();
+		{
+			varray_list.try_emplace(VertexArrayType::sky);
+			VertexBufferLayout layout;
+			layout.Push<float>(3);
+			layout.Push<float>(2);
+			layout.Push<unsigned int>(1);
+			varray_list[VertexArrayType::sky].AddBuffer(sky_buffer, layout, sky_ibo);
+		}
+
+		current_vao = VertexArrayType::normal;
+		varray_list[current_vao].Bind();
 		global_buffer.Bind();
+		global_shader.Bind();
 
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -401,6 +459,6 @@ namespace ACFT
 		GLCall(glUniform1f(global_shader.GetUniformLocation("denominator_2"), 100.0f - 0.1f));
 		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_id));
 
-		GLCall(glEnable(GL_CULL_FACE));
+		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
 	}
 }

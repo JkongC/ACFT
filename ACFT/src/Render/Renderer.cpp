@@ -31,7 +31,6 @@ namespace ACFT
 	void SkyRenderer::Render()
 	{
 		RenderSystem::FlushFrame();
-		RenderSystem::BindSkyShader();
-		RenderSystem::PushVertex(sky_vertices);
+		RenderSystem::BindSky();
 	}
 }

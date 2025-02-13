@@ -8,7 +8,7 @@ namespace ACFT
 
 	enum VertexArrayType
 	{
-		normal = 0
+		normal = 0, sky
 	};
 
 	class VertexArray
@@ -20,7 +20,7 @@ namespace ACFT
 
 		void Unbind() const;
 
-		void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout) const;
+		void AddBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout, const IndexBuffer& ibo) const;
 
 	private:
 		unsigned int va_id;

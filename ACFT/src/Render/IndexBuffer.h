@@ -13,6 +13,9 @@ namespace ACFT
 		inline unsigned int GetCount() const {
 			return count;
 		}
+
+		inline const void* GetRawBuffer() const { return local_buffer.data(); }
+
 	private:
 		unsigned int ib_id;
 		unsigned int count;
@@ -22,6 +25,7 @@ namespace ACFT
 	private:
 		friend class RenderSystem;
 		IndexBuffer();
+		IndexBuffer(std::initializer_list<unsigned int> template_index, bool fill_to_full);
 	};
 }
 

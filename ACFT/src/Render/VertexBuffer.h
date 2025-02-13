@@ -9,6 +9,7 @@ namespace ACFT
 	{
 	public:
 		VertexBuffer();
+		VertexBuffer(const VertexPack& vertices);
 
 		void Bind() const;
 
