@@ -11,6 +11,9 @@ layout(std140, binding = 0) uniform basic
 	mat4 view;
 	mat4 proj;
 	vec3 cam_pos;
+	float numerator;
+	float denominator_1;
+	float denominator_2;
 };
 
 void main()
@@ -29,9 +32,15 @@ in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
 
-uniform float numerator;
-uniform float denominator_1;
-uniform float denominator_2;
+layout(std140, binding = 0) uniform basic
+{
+	mat4 view;
+	mat4 proj;
+	vec3 cam_pos;
+	float numerator;
+	float denominator_1;
+	float denominator_2;
+};
 
 float get_viewspace_z()
 {
@@ -41,8 +50,10 @@ float get_viewspace_z()
 
 vec4 fog(vec4 prev_color)
 {
-	vec4 fog_color = vec4(0.788, 0.856, 1.0, 1.0);
-	return mix(fog_color, prev_color, smoothstep(-26.0, -20.0, get_viewspace_z()));
+	float depth = -get_viewspace_z();
+	
+	vec4 fog_color = vec4(0.576, 0.712, 1.0, 1.0);
+	return mix(prev_color, fog_color, smoothstep(30.0, 36.0, depth));
 }
 
 void main()

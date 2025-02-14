@@ -8,7 +8,7 @@ namespace ACFT
 {
 	constexpr float sqrt2 = Sqrt<float>(2.0);
 	constexpr float disc_radius = 512.0f;
-	constexpr float disc_height = 16.0f;
+	constexpr float disc_height = 12.0f;
 	
 	inline constexpr VertexPack sky_vertices
 	{

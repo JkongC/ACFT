@@ -112,11 +112,11 @@ namespace ACFT
 				{
 					RenderSystem::StartFrame();
 
+					SkyRenderer::Render();
+					
 					BlockRenderer::Render(*(Block*)block_1);
 					BlockRenderer::Render(*(Block*)block_2);
 					BlockRenderer::Render(*(Block*)block_3);
-
-					SkyRenderer::Render();
 
 					RenderSystem::EndFrame();
 					should_poll_render_calls.release();

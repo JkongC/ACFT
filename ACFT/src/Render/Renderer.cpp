@@ -30,7 +30,8 @@ namespace ACFT
 
 	void SkyRenderer::Render()
 	{
-		RenderSystem::FlushFrame();
 		RenderSystem::BindSky();
+		RenderSystem::FlushFrame();
+		RenderSystem::BindGlobal();
 	}
 }

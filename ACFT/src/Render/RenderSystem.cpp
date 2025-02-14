@@ -67,7 +67,7 @@ namespace ACFT
 				ubo.proj = camera.GetProjectionMatrix();
 				ubo.cam_pos = camera.GetPos();
 
-				GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformBuffer), &ubo));
+				GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, offsetof(UniformBuffer, UniformBuffer::numerator), &ubo));
 				GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 				, &
 			)
@@ -75,7 +75,7 @@ namespace ACFT
 		else
 		{
 			NORMALCALL(
-				GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformBuffer), &ubo));
+				GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, offsetof(UniformBuffer, UniformBuffer::numerator), &ubo));
 				GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 				, &
 			)
@@ -84,46 +84,23 @@ namespace ACFT
 
 	void RenderSystem::FlushFrame()
 	{
-		if (!Game::IsRenderThread()) {
-			RecordDrawCall([]() -> void {
-				RenderSystem& render_system = GetInstance();
-				VertexPack& vertices = render_system.local_vertex_buffer;
-				GLsizei idx_count;
-				if (render_system.current_vao == VertexArrayType::normal) {
-				idx_count = static_cast<GLsizei>(vertices.GetCount() * 1.5);
-				GLClearError();
-				__glewBufferSubData(0x8892, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer());
-				GLLogCall();
-				GLClearError();
-				glDrawElements(0x0004, idx_count, 0x1405, nullptr);
-				GLLogCall();
-				vertices.Clear();
-			}
-			else {
-				idx_count = static_cast<GLsizei>(render_system.sky_ibo.GetCount()); GLClearError(); glDrawElements(0x0004, idx_count, 0x1405, nullptr); GLLogCall();
-			}});
-		}
-		else {
-			RenderSystem& render_system = GetInstance();
-			VertexPack& vertices = render_system.local_vertex_buffer;
+		NORMALCALL(
+			RenderSystem & render_system = GetInstance();
+			VertexPack & vertices = render_system.local_vertex_buffer;
 			GLsizei idx_count;
-			if (render_system.current_vao == VertexArrayType::normal) {
+			if (render_system.current_vao == VertexArrayType::normal)
+			{
 				idx_count = static_cast<GLsizei>(vertices.GetCount() * 1.5);
-				GLClearError();
-				__glewBufferSubData(0x8892, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer());
-				GLLogCall();
-				GLClearError();
-				glDrawElements(0x0004, idx_count, 0x1405, nullptr);
-				GLLogCall();
+				GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.GetCount() * sizeof(Vertex), vertices.GetRawBuffer()));
+				GLCall(glDrawElements(GL_TRIANGLES, idx_count, GL_UNSIGNED_INT, nullptr));
 				vertices.Clear();
 			}
-			else {
+			else 
+			{
 				idx_count = static_cast<GLsizei>(render_system.sky_ibo.GetCount());
-				GLClearError();
-				glDrawElements(0x0004, idx_count, 0x1405, nullptr);
-				GLLogCall();
+				GLCall(glDrawElements(GL_TRIANGLES, idx_count, GL_UNSIGNED_INT, nullptr));
 			}
-		}
+		)
 	}
 
 	void RenderSystem::EndFrame()
@@ -211,6 +188,7 @@ namespace ACFT
 			render_system.global_buffer.Bind();
 			render_system.global_shader.Bind();
 			GLCall(glEnable(GL_CULL_FACE));
+			GLCall(glDepthMask(GL_TRUE));
 		)
 	}
 
@@ -223,6 +201,7 @@ namespace ACFT
 			render_system.sky_buffer.Bind();
 			render_system.sky_shader.Bind();
 			GLCall(glDisable(GL_CULL_FACE));
+			GLCall(glDepthMask(GL_FALSE));
 		)
 	}
 
@@ -445,20 +424,23 @@ namespace ACFT
 		global_buffer.Bind();
 		global_shader.Bind();
 
-		GLCall(glEnable(GL_BLEND));
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		//GLCall(glEnable(GL_BLEND));
+		//GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 		GLCall(glEnable(GL_DEPTH_TEST));
 		GLCall(glDepthFunc(GL_LESS));
 
+		GLCall(glDisable(GL_FRAMEBUFFER_SRGB));
+
 		GLCall(glCreateBuffers(1, &ubo_id));
 		GLCall(glBindBuffer(GL_UNIFORM_BUFFER, ubo_id));
 		GLCall(glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformBuffer), nullptr, GL_DYNAMIC_DRAW));
-		GLCall(glUniform1f(global_shader.GetUniformLocation("numerator"), 2 * 0.1f * 100.0f));
-		GLCall(glUniform1f(global_shader.GetUniformLocation("denominator_1"), 100.0f + 0.1f));
-		GLCall(glUniform1f(global_shader.GetUniformLocation("denominator_2"), 100.0f - 0.1f));
+		internal_ubo.numerator = 2 * 0.1f * 100.0f;
+		internal_ubo.denominator_1 = 100.0f + 0.1f;
+		internal_ubo.denominator_2 = 100.0f - 0.1f;
 		GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_id));
+		GLCall(glBufferSubData(GL_UNIFORM_BUFFER, offsetof(UniformBuffer, UniformBuffer::numerator), 3 * sizeof(float), &internal_ubo.numerator));
 
-		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, clear_color.a));
+		GLCall(glClearColor(clear_color.r, clear_color.g, clear_color.b, 1.0f));
 	}
 }

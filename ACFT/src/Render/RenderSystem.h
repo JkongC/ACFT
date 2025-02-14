@@ -93,7 +93,8 @@ namespace ACFT
 		Shader global_shader;
 		IndexBuffer global_ibo;
 		VertexBuffer global_buffer;
-		glm::vec4 clear_color = {0.788f, 0.856f, 1.0f, 1.0f};
+
+		glm::vec3 clear_color = 0.8f * glm::vec3(0.47f, 0.64f, 1.0f) + 0.2f * glm::vec3(1.0f);
 
 		Shader sky_shader;
 		IndexBuffer sky_ibo;
@@ -106,6 +107,9 @@ namespace ACFT
 			alignas(16) glm::mat4 view;
 			alignas(16) glm::mat4 proj;
 			alignas(16) glm::vec3 cam_pos;
+			float numerator;
+			float denominator_1;
+			float denominator_2;
 		} internal_ubo;
 		unsigned int ubo_id;
 	private:
