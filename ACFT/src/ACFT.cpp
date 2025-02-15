@@ -10,8 +10,12 @@
 #include "Event/EventManager.h"
 #include "Tick/Tick.h"
 
+#include <stbi/stb_image.h>
+
 namespace ACFT
 {
+	GLFWimage icon[1];
+
 	GLFWwindow* Game::gameWindow = nullptr;
 	static thread_local bool is_render_thread = false;
 
@@ -59,12 +63,16 @@ namespace ACFT
 		if (!glfwInit())
 			return ACFT_ERROR;
 
+		icon[0].pixels = stbi_load("resources/acft_icon.png", &icon[0].width, &icon[0].height, nullptr, 4);
+
 		gameWindow = glfwCreateWindow(WindowWidth, WindowHeight, "AnotherCraft", nullptr, nullptr);
 		if (!gameWindow)
 		{
 			glfwTerminate();
 			return ACFT_ERROR;
 		}
+
+		glfwSetWindowIcon(gameWindow, 1, icon);
 
 		glfwMakeContextCurrent(gameWindow);
 
