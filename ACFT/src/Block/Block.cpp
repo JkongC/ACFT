@@ -2,8 +2,9 @@
 
 #include "ACFT.h"
 #include "Block.h"
-#include "Util/Direction.h"
 #include "Render/Camera.h"
+
+import Direction;
 
 namespace ACFT
 {

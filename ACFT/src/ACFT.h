@@ -23,12 +23,14 @@ namespace ACFT
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
+	using StringView = std::string_view;
+
 	constexpr int WindowWidth = 1280;
 	constexpr int WindowHeight = 960;
 	constexpr int FramesPerSecond = 180;
 	constexpr float MsPerFrame = 1000.0f / FramesPerSecond;
 
-	constexpr int maxVerteciesPerDraw = 6 * 300;
+	constexpr int maxVerteciesPerDraw = 12 * 300;
 
 	class Game
 	{

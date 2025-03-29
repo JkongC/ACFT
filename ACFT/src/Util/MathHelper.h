@@ -1,6 +1,8 @@
 #ifndef ACFT_MATHHELPER_H_
 #define ACFT_MATHHELPER_H_
 
+#include <cstdint>
+
 namespace ACFT
 {
 	template<typename Type>
@@ -37,6 +39,24 @@ namespace ACFT
 		}
 
 		return static_cast<RetType>(guess);
+	}
+
+	template<typename RetType>
+		requires std::is_arithmetic_v<RetType>
+	inline constexpr RetType FastSqrt(float x)
+	{
+		if (x == 0.0f)
+			return static_cast<RetType>(0.0);
+
+		if (x < 0.0f)
+			return std::numeric_limits<RetType>::quiet_NaN();
+
+		uint32_t i = std::bit_cast<uint32_t>(x);
+		i = 0x5f3759df - (i >> 1);
+		float result = std::bit_cast<float>(i);
+		result *= x;
+		result = result - (result * result - x) / (2.0f * result);
+		return static_cast<RetType>(result);
 	}
 }
 

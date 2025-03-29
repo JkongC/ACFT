@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+import Util;
+
 #include "ACFT.h"
 #include "Util/Timer.h"
 #include "Log/Logger.h"
@@ -9,6 +11,7 @@
 #include "ResourceManager.h"
 #include "Event/EventManager.h"
 #include "Tick/Tick.h"
+#include "Block/Blocks.h"
 
 #include <stbi/stb_image.h>
 
@@ -153,7 +156,6 @@ namespace ACFT
 		}
 
 		RenderSystem::Init();
-		ResourceManager::Init();
 
 		ResourceManager::CreateTexture("acacia_log", "resources/acacia_log.png");
 
@@ -182,7 +184,6 @@ namespace ACFT
 		delete (Block*)block_2;
 		delete (Block*)block_3;
 
-		ResourceManager::Shutdown();
 		RenderSystem::Shutdown();
 	}
 

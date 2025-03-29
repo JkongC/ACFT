@@ -24,37 +24,16 @@
     <ClCompile Include="src\ACFT.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\Renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\Util\Timer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\Log\Logger.cpp">
+    <ClCompile Include="src\Log\Log.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Render\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Block\Block.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\IndexBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\VertexArray.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\Camera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\VertexBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\Vertex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Event\Event.cpp">
@@ -81,6 +60,147 @@
     <ClCompile Include="src\ResourceManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Block\Blocks.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Block\BlockState.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Chunk\Chunk.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Chunk\ChunkManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Serialization\Serializer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UUID.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UUID.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Direction.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\LockfreeQueue.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Util.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Node.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Base.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\entt\src\entt\entity\registry.hpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\glm\glm\glm.hpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\glm\glm\gtc\matrix_transform.hpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Base_std.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Base_glm.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Base_entt.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Renderer.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Vertex.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Vertex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Tesselator.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Tesselator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Log\Log.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLShader.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Camera.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Window.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Window.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Config.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Config.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Shader.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -89,13 +209,7 @@
     <ClInclude Include="src\ACFT.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\Render\Renderer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="src\Util\Timer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Log\Logger.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Render\Voxel.h">
@@ -128,12 +242,6 @@
     <ClInclude Include="src\Render\Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\Render\Vertex.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Util\Direction.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="src\Event\Event.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -155,12 +263,6 @@
     <ClInclude Include="src\Render\RenderQueue.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\Util\LockfreeQueue.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Util\Node.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="src\Render\RenderSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -171,6 +273,24 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\MathHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Chunk\Chunk.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Block\Blocks.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Block\BlockState.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Chunk\ChunkManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Serialization\Serializer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\GLImpls\gldbg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

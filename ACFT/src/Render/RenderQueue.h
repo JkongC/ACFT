@@ -2,7 +2,7 @@
 #define ACFT_RENDERQUEUE_H_
 
 #include "RenderCommand.h"
-#include "Util/LockfreeQueue.h"
+import LockfreeQueue;
 
 namespace ACFT
 {

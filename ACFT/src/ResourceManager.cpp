@@ -5,64 +5,55 @@
 
 namespace ACFT
 {
-	static ResourceManager* rm_instance = nullptr;
-	
-	void ResourceManager::Init()
-	{
-		if (rm_instance == nullptr)
-			rm_instance = new ResourceManager();
-	}
-
-	void ResourceManager::Shutdown()
-	{
-		if (rm_instance != nullptr)
-		{
-			delete rm_instance;
-			rm_instance;
-		}
-	}
-
 	ResourceManager& ResourceManager::GetInstance()
 	{
-		if (rm_instance == nullptr)
-			Init();
-
-		return *rm_instance;
+		static ResourceManager instance;
+		return instance;
 	}
 
-	void ResourceManager::CreateTexture(const std::string& name, const std::string& filepath)
+	UUID ResourceManager::CreateTexture(const std::string& name, const std::string& filepath)
 	{
-		auto& tex_map = GetInstance().textures;
-		tex_map.try_emplace(name, MakeRef<Texture>(filepath));
+		auto& instance = GetInstance();
+		UUID uuid{};
+		instance.string_to_uuid.insert({ name, uuid });
+		instance.textures.try_emplace(uuid, MakeRef<Texture>(filepath));
+		
+		return uuid;
 	}
 
 	std::optional<Ref<Texture>> ResourceManager::GetTexture(const std::string& name)
 	{
-		auto& tex_map = GetInstance().textures;
-		if (tex_map.find(name) != tex_map.end())
+		auto& instance = GetInstance();
+		if (instance.string_to_uuid.find(name) != instance.string_to_uuid.end())
 		{
-			return tex_map[name];
+			return GetTexture(instance.string_to_uuid[name]);
 		}
 		return std::nullopt;
 	}
 
-	std::optional<unsigned int> ResourceManager::GetTextureID(const std::string& name)
+	Ref<Texture> ResourceManager::GetTexture(const UUID& uuid)
 	{
-		auto& tex_map = GetInstance().textures;
-		if (tex_map.find(name) != tex_map.end())
-		{
-			return tex_map[name]->GetID();
-		}
-		return std::nullopt;
+		auto& textures = GetInstance().textures;
+		return textures[uuid];
 	}
 
 	void ResourceManager::RemoveTexture(const std::string& name)
 	{
-		auto& tex_map = GetInstance().textures;
-		auto it = tex_map.find(name);
-		if (it != tex_map.end())
+		auto& uuids = GetInstance().string_to_uuid;
+		auto it = uuids.find(name);
+		if (it != uuids.end())
 		{
-			tex_map.erase(it);
+			RemoveTexture(uuids[name]);
+		}
+	}
+
+	void ResourceManager::RemoveTexture(const UUID& uuid)
+	{
+		auto& textures = GetInstance().textures;
+		auto it = textures.find(uuid);
+		if (it != textures.end())
+		{
+			textures.erase(it);
 		}
 	}
 }

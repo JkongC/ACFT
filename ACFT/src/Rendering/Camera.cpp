@@ -1,0 +1,6 @@
+module Camera;
+
+namespace ACFT
+{
+	
+}

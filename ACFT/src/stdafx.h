@@ -17,6 +17,8 @@
 #include <condition_variable>
 #include <unordered_map>
 #include <unordered_set>
+#include <filesystem>
+#include <fstream>
 
 #include <Windows.h>
 
@@ -32,3 +34,5 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+
+#include <entt/entity/registry.hpp>

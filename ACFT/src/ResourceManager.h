@@ -2,23 +2,25 @@
 #define ACFT_RESOURCEMANAGER_H_
 
 #include "Render/Texture.h"
+import UUID;
 
 namespace ACFT
 {
 	class ResourceManager
 	{
 	public:
-		static void Init();
-		static void Shutdown();
 		static ResourceManager& GetInstance();
 
-		static void CreateTexture(const std::string& name, const std::string& filepath);
+		static UUID CreateTexture(const std::string& name, const std::string& filepath);
 		static std::optional<Ref<Texture>> GetTexture(const std::string& name);
-		static std::optional<unsigned int> GetTextureID(const std::string& name);
+		static Ref<Texture> GetTexture(const UUID& uuid);
 		static void RemoveTexture(const std::string& name);
+		static void RemoveTexture(const UUID& uuid);
 
 	private:
-		std::unordered_map<std::string, Ref<Texture>> textures;
+		std::unordered_map<std::string, UUID> string_to_uuid;
+
+		std::unordered_map<UUID, Ref<Texture>> textures;
 
 	private:
 		ResourceManager() = default;
