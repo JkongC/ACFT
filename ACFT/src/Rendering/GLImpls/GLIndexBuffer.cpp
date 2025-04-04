@@ -20,8 +20,6 @@ namespace GLImplementations
 {
 	using namespace ACFT;
 
-#define mp(e1, e2) std::make_pair<Primitive, VertexExpander>(e1, e2)
-
 	IndexBuffer::IndexBuffer()
 	{
 		glGenBuffers(1, &m_BufferID);
@@ -52,9 +50,7 @@ namespace GLImplementations
 		this->m_Count = indices.size();
 		this->m_Size = this->m_Count * sizeof(unsigned int);
 
-		unsigned int* buffer = static_cast<unsigned int*>(alloca(this->m_Size));
-
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->m_Size, buffer, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->m_Size, indices.data(), GL_STATIC_DRAW);
 
 		Unbind();
 	}
@@ -67,9 +63,7 @@ namespace GLImplementations
 		this->m_Count = indices.size();
 		this->m_Size = this->m_Count * sizeof(unsigned int);
 
-		unsigned int* buffer = static_cast<unsigned int*>(alloca(this->m_Size));
-
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->m_Size, buffer, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->m_Size, indices.data(), GL_STATIC_DRAW);
 
 		Unbind();
 	}

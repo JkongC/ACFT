@@ -1,10 +1,36 @@
 export module Vertex;
 
 import Base.entt;
-import UUID;
 
 namespace ACFT
 {
+	export struct VertexPos
+	{
+		float x;
+		float y;
+		float z;
+	};
+
+	export struct VertexColorRGB
+	{
+		float r;
+		float g;
+		float b;
+	};
+
+	export struct VertexColorRGBA
+	{
+		float r;
+		float g;
+		float b;
+		float a;
+	};
+
+	export struct VertexTexture
+	{
+		unsigned int texture;
+	};
+	
 	export class Vertex
 	{
 	public:
@@ -14,13 +40,19 @@ namespace ACFT
 
 		~Vertex();
 
-		void Pos(float x, float y, float z);
-		void Color(int r, int g, int b);
-		void Color(int r, int g, int b, int a);
-		void Texture(UUID texture);
+		Vertex& Pos(float x, float y, float z);
+		Vertex& Color(float r, float g, float b);
+		Vertex& Color(float r, float g, float b, float a);
+		Vertex& Texture(unsigned int texture);
+
+		template<typename Attribute>
+		Attribute* GetAttribute() const;
+
+		size_t GetSize() const { return m_VertexSize; }
 
 	private:
 		entt::entity m_InternalID;
+		size_t m_VertexSize{ 0 };
 		static inline entt::registry g_Manager;
 	};
 }

@@ -30,9 +30,6 @@
     <ClCompile Include="src\Log\Log.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\Texture.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\Block\Block.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -49,12 +46,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Controller\InputQuery.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\RenderQueue.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Render\RenderSystem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\ResourceManager.cpp">
@@ -199,6 +190,30 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Sprite.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Sprite.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Image.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Image.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Atlas.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Atlas.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Texture.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Types.ixx">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

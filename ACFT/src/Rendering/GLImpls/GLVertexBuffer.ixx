@@ -10,6 +10,7 @@ module;
 export module Renderer:GLVertexBuffer;
 
 import <vector>;
+import Vertex;
 
 namespace GLImplementations
 {
@@ -17,22 +18,39 @@ namespace GLImplementations
 	{
 	public:
 		VertexBuffer();
+		VertexBuffer(size_t max_size);
 		~VertexBuffer();
+
+		void Init(size_t max_size);
 
 		void Bind() const;
 		void Unbind() const;
+		bool Submit(const ACFT::Vertex& vtx);
+		void Clear();
+
+		inline size_t GetCurrentBufferSize() const { return m_CurrentSize; }
+		inline size_t GetRemainingSize() const { return m_MaxBufferSize - m_CurrentSize; }
+		inline size_t GetMaxBufferSize() const { return m_MaxBufferSize; }
+		inline size_t GetCurrentVertexCount() const { return m_CurrentVertexCount; }
+
+	private:
+		template<typename Attribute>
+		void PushSingleAttribute(const ACFT::Vertex& vtx);
 
 	private:
 		unsigned int m_BufferID;
+		size_t m_MaxBufferSize{ 0 };
+		size_t m_CurrentSize{ 0 };
+		size_t m_CurrentVertexCount{ 0 };
 	};
 
 	struct VertexBufferElement
 	{
 		unsigned int type;
-		unsigned int count;
+		size_t count;
 		unsigned char normalized;
 
-		static unsigned int GetSizeOfType(unsigned int type) {
+		static size_t GetSizeOfType(unsigned int type) {
 			switch (type)
 			{
 			case GL_UNSIGNED_INT:	return 4;
@@ -81,13 +99,13 @@ namespace GLImplementations
 			return m_Elements;
 		}
 
-		inline unsigned GetStride() const {
+		inline size_t GetStride() const {
 			return m_Stride;
 		}
 
 	private:
 		std::vector<VertexBufferElement> m_Elements;
 		unsigned int m_Count;
-		unsigned int m_Stride;
+		size_t m_Stride;
 	};
 }

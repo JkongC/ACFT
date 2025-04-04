@@ -20,32 +20,37 @@ import :GLVertexArray;
 
 namespace ACFT
 {
-	export constexpr size_t defaultVertexPerDraw = 1000;
+	export constexpr size_t defaultPrimitivePerDraw = 1000;
 	
 	using namespace GLImplementations;
 	export class OpenGLRenderer : public Renderer
 	{
 	public:
 		void InitContext() override;
-		void DrawTesselator(Tesselator tesselator) override;
+		void DrawTesselator(const Tesselator& tesselator) override;
+		void DrawSprite(const Sprite& sprite) override;
+
+		void BeginScene() override;
+		void EndScene() override;
+
 		void SetClearColor(float r, float g, float b, float a) override;
+		void SetPrimitive(Primitive primitive) override;
 
 		RenderAPI GetRenderAPI() override;
 
 		OpenGLRenderer()
-			: m_VBO(), m_BasicVAO(), m_DefaultTriangleVAO(), m_DefaultTriangleFanVAO()
-			, m_DefaultSquareVAO(), m_DefaultCubeVAO()
+			: m_CurrentPrimitive(cube)
 		{};
 
 	private:
-		std::unordered_map<UUID, VertexArray> m_VAOs;
-		VertexBuffer m_VBO;
+		template<Primitive primitive>
+		void InitBuffers(const VertexBufferLayout& layout);
 
-		UUID m_BasicVAO;
-		UUID m_DefaultTriangleVAO;
-		UUID m_DefaultTriangleFanVAO;
-		UUID m_DefaultSquareVAO;
-		UUID m_DefaultCubeVAO;
+	private:
+		std::unordered_map<Primitive, VertexArray> m_VAOs;
+		std::unordered_map<Primitive, VertexBuffer> m_VBOs;
+
+		Primitive m_CurrentPrimitive;
 	};
 }
 

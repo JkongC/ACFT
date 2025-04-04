@@ -11,7 +11,9 @@ namespace ACFT
 		point, line, triangle, triangle_fan, square, cube
 	};
 
+	export constexpr const char* PrimitiveToString(Primitive primitive);
 	export constexpr unsigned int IndexCountPerPrimitive(Primitive primitive);
+	export constexpr unsigned int VertexCountPerPrimitive(Primitive primitive);
 	
 	export class Tesselator
 	{
@@ -20,9 +22,10 @@ namespace ACFT
 		Tesselator(Tesselator&&) = default;
 		~Tesselator() = default;
 
-		void AddVertex(Vertex vtx);
+		void PushVertex(Vertex vtx);
+		Vertex& NewVertex();
 		const std::vector<Vertex>& GetVertices() const;
-		inline Primitive GetMode() const;	
+		inline Primitive GetMode() const;
 
 	private:
 		Primitive m_VertexMode;

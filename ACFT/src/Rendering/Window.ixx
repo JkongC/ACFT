@@ -1,14 +1,14 @@
 export module Window;
 
 import Renderer;
-import <memory>;
+import Types;
 
 namespace ACFT
 {
 	export class Window
 	{
 	public:
-		static std::shared_ptr<Window> InitWindow();
+		static Ref<Window> InitWindow();
 		
 		inline int GetWidth() const { return m_Width; }
 		inline void SetWidth(int width) { m_Width = width; }
