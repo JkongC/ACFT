@@ -25,6 +25,11 @@ namespace ACFT
 				m_MaxVerticalTextures * m_PixelPerTexture * channels];
 		this->m_Channels = channels;
 	}
+
+	TextureInfo Atlas::AddTexture(Image&& img)
+	{
+		return AddTexture(img);
+	}
 	
 	TextureInfo Atlas::AddTexture(Image& img)
 	{
@@ -51,14 +56,14 @@ namespace ACFT
 		}
 
 		const unsigned char* img_data = img.GetInternalData();
+		size_t atl_col_offset = static_cast<size_t>(m_CurrentColumn) * m_Channels;
+		size_t atl_per_row_offset = static_cast<size_t>(m_MaxHorizontalTextures) * m_PixelPerTexture * m_Channels;
 		for (size_t row = 0; row < img.GetHeight(); row++)
 		{
-			size_t atl_row_offset = m_MaxHorizontalTextures * m_PixelPerTexture * m_Channels * (m_CurrentRow + row);
-			size_t atl_col_offset = m_CurrentColumn * m_Channels;
+			size_t atl_row_offset = atl_per_row_offset * (m_CurrentRow + row);
 			memcpy(&this->m_AtlasData[atl_row_offset + atl_col_offset], &img.GetInternalData()[static_cast<size_t>(img.GetWidth()) * m_Channels * row], static_cast<size_t>(img.GetWidth()) * m_Channels);
 		}
 		
-
 		TextureInfo info{};
 		info.uv_coords.min_u = static_cast<float>(m_CurrentColumn) / static_cast<float>(m_MaxHorizontalTextures);
 		info.uv_coords.min_v = static_cast<float>(m_MaxVerticalTextures - m_CurrentRow - 1) / m_MaxVerticalTextures;

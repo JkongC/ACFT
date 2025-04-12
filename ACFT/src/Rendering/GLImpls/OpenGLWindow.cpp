@@ -10,12 +10,17 @@ module;
 #include <glew.h>
 #include <glfw3.h>
 
+#include <atomic>
+
 module Window:OpenGLWindow;
 
 import Log;
+import Event;
 
 namespace ACFT
 {
+	std::atomic<size_t> WindowCount{ 0 };
+	
 	GLFWimage icon[1];
 	
 	OpenGLWindow::OpenGLWindow()
@@ -45,10 +50,55 @@ namespace ACFT
 			ACFT_LOG_FATAL("Failed to initialize glew!");
 			exit(-1);
 		}
+
+		glfwSetCursorPosCallback(m_RawWindow, MousePosCallback);
+		glfwSetMouseButtonCallback(m_RawWindow, MouseButtonCallback);
+		glfwSetKeyCallback(m_RawWindow, KeyCallback);
+		glfwSetFramebufferSizeCallback(m_RawWindow, WindowResizeCallback);
+
+		WindowCount++;
 	}
 
 	OpenGLWindow::~OpenGLWindow()
 	{
-		glfwTerminate();
+		glfwDestroyWindow(m_RawWindow);
+		WindowCount--;
+		if (WindowCount == 0)
+			glfwTerminate();
+	}
+
+	void OpenGLWindow::MousePosCallback(GLFWwindow* window, double xpos, double ypos)
+	{
+		EventManager::DistributeEvent(Events::MOUSE_POS,
+			MousePosInfo{ xpos, ypos }
+		);
+	}
+	
+	void OpenGLWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+	{
+		EventManager::DistributeEvent(Events::MOUSE_BUTTON,
+			MouseButtonInfo{ button, action == GLFW_PRESS, mods }
+		);
+	}
+
+	void OpenGLWindow::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+		EventManager::DistributeEvent(Events::SCROLL,
+			ScrollInfo{ xoffset, yoffset }
+		);
+	}
+
+	void OpenGLWindow::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		EventManager::DistributeEvent(Events::KEY,
+			KeyInfo{ key, action == GLFW_PRESS, scancode, mods }
+		);
+	}
+
+	void OpenGLWindow::WindowResizeCallback(GLFWwindow* window, int width, int height)
+	{
+		EventManager::DistributeEvent(Events::WINDOW_RESIZE,
+			WindowSizeInfo{ width, height }
+		);
 	}
 }

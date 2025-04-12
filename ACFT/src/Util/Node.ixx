@@ -1,9 +1,6 @@
-module;
-
-#include "stdafx.h"
-#include "ACFT.h"
-
 export module Node;
+
+export import Types;
 
 namespace ACFT
 {

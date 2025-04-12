@@ -15,6 +15,7 @@ namespace ACFT
 	export constexpr unsigned int IndexCountPerPrimitive(Primitive primitive);
 	export constexpr unsigned int VertexCountPerPrimitive(Primitive primitive);
 	
+	//A tool for building a specific shape for render use using vertices.
 	export class Tesselator
 	{
 	public:

@@ -1,6 +1,6 @@
 export module Renderer;
 
-export import <memory>;
+export import Types;
 export import Tesselator;
 export import Sprite;
 
@@ -14,7 +14,7 @@ namespace ACFT
 	export class Renderer
 	{
 	public:
-		static std::shared_ptr<Renderer> GetRenderer(RenderAPI API_type);
+		static Ref<Renderer> GetRenderer();
 
 		virtual void InitContext() = 0;
 

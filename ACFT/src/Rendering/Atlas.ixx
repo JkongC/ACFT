@@ -13,7 +13,14 @@ namespace ACFT
 		~Atlas();
 
 		void InitAtlas(int channels);
+
+		/**
+		 * Adds a image to the atlas as a single texture
+		 * 
+		 * \return The information about the texture in the atlas, UV coords for example.
+		 */
 		TextureInfo AddTexture(Image& img);
+		TextureInfo AddTexture(Image&& img);
 
 	private:
 		unsigned char* m_AtlasData{ nullptr };

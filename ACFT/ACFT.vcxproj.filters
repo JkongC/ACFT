@@ -21,9 +21,6 @@
     <ClCompile Include="src\stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\ACFT.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\Util\Timer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -31,12 +28,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Block\Block.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Event\Event.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Event\EventManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\Tick\TickManager.cpp">
@@ -216,12 +207,27 @@
     <ClCompile Include="src\Types.ixx">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Layer.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Event\Event.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Event\Event.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Event\EventInfo.ixx">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ACFT.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\Timer.h">
@@ -255,12 +261,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Render\Camera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Event\Event.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Event\EventManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="src\Tick\Tick.h">

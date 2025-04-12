@@ -45,6 +45,11 @@ namespace ACFT
 		Vertex& Color(float r, float g, float b, float a);
 		Vertex& Texture(unsigned int texture);
 
+		/**
+		 * Get a specific attribute of the vertex.
+		 * 
+		 * \return The pointer to the actual attribute. Nullptr if it doesn't exist.
+		 */
 		template<typename Attribute>
 		Attribute* GetAttribute() const;
 

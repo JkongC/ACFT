@@ -1,16 +1,18 @@
 module Renderer;
 
+import Types;
 import Log;
+import Config;
 import :OpenGLRenderer;
 
 namespace ACFT
 {
-	std::shared_ptr<Renderer> Renderer::GetRenderer(RenderAPI API_type)
+	Ref<Renderer> Renderer::GetRenderer()
 	{
-		switch (API_type)
+		switch (Config::GetRenderAPI())
 		{
 		case RenderAPI::OpenGL:
-			return std::static_pointer_cast<Renderer>(std::make_shared<OpenGLRenderer>());
+			return RefCast<Renderer>(MakeRef<OpenGLRenderer>());
 			break;
 		default:
 			ACFT_LOG_ERROR("[Renderer] Trying to use an invalid Render API type!");

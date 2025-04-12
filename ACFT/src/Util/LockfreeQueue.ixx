@@ -1,15 +1,12 @@
-module;
-
-#include "stdafx.h"
-#include "ACFT.h"
-
 export module LockfreeQueue;
 
+import <type_traits>;
+import <optional>;
 import Node;
 
 namespace ACFT
 {
-	export template<typename T, template <typename> typename NodeType>
+	export template<typename T, template <typename> typename NodeType = Scope>
 		requires std::is_same_v<NodeType<T>, Ref<T>> || std::is_same_v<NodeType<T>, Scope<T>>
 	class LockfreeQueue
 	{
@@ -31,6 +28,19 @@ namespace ACFT
 			{
 				head.store(old_head->next.load());
 				delete old_head;
+			}
+		}
+
+		template<typename T, typename... Args>
+		void Emplace(Args&&... args)
+		{
+			if constexpr (std::is_same_v<NodeType<T>, Ref<T>>)
+			{
+				Push(MakeRef<T>(std::forward<Args...>(args)...));
+			}
+			else
+			{
+				Push(std::move(MakeScope<T>(std::forward<Args...>(args)...)));
 			}
 		}
 

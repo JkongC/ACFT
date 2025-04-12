@@ -1,11 +1,8 @@
-#include "stdafx.h"
-
-#include "ACFT.h"
-#include "Log/Logger.h"
-
+import Game;
 
 int main()
 {
-	ACFT::Game::Init();
-	return ACFT::Game::End();
+	using namespace ACFT;
+	Game game;
+	return game.Run();
 }
