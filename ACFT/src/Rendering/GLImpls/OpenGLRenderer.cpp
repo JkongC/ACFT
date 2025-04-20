@@ -1,9 +1,5 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 
@@ -13,6 +9,7 @@ import Tesselator;
 import UUID;
 import Log;
 import :GLVertexArray;
+import :GLIndexBuilder;
 
 namespace ACFT
 {	
@@ -44,31 +41,20 @@ namespace ACFT
 		{
 			while (!vbo.Submit(vtx))
 			{
-				glDrawElements(GL_TRIANGLES, vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(tesselator.GetMode()) * IndexCountPerPrimitive(tesselator.GetMode()),
+				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(tesselator.GetMode()) * IndexCountPerPrimitive(tesselator.GetMode())),
 					GL_UNSIGNED_INT, nullptr);
 			}
 		}
 	}
 
+	void OpenGLRenderer::DrawSprite(const Sprite& sprite)
+	{
+
+	}
+
 	RenderAPI OpenGLRenderer::GetRenderAPI()
 	{
 		return RenderAPI::OpenGL;
-	}
-
-	template<Primitive primitive>
-	void OpenGLRenderer::InitBuffers(const VertexBufferLayout& layout)
-	{
-		IndexBuffer index;
-		index.GenerateByMode<primitive>();
-		this->m_VAOs.try_emplace(primitive, layout, std::move(index));
-		if constexpr (primitive == Primitive::triangle_fan)
-		{
-			this->m_VBOs.try_emplace(Primitive::triangle_fan, 2 + 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(Primitive::triangle_fan));
-		}
-		else
-		{
-			this->m_VBOs.try_emplace(primitive, 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(primitive));
-		}
 	}
 
 	void OpenGLRenderer::InitContext()
@@ -96,7 +82,7 @@ namespace ACFT
 			vao.Bind();
 			vbo.Bind();
 
-			glDrawElements(GL_TRIANGLES, vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(primitive) * IndexCountPerPrimitive(primitive),
+			glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(primitive) * IndexCountPerPrimitive(primitive)),
 				GL_UNSIGNED_INT, nullptr);
 		}
 	}

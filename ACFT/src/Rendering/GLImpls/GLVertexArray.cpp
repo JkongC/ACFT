@@ -1,9 +1,5 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 
@@ -36,8 +32,8 @@ namespace GLImplementations
 		for (unsigned int i = 0; i < elements.size(); i++) {
 			const auto& element = elements[i];
 			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, element.count, element.type,
-				element.normalized, layout.GetStride(), reinterpret_cast<const void*>(offset));
+			glVertexAttribPointer(i, static_cast<GLsizei>(element.count), element.type,
+				element.normalized, static_cast<GLsizei>(layout.GetStride()), reinterpret_cast<const void*>(offset));
 			offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
 		}
 		Unbind();

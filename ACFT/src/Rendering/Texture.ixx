@@ -1,3 +1,7 @@
+module;
+
+#include "Platform.h"
+
 export module Texture;
 
 import <utility>;
@@ -24,7 +28,7 @@ namespace ACFT
 	export class Texture
 	{
 	public:
-		Texture(const TextureInfo& info, Ref<Atlas> atlas)
+		ACFT_API Texture(const TextureInfo& info, Ref<Atlas> atlas)
 			: m_UV(info.uv_coords), m_Width(info.width), m_Height(info.height), m_Atlas(atlas)
 		{ }
 

@@ -1,3 +1,3 @@
 export module Base.entt;
 
-export import "entt/entity/registry.hpp";
+export import <entt/entity/registry.hpp>;

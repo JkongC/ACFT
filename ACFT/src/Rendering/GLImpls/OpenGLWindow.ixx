@@ -1,16 +1,11 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 
 export module Window:OpenGLWindow;
 
 import Window;
-import <functional>;
 
 namespace ACFT
 {
@@ -19,6 +14,10 @@ namespace ACFT
 	public:
 		OpenGLWindow();
 		~OpenGLWindow();
+
+		virtual bool ShouldClose() override;
+		
+		virtual void PollEvents() override;
 
 	private:
 		static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);

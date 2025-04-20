@@ -106,7 +106,7 @@ namespace ACFT
 		return m_VertexList;
 	}
 
-	inline Primitive Tesselator::GetMode() const
+	Primitive Tesselator::GetMode() const
 	{
 		return m_VertexMode;
 	}

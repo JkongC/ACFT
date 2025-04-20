@@ -1,36 +1,48 @@
-export module Event;
+module;
 
-import Base.entt;
+#include <entt/entity/registry.hpp>
+
+#include "Platform.h"
+
+export module Event;
 
 export import EventInfo;
 
 import <string>;
+import <array>;
+import <mutex>;
 
 import LockfreeQueue;
 import Types;
+import Log;
 
 namespace ACFT
 {
+	class Event;
 	class EventRegistry;
 	class EventTypeBuilder;
 	class EventRegistry;
+	class EventManager;
 
 	export class EventType
 	{
 	public:
 		template<typename Info>
-		bool HasInfo();
+		bool HasInfo()
+		{
+			return EventRegistry::GetRegistry().try_get<Info>(m_Identifier) != nullptr;
+		}
 
-		bool IsSame(Ref<EventType> type);
+		ACFT_API bool IsSame(Ref<EventType> type);
 
 		inline const std::string& GetName() const { return m_Name; }
 
-		~EventType();
+		ACFT_API ~EventType();
 	
 	private:
 		friend class EventRegistry;
 		friend class EventTypeBuilder;
-		EventType(entt::entity);
+		ACFT_API EventType(entt::entity);
 
 	private:
 		entt::entity m_Identifier;
@@ -41,17 +53,36 @@ namespace ACFT
 	export class EventTypeBuilder
 	{
 	public:
-		EventTypeBuilder();
+		ACFT_API EventTypeBuilder();
 
 		template<typename Info>
-		EventTypeBuilder& Info();
+		EventTypeBuilder& Info()
+		{
+			if (m_BuildFunc)
+			{
+				m_BuildFunc = [prev_func = std::move(m_BuildFunc)](entt::entity type) -> void
+					{
+						prev_func(type);
+						EventRegistry::GetRegistry().emplace<Info>(type);
+					};
+			}
+			else
+			{
+				m_BuildFunc = [](entt::entity type) -> void
+					{
+						EventRegistry::GetRegistry().emplace<Info>(type);
+					};
+			}
+
+			return *this;
+		}
 
 		/**
 		 * Assign a name to the event type, so it can be displayed as a string.
 		 * 
 		 * \param name The name to be assign.
 		 */
-		EventTypeBuilder& Name(const std::string& name);
+		ACFT_API EventTypeBuilder& Name(const std::string& name);
 
 	private:
 		friend class EventRegistry;
@@ -61,77 +92,147 @@ namespace ACFT
 		std::string m_NameBuffer;
 	};
 
+	export class EventRegistry
+	{
+	public:
+		static ACFT_API const Ref<EventType> Register(const EventTypeBuilder& type_builder);
+
+		static ACFT_API bool AssertTypeExists(const Ref<EventType>& type);
+
+		static ACFT_API const std::vector<Ref<EventType>>& GetAllTypes();
+	
+	private:
+		friend class EventType;
+		friend class EventTypeBuilder;
+		EventRegistry() = default;
+		static ACFT_API entt::registry& GetRegistry();
+
+	private:
+		static inline entt::registry s_Registry;
+		static inline std::vector<Ref<EventType>> s_Types;
+	};
+
 	export class Event
 	{
 	public:
-		Event(const Ref<EventType>& type);
-		~Event();
+		ACFT_API Event(const Ref<EventType>& type);
+		ACFT_API ~Event();
 
 		template<typename T>
-		void AttachInfo(T&& info);
+		void AttachInfo(T&& info)
+		{
+			if (!EventRegistry::AssertTypeExists(GetType()) || !AssertCanAttach<T>())
+				return;
+
+			EventManager::m_AllEvents.emplace<T>(m_Identifier, std::forward<T>(info));
+		}
+
 		template<typename T, typename... Args>
-		void AttachInfo(Args&&... args);
+		void AttachInfo(Args&&... args)
+		{
+			if (!EventRegistry::AssertTypeExists(GetType()) || !AssertCanAttach<T>())
+				return;
+
+			EventManager::m_AllEvents.emplace<T>(m_Identifier, std::forward<Args>(args)...);
+		}
 
 		/**
 		 * Get the info of an event.
-		 * 
+		 *
 		 * \return The pointer to the actual info. CAN BE NULLPTR.
 		 */
 		template<typename T>
-		T* GetInfo();
+		T* GetInfo()
+		{
+			return EventManager::m_AllEvents.try_get<T>(m_Identifier);
+		}
 
 		// Make the info of the event CONST.
-		void FreezeInfo();
+		ACFT_API void Const();
 
 		const Ref<EventType>& GetType() const { return m_Type; }
 
 	private:
 		template<typename T>
-		bool AssertCanAttach();
+		bool AssertCanAttach()
+		{
+			if (!m_Mutable)
+			{
+				ACFT_LOG_WARN("[Event] Trying to modify a const event's info. Doing nothing instead.");
+				return false;
+			}
+
+			if (!m_Type->HasInfo<T>())
+			{
+				ACFT_LOG_WARN("[Event] Trying to attach info to an incorrect type of event. Doing nothing instead.");
+				return false;
+			}
+
+			return true;
+		}
 
 	private:
 		entt::entity m_Identifier;
 		Ref<EventType> m_Type;
 		bool m_Mutable;
 	};
-
-	export class EventRegistry
-	{
-	public:
-		static const Ref<EventType> Register(const EventTypeBuilder& type_builder);
-
-		static bool AssertTypeExists(const Ref<EventType>& type);
 	
-	private:
-		friend class EventType;
-		EventRegistry() = default;
-		static entt::registry& GetRegistry();
-
-	private:
-		static inline entt::registry m_Registry;
+	
+	export enum EventManagerType
+	{
+		global = 0, layer, _Placeholder
 	};
 	
-	using SubscriberFunc = std::function<void(Ref<Event>)>;
+	export using SubscriberFunc = std::function<void(Ref<Event>)>;
 	export class EventManager
 	{
 	public:
-		static void JoinEvent(Ref<Event> event);
-		static Ref<Event> FetchEvent();
+		static ACFT_API EventManager& Global();
+		
+		void JoinEvent(Ref<Event> event);
+		Ref<Event> FetchEvent();
 
-		static void DistributeEvent(Ref<Event> event);
+		ACFT_API void DistributeEvent(Ref<Event> event);
+
 		template<typename... Infos>
-		static void DistributeEvent(const Ref<EventType>& type, Infos&&... infos);
+		void DistributeEvent(const Ref<EventType>& type, Infos&&... infos)
+		{
+			Ref<Event> event = MakeRef<Event>(type);
+			(event->AttachInfo<Infos>(std::forward<Infos>(infos)), ...);
+			DistributeEvent(event);
+		}
 		
 		template<typename Subscriber>
-		static void Subscribe(Ref<Subscriber> subscriber, const Ref<EventType>& type, SubscriberFunc callback);
-		template<typename Subscriber>
-		static void Unsubscribe(Ref<Subscriber> subscriber, const Ref<EventType>& type);
+		void Subscribe(Ref<Subscriber> subscriber, const Ref<EventType>& type, SubscriberFunc callback)
+		{
+			if (!EventRegistry::AssertTypeExists(type))
+				return;
 
+			auto& map = m_Subscribers[type];
+			map[subscriber] = std::move(callback);
+		}
+
+		template<typename Subscriber>
+		void Unsubscribe(Ref<Subscriber> subscriber, const Ref<EventType>& type)
+		{
+			if (!EventRegistry::AssertTypeExists(type))
+				return;
+
+			auto& map = m_Subscribers[type];
+			auto it = map.find(subscriber);
+			if (it != map.end())
+				map.erase(it);
+		}
+
+		ACFT_API EventManager() = default;
+		ACFT_API EventManager& operator=(const EventManager&) = delete;
+	
 	private:
 		friend class Event;
-		static inline LockfreeQueue<Event> m_EventQueue;
-		static inline std::unordered_map<Ref<EventType>, std::unordered_map<View<void>, SubscriberFunc, ViewHash<void>, ViewEqual<void>>> m_Subscribers;
+		LockfreeQueue<Event> m_EventQueue;
+		std::unordered_map<Ref<EventType>, std::unordered_map<View<void>, SubscriberFunc, ViewHash<void>, ViewEqual<void>>> m_Subscribers;
 		static inline entt::registry m_AllEvents;
+		std::mutex m_Mtx;
 	};
 
 	export namespace Events

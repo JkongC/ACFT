@@ -1,6 +1,9 @@
-export module Camera;
+module;
 
-import Base.glm;
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+export module Camera;
 
 namespace ACFT
 {

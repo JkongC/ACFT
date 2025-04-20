@@ -1,10 +1,14 @@
+module;
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 export module Renderer:GLShader;
 
 import <string>;
 import <unordered_map>;
-import Base.glm;
 
-namespace GLImplementions
+namespace GLImplementations
 {
 	struct ShaderSources {
 		std::string vertex;

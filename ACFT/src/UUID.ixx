@@ -1,3 +1,7 @@
+module;
+
+#include "Platform.h"
+
 export module UUID;
 
 import <cstdint>;
@@ -5,7 +9,7 @@ import <functional>;
 
 namespace ACFT
 {
-	export class UUID
+	export class ACFT_API UUID
 	{
 	public:
 		UUID();

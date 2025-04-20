@@ -1,14 +1,11 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
-#define STB_IMAGE_IMPLEMENTATION
 #include <stbi/stb_image.h>
 
 #include <glew.h>
 #include <glfw3.h>
+
+#include <entt/entity/registry.hpp>
 
 #include <atomic>
 
@@ -67,37 +64,47 @@ namespace ACFT
 			glfwTerminate();
 	}
 
+	bool OpenGLWindow::ShouldClose()
+	{
+		return glfwWindowShouldClose(m_RawWindow);
+	}
+
+	void OpenGLWindow::PollEvents()
+	{
+		glfwPollEvents();
+	}
+
 	void OpenGLWindow::MousePosCallback(GLFWwindow* window, double xpos, double ypos)
 	{
-		EventManager::DistributeEvent(Events::MOUSE_POS,
+		EventManager::Global().DistributeEvent(Events::MOUSE_POS,
 			MousePosInfo{ xpos, ypos }
 		);
 	}
 	
 	void OpenGLWindow::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 	{
-		EventManager::DistributeEvent(Events::MOUSE_BUTTON,
+		EventManager::Global().DistributeEvent(Events::MOUSE_BUTTON,
 			MouseButtonInfo{ button, action == GLFW_PRESS, mods }
 		);
 	}
 
 	void OpenGLWindow::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 	{
-		EventManager::DistributeEvent(Events::SCROLL,
+		EventManager::Global().DistributeEvent(Events::SCROLL,
 			ScrollInfo{ xoffset, yoffset }
 		);
 	}
 
 	void OpenGLWindow::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-		EventManager::DistributeEvent(Events::KEY,
+		EventManager::Global().DistributeEvent(Events::KEY,
 			KeyInfo{ key, action == GLFW_PRESS, scancode, mods }
 		);
 	}
 
 	void OpenGLWindow::WindowResizeCallback(GLFWwindow* window, int width, int height)
 	{
-		EventManager::DistributeEvent(Events::WINDOW_RESIZE,
+		EventManager::Global().DistributeEvent(Events::WINDOW_RESIZE,
 			WindowSizeInfo{ width, height }
 		);
 	}

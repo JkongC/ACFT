@@ -1,14 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -19,49 +11,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{83DA817C-6F11-830D-18FE-68100414FF0E}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c27e80b0-b2e2-4329-aa50-026697de0796}</ProjectGuid>
     <RootNamespace>ACFT</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -71,323 +41,183 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin-int\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(ProjectDir)vendor\entt\src</IncludePath>
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\Debug-windows-x86_64\ACFT\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\ACFT\</IntDir>
+    <TargetName>ACFT</TargetName>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin-int\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor;$(ProjectDir)vendor\spdlog\include;$(ProjectDir)vendor\glm;$(ProjectDir)vendor\entt\src</IncludePath>
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\Release-windows-x86_64\ACFT\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\ACFT\</IntDir>
+    <TargetName>ACFT</TargetName>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>ACFT_EXPORTS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor;vendor\glm;vendor\entt\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalOptions>/utf-8 /Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <EnableModules>false</EnableModules>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>false</Profile>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>MSVCRT;LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;spdlog.lib;fmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\bin\Debug-windows-x86_64\ACFT\ACFT.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\bin\Debug-windows-x86_64\Sandbox (mkdir ..\bin\Debug-windows-x86_64\Sandbox)
+copy /B /Y ..\bin\Debug-windows-x86_64\ACFT\ACFT.dll ..\bin\Debug-windows-x86_64\Sandbox\$(TargetFileName)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>ACFT_EXPORTS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor;vendor\glm;vendor\entt\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <EnableModules>false</EnableModules>
-      <CompileAsWinRT>false</CompileAsWinRT>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>false</Profile>
-      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;spdlog.lib;fmt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ImportLibrary>..\bin\Release-windows-x86_64\ACFT\ACFT.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>IF NOT EXIST ..\bin\Release-windows-x86_64\Sandbox (mkdir ..\bin\Release-windows-x86_64\Sandbox)
+copy /B /Y ..\bin\Release-windows-x86_64\ACFT\ACFT.dll ..\bin\Release-windows-x86_64\Sandbox\$(TargetFileName)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Base.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Base_entt.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Base_glm.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Base_std.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Block\Blocks.cpp" />
-    <ClCompile Include="src\Block\BlockState.cpp" />
-    <ClCompile Include="src\Chunk\Chunk.cpp" />
-    <ClCompile Include="src\Chunk\ChunkManager.cpp" />
-    <ClCompile Include="src\Components.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Config.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Config.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Controller\InputQuery.cpp" />
-    <ClCompile Include="src\Event\Event.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Event\Event.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Event\EventInfo.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Game.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Game.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Log\Log.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Atlas.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Atlas.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Camera.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Camera.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLShader.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Image.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Image.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Layer.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Renderer.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Renderer.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Shader.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Sprite.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Sprite.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Tesselator.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Tesselator.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Texture.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Vertex.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Vertex.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Window.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Window.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Types.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Util\Direction.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Util\LockfreeQueue.ixx">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</PreprocessToFile>
-      <PreprocessSuppressLineNumbers Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</PreprocessSuppressLineNumbers>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Util\Node.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Util\Util.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\UUID.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\UUID.ixx">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Block\Block.cpp" />
-    <ClCompile Include="src\Entry.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\Log\Log.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="src\ResourceManager.cpp" />
-    <ClCompile Include="src\Serialization\Serializer.cpp" />
-    <ClCompile Include="src\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:preprocessor %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="src\Tick\Tick.cpp" />
-    <ClCompile Include="src\Tick\TickManager.cpp" />
-    <ClCompile Include="src\Util\Timer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\Block\Blocks.h" />
-    <ClInclude Include="src\Block\BlockState.h" />
-    <ClInclude Include="src\Chunk\Chunk.h" />
-    <ClInclude Include="src\Chunk\ChunkManager.h" />
-    <ClInclude Include="src\Controller\InputQuery.h" />
+    <ClInclude Include="src\ACFTEngine.h" />
+    <ClInclude Include="src\Platform.h" />
     <ClInclude Include="src\Rendering\GLImpls\gldbg.h" />
-    <ClInclude Include="src\Render\Camera.h" />
-    <ClInclude Include="src\Render\IndexBuffer.h" />
-    <ClInclude Include="src\Block\Block.h" />
-    <ClInclude Include="src\Render\RenderCommand.h" />
-    <ClInclude Include="src\Render\RenderQueue.h" />
-    <ClInclude Include="src\Render\RenderSystem.h" />
-    <ClInclude Include="src\Render\Shader.h" />
-    <ClInclude Include="src\Render\Sky\Sky.h" />
-    <ClInclude Include="src\Render\Texture.h" />
-    <ClInclude Include="src\Render\VertexBuffer.h" />
-    <ClInclude Include="src\Render\VertexBufferLayout.h" />
-    <ClInclude Include="src\Render\Voxel.h" />
-    <ClInclude Include="src\ResourceManager.h" />
-    <ClInclude Include="src\Serialization\Serializer.h" />
-    <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\Tick\Tick.h" />
-    <ClInclude Include="src\Tick\TickManager.h" />
-    <ClInclude Include="src\Util\MathHelper.h" />
-    <ClInclude Include="src\Util\Timer.h" />
-    <ClInclude Include="src\Render\VertexArray.h" />
-    <ClInclude Include="src\Util\Vec.h" />
-    <ClCompile Include="vendor\entt\src\entt\entity\registry.hpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="vendor\glm\glm\glm.hpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="vendor\glm\glm\gtc\matrix_transform.hpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\sky.shader" />
-    <None Include="shader\basic.shader" />
+    <ClCompile Include="src\ACFT.ixx" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Application.ixx">
+      <ObjectFileName>$(IntDir)\Application1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Base_entt.ixx" />
+    <ClCompile Include="src\Base_glm.ixx" />
+    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\Config.ixx">
+      <ObjectFileName>$(IntDir)\Config1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Controller\Input.cpp" />
+    <ClCompile Include="src\Controller\Input.ixx">
+      <ObjectFileName>$(IntDir)\Input1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Controller\KeyInput.ixx" />
+    <ClCompile Include="src\Controller\MouseInput.ixx" />
+    <ClCompile Include="src\Event\Event.cpp" />
+    <ClCompile Include="src\Event\Event.ixx">
+      <ObjectFileName>$(IntDir)\Event1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Event\EventInfo.ixx" />
+    <ClCompile Include="src\Log\Log.cpp" />
+    <ClCompile Include="src\Log\Log.ixx">
+      <ObjectFileName>$(IntDir)\Log1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Atlas.cpp" />
+    <ClCompile Include="src\Rendering\Atlas.ixx">
+      <ObjectFileName>$(IntDir)\Atlas1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Rendering\Camera.ixx">
+      <ObjectFileName>$(IntDir)\Camera1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.ixx">
+      <ObjectFileName>$(IntDir)\GLIndexBuffer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.ixx">
+      <ObjectFileName>$(IntDir)\GLIndexBuilder1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLShader.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
+      <ObjectFileName>$(IntDir)\GLShader1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.ixx">
+      <ObjectFileName>$(IntDir)\GLVertexArray1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.ixx">
+      <ObjectFileName>$(IntDir)\GLVertexBuffer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.ixx">
+      <ObjectFileName>$(IntDir)\OpenGLRenderer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.ixx">
+      <ObjectFileName>$(IntDir)\OpenGLWindow1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Image.cpp" />
+    <ClCompile Include="src\Rendering\Image.ixx">
+      <ObjectFileName>$(IntDir)\Image1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Layer.cpp" />
+    <ClCompile Include="src\Rendering\Layer.ixx">
+      <ObjectFileName>$(IntDir)\Layer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Renderer.cpp" />
+    <ClCompile Include="src\Rendering\Renderer.ixx">
+      <ObjectFileName>$(IntDir)\Renderer1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Shader.ixx" />
+    <ClCompile Include="src\Rendering\Sprite.cpp" />
+    <ClCompile Include="src\Rendering\Sprite.ixx">
+      <ObjectFileName>$(IntDir)\Sprite1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Tesselator.cpp" />
+    <ClCompile Include="src\Rendering\Tesselator.ixx">
+      <ObjectFileName>$(IntDir)\Tesselator1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Texture.ixx" />
+    <ClCompile Include="src\Rendering\Vertex.cpp" />
+    <ClCompile Include="src\Rendering\Vertex.ixx">
+      <ObjectFileName>$(IntDir)\Vertex1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Window.cpp" />
+    <ClCompile Include="src\Rendering\Window.ixx">
+      <ObjectFileName>$(IntDir)\Window1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Types.ixx" />
+    <ClCompile Include="src\UUID.cpp" />
+    <ClCompile Include="src\UUID.ixx">
+      <ObjectFileName>$(IntDir)\UUID1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Util\Direction.ixx" />
+    <ClCompile Include="src\Util\LockfreeQueue.ixx" />
+    <ClCompile Include="src\Util\MathHelper.ixx" />
+    <ClCompile Include="src\Util\Node.ixx" />
+    <ClCompile Include="src\Util\RefCount.cpp" />
+    <ClCompile Include="src\Util\RefCount.ixx">
+      <ObjectFileName>$(IntDir)\RefCount1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="src\Util\Timer.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

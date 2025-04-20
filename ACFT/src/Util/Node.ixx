@@ -1,5 +1,7 @@
 export module Node;
 
+export import <atomic>;
+
 export import Types;
 
 namespace ACFT

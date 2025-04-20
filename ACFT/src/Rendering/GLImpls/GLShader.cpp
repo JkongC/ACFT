@@ -1,23 +1,22 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 #include <malloc.h>
 #include <sstream>
+#include <fstream>
 
-#include "gldbg.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 module Renderer:GLShader;
 
 import <string>;
-import <fstream>;
 import Log;
 
-namespace GLImplementions
+#include "gldbg.h"
+
+namespace GLImplementations
 {
 	Shader::Shader(const std::string& filepath)
 		: m_FilePath(filepath), m_ShaderID(0)

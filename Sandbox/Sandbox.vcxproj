@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Sandbox</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\Debug-windows-x86_64\Sandbox\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\Sandbox\</IntDir>
+    <TargetName>Sandbox</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\bin\Release-windows-x86_64\Sandbox\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\Sandbox\</IntDir>
+    <TargetName>Sandbox</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>..\ACFT\src;..\ACFT\vendor;..\ACFT\vendor\glm;..\ACFT\vendor\entt\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /B /Y ..\lib\*.dll ..\bin\Debug-windows-x86_64\Sandbox</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>..\ACFT\src;..\ACFT\vendor;..\ACFT\vendor\glm;..\ACFT\vendor\entt\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /B /Y ..\lib\*.dll ..\bin\Release-windows-x86_64\Sandbox</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ACFT\src\ACFT.ixx" />
+    <ClCompile Include="..\ACFT\src\Application.ixx" />
+    <ClCompile Include="..\ACFT\src\Base_entt.ixx" />
+    <ClCompile Include="..\ACFT\src\Base_glm.ixx" />
+    <ClCompile Include="..\ACFT\src\Config.ixx" />
+    <ClCompile Include="..\ACFT\src\Controller\Input.ixx" />
+    <ClCompile Include="..\ACFT\src\Controller\KeyInput.ixx" />
+    <ClCompile Include="..\ACFT\src\Controller\MouseInput.ixx" />
+    <ClCompile Include="..\ACFT\src\Event\Event.ixx" />
+    <ClCompile Include="..\ACFT\src\Event\EventInfo.ixx" />
+    <ClCompile Include="..\ACFT\src\Log\Log.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Atlas.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Camera.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLIndexBuffer.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLIndexBuilder.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLShader.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexArray.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexBuffer.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\OpenGLRenderer.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\OpenGLWindow.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Image.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Layer.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Renderer.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Shader.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Sprite.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Tesselator.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Texture.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Vertex.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\Window.ixx" />
+    <ClCompile Include="..\ACFT\src\Types.ixx" />
+    <ClCompile Include="..\ACFT\src\UUID.ixx" />
+    <ClCompile Include="..\ACFT\src\Util\Direction.ixx" />
+    <ClCompile Include="..\ACFT\src\Util\LockfreeQueue.ixx" />
+    <ClCompile Include="..\ACFT\src\Util\MathHelper.ixx" />
+    <ClCompile Include="..\ACFT\src\Util\Node.ixx" />
+    <ClCompile Include="..\ACFT\src\Util\RefCount.ixx" />
+    <ClCompile Include="..\ACFT\src\Util\Timer.ixx" />
+    <ClCompile Include="src\Sandbox.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ACFT\ACFT.vcxproj">
+      <Project>{83DA817C-6F11-830D-18FE-68100414FF0E}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

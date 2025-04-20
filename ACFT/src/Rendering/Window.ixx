@@ -1,3 +1,7 @@
+module;
+
+#include "Platform.h"
+
 export module Window;
 
 import <unordered_map>;
@@ -10,13 +14,16 @@ namespace ACFT
 	export class Window
 	{
 	public:
-		static Ref<Window> InitWindow();
+		static ACFT_API Ref<Window> InitWindow();
 		
-		inline int GetWidth() const { return m_Width; }
-		inline void SetWidth(int width) { m_Width = width; }
+		ACFT_API inline int GetWidth() const { return m_Width; }
+		ACFT_API inline void SetWidth(int width) { m_Width = width; }
 
-		inline int GetHeight() const { return m_Height; }
-		inline void SetHeight(int height) { m_Height = height; }
+		ACFT_API inline int GetHeight() const { return m_Height; }
+		ACFT_API inline void SetHeight(int height) { m_Height = height; }
+
+		ACFT_API virtual bool ShouldClose() = 0;
+		ACFT_API virtual void PollEvents() = 0;
 
 	protected:
 		Window() = default;

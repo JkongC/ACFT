@@ -1,11 +1,10 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 export module Renderer:OpenGLRenderer;
 
@@ -15,7 +14,6 @@ import UUID;
 import <vector>;
 import <string>;
 import <unordered_map>;
-import Base.glm;
 import :GLVertexArray;
 
 namespace ACFT
@@ -44,7 +42,20 @@ namespace ACFT
 
 	private:
 		template<Primitive primitive>
-		void InitBuffers(const VertexBufferLayout& layout);
+		void InitBuffers(const VertexBufferLayout& layout)
+		{
+			IndexBuffer index;
+			index.GenerateByMode<primitive>();
+			this->m_VAOs.try_emplace(primitive, layout, std::move(index));
+			if constexpr (primitive == Primitive::triangle_fan)
+			{
+				this->m_VBOs.try_emplace(Primitive::triangle_fan, 2 + 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(Primitive::triangle_fan));
+			}
+			else
+			{
+				this->m_VBOs.try_emplace(primitive, 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(primitive));
+			}
+		}
 
 	private:
 		std::unordered_map<Primitive, VertexArray> m_VAOs;

@@ -1,11 +1,9 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
+
+#include <entt/entity/registry.hpp>
 
 module Renderer:GLVertexBuffer;
 
@@ -59,16 +57,6 @@ namespace GLImplementations
 
 		this->m_CurrentVertexCount++;
 		return true;
-	}
-
-	template<typename Attribute>
-	void VertexBuffer::PushSingleAttribute(const ACFT::Vertex& vtx)
-	{
-		if (Attribute* attr = vtx.GetAttribute<Attribute>())
-		{
-			glBufferSubData(GL_ARRAY_BUFFER, GetCurrentBufferSize(), sizeof(Attribute), attr);
-			this->m_CurrentSize += sizeof(Attribute);
-		}
 	}
 
 	void VertexBuffer::Clear()

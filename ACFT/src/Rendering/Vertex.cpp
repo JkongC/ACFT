@@ -42,10 +42,4 @@ namespace ACFT
 		this->m_VertexSize += sizeof(VertexTexture);
 		return *this;
 	}
-
-	template<typename Attribute>
-	Attribute* Vertex::GetAttribute() const
-	{
-		return Vertex::g_Manager.get<Attribute>(this->m_InternalID);
-	}
 }

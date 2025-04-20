@@ -1,9 +1,5 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 
@@ -35,7 +31,14 @@ namespace GLImplementations
 
 	private:
 		template<typename Attribute>
-		void PushSingleAttribute(const ACFT::Vertex& vtx);
+		void PushSingleAttribute(const ACFT::Vertex& vtx)
+		{
+			if (Attribute* attr = vtx.GetAttribute<Attribute>())
+			{
+				glBufferSubData(GL_ARRAY_BUFFER, GetCurrentBufferSize(), sizeof(Attribute), attr);
+				this->m_CurrentSize += sizeof(Attribute);
+			}
+		}
 
 	private:
 		unsigned int m_BufferID;

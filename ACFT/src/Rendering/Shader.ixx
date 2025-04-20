@@ -1,6 +1,10 @@
+module;
+
+#include "Platform.h"
+
 export module Shader;
 
-import <filesystem>;
+export import <filesystem>;
 
 namespace ACFT
 {
@@ -17,7 +21,7 @@ namespace ACFT
 	export class Shader
 	{
 	public:
-		Shader(std::filesystem::path shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed)
+		ACFT_API Shader(std::filesystem::path shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed)
 			: m_Path(shader_path), m_Lang(language), m_Type(type)
 		{}
 

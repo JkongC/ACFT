@@ -1,6 +1,8 @@
-export module Types;
+module;
 
-import <memory>;
+#include <memory>
+
+export module Types;
 
 namespace ACFT
 {
