@@ -1,6 +1,7 @@
 module;
 
 #include <memory>
+#include <variant>
 
 export module Types;
 
@@ -75,4 +76,6 @@ namespace ACFT
 	{
 		return std::static_pointer_cast<T1>(scope);
 	}
+
+	export using RenderObjectIdentifier = std::variant<std::monostate, unsigned int>;
 }

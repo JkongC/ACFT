@@ -6,7 +6,6 @@ export module Window;
 
 import <unordered_map>;
 import <functional>;
-import Renderer;
 import Types;
 
 namespace ACFT

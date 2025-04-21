@@ -6,9 +6,8 @@ import Image;
 
 namespace ACFT
 {
-	Atlas::Atlas(int horizontal_textures, int vertical_textures, int ppt)
+	Atlas::Atlas(int horizontal_textures, int vertical_textures)
 		: m_MaxHorizontalTextures(horizontal_textures), m_MaxVerticalTextures(vertical_textures)
-		, m_PixelPerTexture(ppt)
 	{
 
 	}
@@ -21,8 +20,8 @@ namespace ACFT
 	void Atlas::InitAtlas(int channels)
 	{
 		this->m_AtlasData = new unsigned char[
-			m_MaxHorizontalTextures * m_PixelPerTexture *
-				m_MaxVerticalTextures * m_PixelPerTexture * channels];
+			m_MaxHorizontalTextures * m_WidthPerTexture *
+				m_MaxVerticalTextures * m_HeightPerTexture * channels];
 		this->m_Channels = channels;
 	}
 
@@ -33,9 +32,14 @@ namespace ACFT
 	
 	TextureInfo Atlas::AddTexture(Image& img)
 	{
-		if (img.GetWidth() != m_PixelPerTexture || img.GetHeight() != m_PixelPerTexture)
+		if (m_WidthPerTexture == 0)
+			m_WidthPerTexture = img.GetWidth();
+		if (m_HeightPerTexture == 0)
+			m_HeightPerTexture = img.GetHeight();
+
+		else if (img.GetWidth() != m_WidthPerTexture || img.GetHeight() != m_HeightPerTexture)
 		{
-			ACFT_LOG_ERROR("Inconsistent pixel per texture in atlas is currently not supported!");
+			ACFT_LOG_ERROR("Inconsistent width/height in atlas is currently not supported!");
 			return {};
 		}
 
@@ -57,7 +61,7 @@ namespace ACFT
 
 		const unsigned char* img_data = img.GetInternalData();
 		size_t atl_col_offset = static_cast<size_t>(m_CurrentColumn) * m_Channels;
-		size_t atl_per_row_offset = static_cast<size_t>(m_MaxHorizontalTextures) * m_PixelPerTexture * m_Channels;
+		size_t atl_per_row_offset = static_cast<size_t>(m_MaxHorizontalTextures) * m_WidthPerTexture * m_Channels;
 		for (size_t row = 0; row < img.GetHeight(); row++)
 		{
 			size_t atl_row_offset = atl_per_row_offset * (m_CurrentRow + row);
@@ -79,6 +83,52 @@ namespace ACFT
 		}
 		else m_CurrentColumn++;
 
+		m_TempInfos.push_back(info);
+		m_CurrentImgCount++;
+
 		return info;
+	}
+
+	int Atlas::GetTextureCount()
+	{
+		return m_CurrentImgCount;
+	}
+
+	const TextureInfo& Atlas::GetTextureInfo(int idx)
+	{
+		static TextureInfo empty{};
+		
+		if (idx >= m_TempInfos.size())
+		{
+			ACFT_LOG_WARN("[Atlas] Index exceeded while trying to get TextureInfo. Returning empty info.");
+			return empty;
+		}
+
+		return m_TempInfos.at(idx);
+	}
+
+	const unsigned char* Atlas::GetInternalData()
+	{
+		return m_AtlasData;
+	}
+
+	int Atlas::GetTextureWidth()
+	{
+		return m_WidthPerTexture;
+	}
+
+	int Atlas::GetTextureHeight()
+	{
+		return m_HeightPerTexture;
+	}
+
+	int Atlas::GetTotalWidth()
+	{
+		return m_WidthPerTexture * m_MaxHorizontalTextures;
+	}
+
+	int Atlas::GetTotalHeight()
+	{
+		return m_HeightPerTexture * m_MaxVerticalTextures;
 	}
 }

@@ -5,6 +5,7 @@ module;
 export module Texture;
 
 import <utility>;
+import <variant>;
 import Types;
 
 namespace ACFT
@@ -25,17 +26,9 @@ namespace ACFT
 	};
 	
 	class Atlas;
-	export class Texture
+	export struct Texture
 	{
-	public:
-		ACFT_API Texture(const TextureInfo& info, Ref<Atlas> atlas)
-			: m_UV(info.uv_coords), m_Width(info.width), m_Height(info.height), m_Atlas(atlas)
-		{ }
-
-	private:
-		TextureUV m_UV;
-		int m_Width;
-		int m_Height;
-		Ref<Atlas> m_Atlas;
+		TextureInfo info;
+		RenderObjectIdentifier m_Identifier;
 	};
 }

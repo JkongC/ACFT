@@ -10,6 +10,7 @@ import UUID;
 import Log;
 import :GLVertexArray;
 import :GLIndexBuilder;
+import :GLTexture;
 
 namespace ACFT
 {	
@@ -47,9 +48,9 @@ namespace ACFT
 		}
 	}
 
-	void OpenGLRenderer::DrawSprite(const Sprite& sprite)
+	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos)
 	{
-
+		
 	}
 
 	RenderAPI OpenGLRenderer::GetRenderAPI()
@@ -95,5 +96,21 @@ namespace ACFT
 	void OpenGLRenderer::SetPrimitive(Primitive primitive)
 	{
 		this->m_CurrentPrimitive = primitive;
+	}
+
+	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Atlas> atlas)
+	{
+		GLTexture* texture = new GLTexture(atlas);
+		unsigned int id = texture->GetID();
+		this->m_TextureCache.insert({ id, std::move(*texture) });
+		return id;
+	}
+
+	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Image> img)
+	{
+		GLTexture* texture = new GLTexture(img);
+		unsigned int id = texture->GetID();
+		this->m_TextureCache.insert({ id, std::move(*texture) });
+		return id;
 	}
 }

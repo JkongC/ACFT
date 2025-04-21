@@ -8,13 +8,17 @@ module;
 
 export module Renderer:OpenGLRenderer;
 
-import Renderer;
-import Tesselator;
-import UUID;
 import <vector>;
 import <string>;
 import <unordered_map>;
+
+import Renderer;
+import Tesselator;
+import Atlas;
+import UUID;
+import Window;
 import :GLVertexArray;
+import :GLTexture;
 
 namespace ACFT
 {
@@ -26,13 +30,16 @@ namespace ACFT
 	public:
 		void InitContext() override;
 		void DrawTesselator(const Tesselator& tesselator) override;
-		void DrawSprite(const Sprite& sprite) override;
+		void DrawSprite(const Sprite& sprite, float xpos, float ypos) override;
 
 		void BeginScene() override;
 		void EndScene() override;
 
 		void SetClearColor(float r, float g, float b, float a) override;
 		void SetPrimitive(Primitive primitive) override;
+
+		RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) override;
+		RenderObjectIdentifier MakeTexture(Ref<Image> img) override;
 
 		RenderAPI GetRenderAPI() override;
 
@@ -60,6 +67,7 @@ namespace ACFT
 	private:
 		std::unordered_map<Primitive, VertexArray> m_VAOs;
 		std::unordered_map<Primitive, VertexBuffer> m_VBOs;
+		std::unordered_map<GLuint, GLTexture> m_TextureCache;
 
 		Primitive m_CurrentPrimitive;
 	};
