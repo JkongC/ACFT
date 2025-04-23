@@ -78,6 +78,9 @@
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLShader.ixx">
       <Filter>ACFT\src\Rendering\GLImpls</Filter>
     </ClCompile>
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLTexture.ixx">
+      <Filter>ACFT\src\Rendering\GLImpls</Filter>
+    </ClCompile>
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexArray.ixx">
       <Filter>ACFT\src\Rendering\GLImpls</Filter>
     </ClCompile>

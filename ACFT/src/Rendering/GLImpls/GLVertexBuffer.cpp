@@ -54,6 +54,7 @@ namespace GLImplementations
 		PushSingleAttribute<ACFT::VertexColorRGB>(vtx);
 		PushSingleAttribute<ACFT::VertexColorRGBA>(vtx);
 		PushSingleAttribute<ACFT::VertexTexture>(vtx);
+		PushSingleAttribute<ACFT::VertexUVCoords>(vtx);
 
 		this->m_CurrentVertexCount++;
 		return true;

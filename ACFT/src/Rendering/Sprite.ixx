@@ -23,11 +23,11 @@ namespace ACFT
 
 		ACFT_API void AccumulateTime(float time_step);
 
-		ACFT_API const Texture& GetCurrentImage();
+		ACFT_API const Texture& GetCurrentImage() const;
 
 	private:
 		int m_ImgCount = 0;
-		int m_CurrentIdx = 0;
+		mutable int m_CurrentIdx = 0;
 		float m_IntervalMs = 0;
 		float m_Timer = 0;
 		std::vector<Texture> m_Textures;

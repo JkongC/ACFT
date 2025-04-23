@@ -26,7 +26,7 @@ namespace ACFT
 		this->m_Data = stbi_load(path_buffer, &this->m_Width, &this->m_Height, &this->m_Channels, 0);
 	}
 	
-	Image::Image(std::filesystem::path path)
+	Image::Image(const std::filesystem::path& path)
 	{
 		InitImage(path);
 	}
@@ -36,7 +36,7 @@ namespace ACFT
 		stbi_image_free(this->m_Data);
 	}
 
-	void Image::InitImage(std::filesystem::path path)
+	void Image::InitImage(const std::filesystem::path& path)
 	{
 		if (m_Data)
 		{
@@ -44,10 +44,10 @@ namespace ACFT
 			return;
 		}
 		
-		int buffer_size = WideCharToMultiByte(CP_UTF8, 0, path.c_str(), -1, nullptr, 0, nullptr, nullptr);
-		char* path_buffer = static_cast<char*>(alloca(buffer_size));
-		WideCharToMultiByte(CP_UTF8, 0, path.c_str(), -1, path_buffer, buffer_size, nullptr, nullptr);
+		//int buffer_size = WideCharToMultiByte(CP_UTF8, 0, path.c_str(), -1, nullptr, 0, nullptr, nullptr);
+		//char* path_buffer = static_cast<char*>(alloca(buffer_size));
+		//WideCharToMultiByte(CP_UTF8, 0, path.c_str(), -1, path_buffer, buffer_size, nullptr, nullptr);
 		stbi_set_flip_vertically_on_load(1);
-		this->m_Data = stbi_load(path_buffer, &this->m_Width, &this->m_Height, &this->m_Channels, 0);
+		this->m_Data = stbi_load(path.string().c_str(), &this->m_Width, &this->m_Height, &this->m_Channels, 0);
 	}
 }

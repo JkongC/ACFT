@@ -12,6 +12,7 @@ export import Types;
 export import Tesselator;
 export import Sprite;
 export import Window;
+export import Camera;
 import Atlas;
 
 namespace ACFT
@@ -19,6 +20,16 @@ namespace ACFT
 	export enum class RenderAPI
 	{
 		OpenGL
+	};
+
+	export struct SceneContext
+	{
+		Ref<Camera> camera = nullptr;
+	};
+
+	export struct RenderContext
+	{
+		ModelMatrix m_mat = ModelMatrix(1.0f);
 	};
 
 	export class Renderer
@@ -30,10 +41,10 @@ namespace ACFT
 
 		ACFT_API virtual void InitContext() = 0;
 
-		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator) = 0;
-		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos) = 0;
+		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator, RenderContext context = {}) = 0;
+		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {}) = 0;
 
-		ACFT_API virtual void BeginScene() = 0;
+		ACFT_API virtual void BeginScene(SceneContext context) = 0;
 		ACFT_API virtual void EndScene() = 0;
 
 		ACFT_API virtual void SetClearColor(float r, float g, float b, float a) = 0;
@@ -53,9 +64,10 @@ namespace ACFT
 
 	protected:
 		Ref<Window> m_Window;
+		SceneContext m_SceneContext;
 
 	private:
 		static inline Renderer* s_Instance = nullptr;
-		static std::mutex s_Mtx;
+		static inline std::mutex s_Mtx;
 	};
 }

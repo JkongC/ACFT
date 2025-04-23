@@ -158,6 +158,10 @@ copy /B /Y ..\bin\Release-windows-x86_64\ACFT\ACFT.dll ..\bin\Release-windows-x8
     <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
       <ObjectFileName>$(IntDir)\GLShader1.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLTexture.cpp" />
+    <ClCompile Include="src\Rendering\GLImpls\GLTexture.ixx">
+      <ObjectFileName>$(IntDir)\GLTexture1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp" />
     <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.ixx">
       <ObjectFileName>$(IntDir)\GLVertexArray1.obj</ObjectFileName>

@@ -46,7 +46,7 @@ namespace ACFT
 			m_CurrentIdx = 0;
 	}
 
-	const Texture& Sprite::GetCurrentImage()
+	const Texture& Sprite::GetCurrentImage() const
 	{
 		if (m_CurrentIdx >= m_ImgCount)
 			m_CurrentIdx = 0;

@@ -1,28 +1,32 @@
+module;
+
+#include "Platform.h"
+
 export module Image;
 
-import <filesystem>;
+export import <filesystem>;
 
 namespace ACFT
 {
 	export class Image
 	{
 	public:
-		Image();
-		Image(const Image&);
-		Image(Image&&) = default;
-		Image(std::filesystem::path path);
-		~Image();
+		ACFT_API Image();
+		ACFT_API Image(const Image&);
+		ACFT_API Image(Image&&) = default;
+		ACFT_API Image(const std::filesystem::path& path);
+		ACFT_API ~Image();
 
-		void InitImage(std::filesystem::path path);
+		ACFT_API void InitImage(const std::filesystem::path& path);
 
-		inline unsigned char* GetInternalData() { return this->m_Data; }
-		inline int GetWidth() const { return this->m_Width; }
-		inline int GetHeight() const { return this->m_Height; }
-		inline int GetChannels() const { return this->m_Channels; }
-		inline std::filesystem::path GetImagePath() const { return this->m_ImagePath; }
+		ACFT_API inline unsigned char* GetInternalData() { return this->m_Data; }
+		ACFT_API inline int GetWidth() const { return this->m_Width; }
+		ACFT_API inline int GetHeight() const { return this->m_Height; }
+		ACFT_API inline int GetChannels() const { return this->m_Channels; }
+		ACFT_API inline std::filesystem::path GetImagePath() const { return this->m_ImagePath; }
 
 	private:
-		unsigned char* m_Data;
+		unsigned char* m_Data = nullptr;
 		std::filesystem::path m_ImagePath;
 
 		int m_Width;

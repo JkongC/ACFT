@@ -42,4 +42,11 @@ namespace ACFT
 		this->m_VertexSize += sizeof(VertexTexture);
 		return *this;
 	}
+
+	Vertex& Vertex::UVCoords(float u, float v)
+	{
+		Vertex::g_Manager.emplace_or_replace<VertexUVCoords>(this->m_InternalID, u, v);
+		this->m_VertexSize += sizeof(VertexUVCoords);
+		return *this;
+	}
 }

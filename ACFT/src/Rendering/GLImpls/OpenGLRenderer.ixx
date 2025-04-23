@@ -29,10 +29,10 @@ namespace ACFT
 	{
 	public:
 		void InitContext() override;
-		void DrawTesselator(const Tesselator& tesselator) override;
-		void DrawSprite(const Sprite& sprite, float xpos, float ypos) override;
+		void DrawTesselator(const Tesselator& tesselator, RenderContext context) override;
+		void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context) override;
 
-		void BeginScene() override;
+		void BeginScene(SceneContext context) override;
 		void EndScene() override;
 
 		void SetClearColor(float r, float g, float b, float a) override;

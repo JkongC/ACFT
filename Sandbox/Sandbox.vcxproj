@@ -107,6 +107,7 @@
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLIndexBuffer.ixx" />
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLIndexBuilder.ixx" />
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLShader.ixx" />
+    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLTexture.ixx" />
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexArray.ixx" />
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexBuffer.ixx" />
     <ClCompile Include="..\ACFT\src\Rendering\GLImpls\OpenGLRenderer.ixx" />

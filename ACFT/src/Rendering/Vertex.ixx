@@ -34,6 +34,12 @@ namespace ACFT
 	{
 		unsigned int texture;
 	};
+
+	export struct VertexUVCoords
+	{
+		float u;
+		float v;
+	};
 	
 	export class Vertex
 	{
@@ -48,6 +54,7 @@ namespace ACFT
 		ACFT_API Vertex& Color(float r, float g, float b);
 		ACFT_API Vertex& Color(float r, float g, float b, float a);
 		ACFT_API Vertex& Texture(unsigned int texture);
+		ACFT_API Vertex& UVCoords(float u, float v);
 
 		/**
 		 * Get a specific attribute of the vertex.

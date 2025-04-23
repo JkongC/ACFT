@@ -16,6 +16,12 @@ namespace GLImplementations
 
 		inline unsigned int GetID() const { return m_ID; }
 
+		static void Bind(unsigned int id);
+		static void Unbind(unsigned int id);
+
+		void Bind() const;
+		void Unbind() const;
+
 	private:
 		int m_Width;
 		int m_Height;

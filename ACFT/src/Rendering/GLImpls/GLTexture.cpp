@@ -49,4 +49,24 @@ namespace GLImplementations
 			GL_RGBA, GL_UNSIGNED_BYTE, data
 		);
 	}
+
+	void GLTexture::Bind(unsigned int id)
+	{
+		glBindTexture(GL_TEXTURE_2D, id);
+	}
+
+	void GLTexture::Unbind(unsigned int = 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void GLTexture::Bind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, m_ID);
+	}
+
+	void GLTexture::Unbind() const
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }

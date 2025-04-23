@@ -5,9 +5,11 @@ module;
 
 module Renderer:OpenGLRenderer;
 
+import Types;
 import Tesselator;
 import UUID;
 import Log;
+import Window;
 import :GLVertexArray;
 import :GLIndexBuilder;
 import :GLTexture;
@@ -16,7 +18,7 @@ namespace ACFT
 {	
 	using namespace GLImplementations;
 
-	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator)
+	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator, RenderContext context = {})
 	{
 		auto vao_it = this->m_VAOs.find(tesselator.GetMode());
 		if (vao_it == this->m_VAOs.end())
@@ -48,9 +50,42 @@ namespace ACFT
 		}
 	}
 
-	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos)
+	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {})
 	{
-		
+		auto& texture = sprite.GetCurrentImage();
+		if (auto* idptr = std::get_if<unsigned int>(&texture.m_Identifier))
+		{
+			unsigned int atlas_texture_id = *idptr;
+
+			GLTexture::Bind(atlas_texture_id);
+			Tesselator tesselator{ Primitive::square };
+
+			auto& uv = texture.info.uv_coords;
+
+			tesselator.NewVertex()
+				.Pos(xpos, ypos, 0.0f)
+				.Texture(atlas_texture_id)
+				.UVCoords(uv.min_u, uv.max_v);
+			tesselator.NewVertex()
+				.Pos(xpos, ypos - height, 0.0f)
+				.Texture(atlas_texture_id)
+				.UVCoords(uv.min_u, uv.min_v);
+			tesselator.NewVertex()
+				.Pos(xpos + width, ypos - height, 0.0f)
+				.Texture(atlas_texture_id)
+				.UVCoords(uv.max_u, uv.min_v);
+			tesselator.NewVertex()
+				.Pos(xpos + width, ypos, 0.0f)
+				.Texture(atlas_texture_id)
+				.UVCoords(uv.max_u, uv.max_v);
+
+			DrawTesselator(tesselator, context);
+		}
+		else
+		{
+			ACFT_LOG_WARN("[Renderer] Trying to draw a sprite without a texture!");
+		}
+			
 	}
 
 	RenderAPI OpenGLRenderer::GetRenderAPI()
@@ -61,7 +96,9 @@ namespace ACFT
 	void OpenGLRenderer::InitContext()
 	{
 		VertexBufferLayout basic_layout;
-		basic_layout.Push<float>(3);
+		basic_layout.Push<float>(3); // position
+		basic_layout.Push<unsigned int>(1); // texture
+		basic_layout.Push<float>(2); // uv coords
 		
 		InitBuffers<Primitive::point>(basic_layout);
 		InitBuffers<Primitive::triangle>(basic_layout);
@@ -70,9 +107,9 @@ namespace ACFT
 		InitBuffers<Primitive::cube>(basic_layout);
 	}
 
-	void OpenGLRenderer::BeginScene()
+	void OpenGLRenderer::BeginScene(SceneContext context)
 	{
-
+		m_SceneContext = context;
 	}
 
 	void OpenGLRenderer::EndScene()

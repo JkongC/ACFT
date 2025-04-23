@@ -92,6 +92,12 @@
     <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
       <Filter>Rendering\GLImpls</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLTexture.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLTexture.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
     <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp">
       <Filter>Rendering\GLImpls</Filter>
     </ClCompile>
