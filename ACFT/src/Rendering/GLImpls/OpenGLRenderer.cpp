@@ -20,6 +20,12 @@ namespace ACFT
 {	
 	using namespace GLImplementations;
 
+	OpenGLRenderer::OpenGLRenderer()
+		: m_CurrentPrimitive(cube)
+	{
+		InitContext();
+	}
+	
 	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator, RenderContext context = {})
 	{
 		bool imediate_draw = false;
@@ -139,6 +145,7 @@ namespace ACFT
 				GL_UNSIGNED_INT, nullptr);
 
 			vbo.Clear();
+			SwapWindowFrameBuffers();
 		}
 	}
 
@@ -150,6 +157,11 @@ namespace ACFT
 	void OpenGLRenderer::SetPrimitive(Primitive primitive)
 	{
 		this->m_CurrentPrimitive = primitive;
+	}
+
+	void OpenGLRenderer::SwapWindowFrameBuffers()
+	{
+		m_Window->SwapFrameBuffers();
 	}
 
 	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Atlas> atlas)

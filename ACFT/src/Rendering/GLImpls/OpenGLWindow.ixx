@@ -19,6 +19,8 @@ namespace ACFT
 		
 		virtual void PollEvents() override;
 
+		virtual void SwapFrameBuffers() override;
+
 	private:
 		static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

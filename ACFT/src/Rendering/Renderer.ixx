@@ -41,8 +41,6 @@ namespace ACFT
 		ACFT_API static Renderer& GetRenderer();
 		ACFT_API static void ShutdownRenderer();
 
-		ACFT_API virtual void InitContext() = 0;
-
 		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator, RenderContext context = {}) = 0;
 		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {}) = 0;
 
@@ -51,6 +49,8 @@ namespace ACFT
 
 		ACFT_API virtual void SetClearColor(float r, float g, float b, float a) = 0;
 		ACFT_API virtual void SetPrimitive(Primitive primitive) = 0;
+
+		ACFT_API virtual void SwapWindowFrameBuffers() = 0;
 
 		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) = 0;
 		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Image> img) = 0;

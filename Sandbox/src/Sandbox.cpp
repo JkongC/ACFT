@@ -7,7 +7,8 @@ class MyApp : public ACFT::Application
 public:
 	virtual int Entry(int argc, char** argv) override
 	{
-		ACFT::Logger::Init();
+		ACFTItems items = ACFT::Initialize();
+		auto& [window, renderer] = items;
 		
 		ACFT::Image left_0{"resources/enemy_left_0.png"};
 		ACFT::Image left_1{"resources/enemy_left_1.png"};
@@ -23,11 +24,6 @@ public:
 		atlas->AddTexture(left_3);
 		atlas->AddTexture(left_4);
 		atlas->AddTexture(left_5);
-		
-		auto window = ACFT::Window::InitWindow();
-		ACFT::Renderer::InitRenderer(window);
-		auto& renderer = ACFT::Renderer::GetRenderer();
-		renderer.InitContext();
 
 		ACFT::Sprite sprite;
 		sprite.SetInterval(500);

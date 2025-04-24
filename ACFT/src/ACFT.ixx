@@ -8,7 +8,13 @@ export import Atlas;
 export import Renderer;
 export import Timer;
 
+export struct ACFTItems
+{
+	ACFT::Ref<ACFT::Window> window;
+	ACFT::Renderer& renderer;
+};
+
 namespace ACFT
 {
-	
+	export ACFTItems Initialize();
 }

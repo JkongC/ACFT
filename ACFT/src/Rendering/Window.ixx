@@ -24,6 +24,8 @@ namespace ACFT
 		ACFT_API virtual bool ShouldClose() = 0;
 		ACFT_API virtual void PollEvents() = 0;
 
+		ACFT_API virtual void SwapFrameBuffers() = 0;
+
 	protected:
 		Window() = default;
 

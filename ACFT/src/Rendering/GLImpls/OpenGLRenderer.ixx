@@ -28,7 +28,6 @@ namespace ACFT
 	export class OpenGLRenderer : public Renderer
 	{
 	public:
-		void InitContext() override;
 		void DrawTesselator(const Tesselator& tesselator, RenderContext context) override;
 		void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context) override;
 
@@ -38,16 +37,18 @@ namespace ACFT
 		void SetClearColor(float r, float g, float b, float a) override;
 		void SetPrimitive(Primitive primitive) override;
 
+		virtual void SwapWindowFrameBuffers() override;
+
 		RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) override;
 		RenderObjectIdentifier MakeTexture(Ref<Image> img) override;
 
 		RenderAPI GetRenderAPI() override;
 
-		OpenGLRenderer()
-			: m_CurrentPrimitive(cube)
-		{};
+		OpenGLRenderer();
 
 	private:
+		void InitContext();
+
 		template<Primitive primitive>
 		void InitBuffers(const VertexBufferLayout& layout)
 		{

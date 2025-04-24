@@ -3,10 +3,11 @@ module;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <unordered_map>
+
 export module Shader:GLShader;
 
 import <string>;
-import <unordered_map>;
 
 import Types;
 import Shader;

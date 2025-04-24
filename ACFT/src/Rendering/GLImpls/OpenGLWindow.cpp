@@ -108,4 +108,9 @@ namespace ACFT
 			WindowSizeInfo{ width, height }
 		);
 	}
+
+	void OpenGLWindow::SwapFrameBuffers()
+	{
+		glfwSwapBuffers(m_RawWindow);
+	}
 }

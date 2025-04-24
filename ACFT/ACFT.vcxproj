@@ -112,7 +112,10 @@ copy /B /Y ..\bin\Release-windows-x86_64\ACFT\ACFT.lib ..\bin\Release-windows-x8
     <ClInclude Include="src\Rendering\GLImpls\gldbg.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ACFT.ixx" />
+    <ClCompile Include="src\ACFT.cpp" />
+    <ClCompile Include="src\ACFT.ixx">
+      <ObjectFileName>$(IntDir)\ACFT1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Application.ixx">
       <ObjectFileName>$(IntDir)\Application1.obj</ObjectFileName>
