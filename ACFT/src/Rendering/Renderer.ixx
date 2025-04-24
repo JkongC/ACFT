@@ -13,6 +13,7 @@ export import Tesselator;
 export import Sprite;
 export import Window;
 export import Camera;
+export import Shader;
 import Atlas;
 
 namespace ACFT
@@ -29,7 +30,8 @@ namespace ACFT
 
 	export struct RenderContext
 	{
-		ModelMatrix m_mat = ModelMatrix(1.0f);
+		ModelMatrix model_mat = ModelMatrix(1.0f);
+		Ref<Shader> shader = nullptr;
 	};
 
 	export class Renderer
@@ -65,6 +67,7 @@ namespace ACFT
 	protected:
 		Ref<Window> m_Window;
 		SceneContext m_SceneContext;
+		RenderContext m_RenderContextCache;
 
 	private:
 		static inline Renderer* s_Instance = nullptr;

@@ -1,8 +1,8 @@
 #pragma once
 
 #define GLCall(x) GLClearError();\
-					x;\
-					GLLogCall()
+				x;\
+				GLLogCall()
 
 inline void GLClearError()
 {

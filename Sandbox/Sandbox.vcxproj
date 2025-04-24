@@ -60,7 +60,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>..\ACFT\src;..\ACFT\vendor;..\ACFT\vendor\glm;..\ACFT\vendor\entt\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /reference "$(SolutionDir)/ifc/ACFT.ixx.ifc" /reference "$(SolutionDir)/ifc/Application.ixx.ifc" /reference "$(SolutionDir)/ifc/Base_entt.ixx.ifc" /reference "$(SolutionDir)/ifc/Base_glm.ixx.ifc" /reference "$(SolutionDir)/ifc/Config.ixx.ifc" /reference "$(SolutionDir)/ifc/Types.ixx.ifc" /reference "$(SolutionDir)/ifc/UUID.ixx.ifc" /reference "$(SolutionDir)/ifc/Input.ixx.ifc" /reference "$(SolutionDir)/ifc/KeyInput.ixx.ifc" /reference "$(SolutionDir)/ifc/MouseInput.ixx.ifc" /reference "$(SolutionDir)/ifc/Event.ixx.ifc" /reference "$(SolutionDir)/ifc/EventInfo.ixx.ifc" /reference "$(SolutionDir)/ifc/Log.ixx.ifc" /reference "$(SolutionDir)/ifc/Atlas.ixx.ifc" /reference "$(SolutionDir)/ifc/Camera.ixx.ifc" /reference "$(SolutionDir)/ifc/Image.ixx.ifc" /reference "$(SolutionDir)/ifc/Layer.ixx.ifc" /reference "$(SolutionDir)/ifc/Renderer.ixx.ifc" /reference "$(SolutionDir)/ifc/Shader.ixx.ifc" /reference "$(SolutionDir)/ifc/Sprite.ixx.ifc" /reference "$(SolutionDir)/ifc/Tesselator.ixx.ifc" /reference "$(SolutionDir)/ifc/Texture.ixx.ifc" /reference "$(SolutionDir)/ifc/Vertex.ixx.ifc" /reference "$(SolutionDir)/ifc/Window.ixx.ifc" /reference "$(SolutionDir)/ifc/GLIndexBuffer.ixx.ifc" /reference "$(SolutionDir)/ifc/GLIndexBuilder.ixx.ifc" /reference "$(SolutionDir)/ifc/GLShader.ixx.ifc" /reference "$(SolutionDir)/ifc/GLTexture.ixx.ifc" /reference "$(SolutionDir)/ifc/GLVertexArray.ixx.ifc" /reference "$(SolutionDir)/ifc/GLVertexBuffer.ixx.ifc" /reference "$(SolutionDir)/ifc/OpenGLRenderer.ixx.ifc" /reference "$(SolutionDir)/ifc/OpenGLWindow.ixx.ifc" /reference "$(SolutionDir)/ifc/Direction.ixx.ifc" /reference "$(SolutionDir)/ifc/LockfreeQueue.ixx.ifc" /reference "$(SolutionDir)/ifc/MathHelper.ixx.ifc" /reference "$(SolutionDir)/ifc/Node.ixx.ifc" /reference "$(SolutionDir)/ifc/RefCount.ixx.ifc" /reference "$(SolutionDir)/ifc/Timer.ixx.ifc" %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -78,7 +78,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>..\ACFT\src;..\ACFT\vendor;..\ACFT\vendor\glm;..\ACFT\vendor\entt\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /reference "$(SolutionDir)/ifc/ACFT.ixx.ifc" /reference "$(SolutionDir)/ifc/Application.ixx.ifc" /reference "$(SolutionDir)/ifc/Base_entt.ixx.ifc" /reference "$(SolutionDir)/ifc/Base_glm.ixx.ifc" /reference "$(SolutionDir)/ifc/Config.ixx.ifc" /reference "$(SolutionDir)/ifc/Types.ixx.ifc" /reference "$(SolutionDir)/ifc/UUID.ixx.ifc" /reference "$(SolutionDir)/ifc/Input.ixx.ifc" /reference "$(SolutionDir)/ifc/KeyInput.ixx.ifc" /reference "$(SolutionDir)/ifc/MouseInput.ixx.ifc" /reference "$(SolutionDir)/ifc/Event.ixx.ifc" /reference "$(SolutionDir)/ifc/EventInfo.ixx.ifc" /reference "$(SolutionDir)/ifc/Log.ixx.ifc" /reference "$(SolutionDir)/ifc/Atlas.ixx.ifc" /reference "$(SolutionDir)/ifc/Camera.ixx.ifc" /reference "$(SolutionDir)/ifc/Image.ixx.ifc" /reference "$(SolutionDir)/ifc/Layer.ixx.ifc" /reference "$(SolutionDir)/ifc/Renderer.ixx.ifc" /reference "$(SolutionDir)/ifc/Shader.ixx.ifc" /reference "$(SolutionDir)/ifc/Sprite.ixx.ifc" /reference "$(SolutionDir)/ifc/Tesselator.ixx.ifc" /reference "$(SolutionDir)/ifc/Texture.ixx.ifc" /reference "$(SolutionDir)/ifc/Vertex.ixx.ifc" /reference "$(SolutionDir)/ifc/Window.ixx.ifc" /reference "$(SolutionDir)/ifc/GLIndexBuffer.ixx.ifc" /reference "$(SolutionDir)/ifc/GLIndexBuilder.ixx.ifc" /reference "$(SolutionDir)/ifc/GLShader.ixx.ifc" /reference "$(SolutionDir)/ifc/GLTexture.ixx.ifc" /reference "$(SolutionDir)/ifc/GLVertexArray.ixx.ifc" /reference "$(SolutionDir)/ifc/GLVertexBuffer.ixx.ifc" /reference "$(SolutionDir)/ifc/OpenGLRenderer.ixx.ifc" /reference "$(SolutionDir)/ifc/OpenGLWindow.ixx.ifc" /reference "$(SolutionDir)/ifc/Direction.ixx.ifc" /reference "$(SolutionDir)/ifc/LockfreeQueue.ixx.ifc" /reference "$(SolutionDir)/ifc/MathHelper.ixx.ifc" /reference "$(SolutionDir)/ifc/Node.ixx.ifc" /reference "$(SolutionDir)/ifc/RefCount.ixx.ifc" /reference "$(SolutionDir)/ifc/Timer.ixx.ifc" %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
@@ -91,44 +91,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\ACFT\src\ACFT.ixx" />
-    <ClCompile Include="..\ACFT\src\Application.ixx" />
-    <ClCompile Include="..\ACFT\src\Base_entt.ixx" />
-    <ClCompile Include="..\ACFT\src\Base_glm.ixx" />
-    <ClCompile Include="..\ACFT\src\Config.ixx" />
-    <ClCompile Include="..\ACFT\src\Controller\Input.ixx" />
-    <ClCompile Include="..\ACFT\src\Controller\KeyInput.ixx" />
-    <ClCompile Include="..\ACFT\src\Controller\MouseInput.ixx" />
-    <ClCompile Include="..\ACFT\src\Event\Event.ixx" />
-    <ClCompile Include="..\ACFT\src\Event\EventInfo.ixx" />
-    <ClCompile Include="..\ACFT\src\Log\Log.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Atlas.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Camera.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLIndexBuffer.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLIndexBuilder.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLShader.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLTexture.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexArray.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\GLVertexBuffer.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\OpenGLRenderer.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\GLImpls\OpenGLWindow.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Image.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Layer.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Renderer.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Shader.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Sprite.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Tesselator.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Texture.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Vertex.ixx" />
-    <ClCompile Include="..\ACFT\src\Rendering\Window.ixx" />
-    <ClCompile Include="..\ACFT\src\Types.ixx" />
-    <ClCompile Include="..\ACFT\src\UUID.ixx" />
-    <ClCompile Include="..\ACFT\src\Util\Direction.ixx" />
-    <ClCompile Include="..\ACFT\src\Util\LockfreeQueue.ixx" />
-    <ClCompile Include="..\ACFT\src\Util\MathHelper.ixx" />
-    <ClCompile Include="..\ACFT\src\Util\Node.ixx" />
-    <ClCompile Include="..\ACFT\src\Util\RefCount.ixx" />
-    <ClCompile Include="..\ACFT\src\Util\Timer.ixx" />
     <ClCompile Include="src\Sandbox.cpp" />
   </ItemGroup>
   <ItemGroup>

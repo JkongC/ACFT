@@ -14,12 +14,16 @@ import :GLVertexArray;
 import :GLIndexBuilder;
 import :GLTexture;
 
+#include "gldbg.h"
+
 namespace ACFT
 {	
 	using namespace GLImplementations;
 
 	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator, RenderContext context = {})
 	{
+		bool imediate_draw = false;
+		
 		auto vao_it = this->m_VAOs.find(tesselator.GetMode());
 		if (vao_it == this->m_VAOs.end())
 		{
@@ -39,13 +43,24 @@ namespace ACFT
 		vao.Bind();
 		vbo.Bind();
 
+		if (context.shader != m_RenderContextCache.shader)
+		{
+			m_RenderContextCache.shader = context.shader;
+			imediate_draw = true;
+		}
+
+		m_RenderContextCache.shader->Use();
+
 		auto& vertices = tesselator.GetVertices();
 		for (const Vertex& vtx : vertices)
 		{
-			while (!vbo.Submit(vtx))
+			while (imediate_draw || !vbo.Submit(vtx))
 			{
 				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(tesselator.GetMode()) * IndexCountPerPrimitive(tesselator.GetMode())),
 					GL_UNSIGNED_INT, nullptr);
+
+				vbo.Clear();
+				imediate_draw = false;
 			}
 		}
 	}
@@ -122,6 +137,8 @@ namespace ACFT
 
 			glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(primitive) * IndexCountPerPrimitive(primitive)),
 				GL_UNSIGNED_INT, nullptr);
+
+			vbo.Clear();
 		}
 	}
 

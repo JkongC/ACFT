@@ -20,12 +20,12 @@ workspace "ACFT"
     }
   
 project "ACFT"
-  kind "SharedLib"
+  kind "StaticLib"
   language "C++"
   location "ACFT"
   targetdir "bin"
 
-  defines { "ACFT_EXPORTS" }
+  -- defines { "ACFT_EXPORTS" }
   
   -- 源文件配置（保持原始结构）
   files {
@@ -84,8 +84,8 @@ project "Sandbox"
   files {
     "%{prj.name}/src/**.ixx",
     "%{prj.name}/src/**.cpp",
-    "%{prj.name}/src/**.h",
-    "ACFT/src/**.ixx"
+    "%{prj.name}/src/**.h"
+    -- "ACFT/src/**.ixx"
   }
 
   includedirs {
@@ -99,9 +99,8 @@ project "Sandbox"
   objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
   links { "ACFT" }
+  
 
---[[
-  -- 获取所有.ifc文件的绝对路径
   local ifc_files = os.matchfiles("ACFT/src/**.ixx")
   local ref_options = {}
 
@@ -110,7 +109,7 @@ project "Sandbox"
   end
 
   buildoptions (ref_options)
-]]--
+  
   postbuildcommands {
     "{COPYFILE} ../lib/*.dll %{cfg.targetdir}/"
   }

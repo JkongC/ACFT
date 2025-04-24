@@ -4,6 +4,8 @@ module;
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#include "Platform.h"
+
 export module Log;
 
 import <memory>;
@@ -22,10 +24,10 @@ namespace ACFT
 	export class Logger
 	{
 	public:
-		static void Init();
+		ACFT_API static void Init();
 
-		inline static std::shared_ptr<spdlog::logger>& GetACFTLogger() { return acft_logger; }
-		inline static std::shared_ptr<spdlog::logger>& GetGLLogger() { return gl_logger; }
+		ACFT_API inline static std::shared_ptr<spdlog::logger>& GetACFTLogger() { return acft_logger; }
+		ACFT_API inline static std::shared_ptr<spdlog::logger>& GetGLLogger() { return gl_logger; }
 
 	private:
 		inline static std::shared_ptr<spdlog::logger> acft_logger;

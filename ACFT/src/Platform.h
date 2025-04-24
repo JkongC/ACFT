@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef _WIN32
+#if defined(_WIN32) && defined(ACFT_DLL)
 
 #ifdef ACFT_EXPORTS
 #define ACFT_API __declspec(dllexport)

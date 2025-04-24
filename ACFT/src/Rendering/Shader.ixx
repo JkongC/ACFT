@@ -4,6 +4,7 @@ module;
 
 export module Shader;
 
+import Types;
 export import <filesystem>;
 
 namespace ACFT
@@ -21,11 +22,16 @@ namespace ACFT
 	export class Shader
 	{
 	public:
-		ACFT_API Shader(std::filesystem::path shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed)
-			: m_Path(shader_path), m_Lang(language), m_Type(type)
-		{}
+		static Ref<Shader> Create(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed);
 
-	private:
+		virtual RenderObjectIdentifier GetIdentifier() = 0;
+
+		virtual void Use() = 0;
+		virtual void Unuse() = 0;
+
+	protected:
+		Shader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed);
+
 		std::filesystem::path m_Path;
 		ShaderLang m_Lang;
 		ShaderType m_Type{ShaderType::glsl_mixed};
