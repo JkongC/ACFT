@@ -9,7 +9,7 @@ module;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-module Shader:GLShader;
+module Renderer:GLShader;
 
 import <string>;
 import <filesystem>;
@@ -20,8 +20,8 @@ import Shader;
 
 namespace GLImplementations
 {
-	GLShader::GLShader(const std::filesystem::path& filepath, ACFT::ShaderLang language, ACFT::ShaderType type)
-		: ACFT::Shader(filepath, language, type)
+	GLShader::GLShader(const std::filesystem::path& filepath)
+		: m_Path(filepath)
 	{
 		m_Identifier = CreateShader();
 	}
@@ -147,15 +147,5 @@ namespace GLImplementations
 	ACFT::RenderObjectIdentifier GLShader::GetIdentifier()
 	{
 		return m_Identifier;
-	}
-
-	void GLShader::Use()
-	{
-		Bind();
-	}
-
-	void GLShader::Unuse()
-	{
-		Unbind();
 	}
 }

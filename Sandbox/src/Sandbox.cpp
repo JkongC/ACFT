@@ -10,12 +10,12 @@ public:
 		ACFTItems items = ACFT::Initialize();
 		auto& [window, renderer] = items;
 		
-		ACFT::Image left_0{"resources/enemy_left_0.png"};
-		ACFT::Image left_1{"resources/enemy_left_1.png"};
-		ACFT::Image left_2{"resources/enemy_left_2.png"};
-		ACFT::Image left_3{"resources/enemy_left_3.png"};
-		ACFT::Image left_4{"resources/enemy_left_4.png"};
-		ACFT::Image left_5{"resources/enemy_left_5.png"};
+		ACFT::Image left_0{"resources/imgs/enemy_left_0.png"};
+		ACFT::Image left_1{"resources/imgs/enemy_left_1.png"};
+		ACFT::Image left_2{"resources/imgs/enemy_left_2.png"};
+		ACFT::Image left_3{"resources/imgs/enemy_left_3.png"};
+		ACFT::Image left_4{"resources/imgs/enemy_left_4.png"};
+		ACFT::Image left_5{"resources/imgs/enemy_left_5.png"};
 
 		ACFT::Ref<ACFT::Atlas> atlas = ACFT::MakeRef<ACFT::Atlas>(6, 1);
 		atlas->AddTexture(left_0);

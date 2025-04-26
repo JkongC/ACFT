@@ -3,26 +3,26 @@ module;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <string>
 #include <unordered_map>
 
-export module Shader:GLShader;
-
-import <string>;
+export module Renderer:GLShader;
 
 import Types;
 import Shader;
 
 namespace GLImplementations
 {
-	struct ShaderSources {
+	export struct ShaderSources {
 		std::string vertex;
 		std::string fragment;
 	};
 
-	export class GLShader : public ACFT::Shader
+	export class GLShader
 	{
 	public:
-		GLShader(const std::filesystem::path& path, ACFT::ShaderLang language, ACFT::ShaderType type);
+		GLShader(const std::filesystem::path& path);
+		GLShader(GLShader&&) = default;
 
 		void Bind() const;
 		void Unbind() const;
@@ -34,10 +34,7 @@ namespace GLImplementations
 		void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 		void SetUniformVec3f(const std::string& name, const glm::vec3& vec);
 
-		virtual ACFT::RenderObjectIdentifier GetIdentifier() override;
-
-		virtual void Use() override;
-		virtual void Unuse() override;
+		ACFT::RenderObjectIdentifier GetIdentifier();
 
 	private:
 		ShaderSources ParseShader();
@@ -45,6 +42,7 @@ namespace GLImplementations
 		unsigned int CreateShader();
 
 	private:
+		std::filesystem::path m_Path;
 		unsigned int m_Identifier;
 		mutable std::unordered_map<std::string, int> m_UniformLocationCache;
 	};

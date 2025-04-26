@@ -52,9 +52,6 @@ namespace ACFT
 
 		ACFT_API virtual void SwapWindowFrameBuffers() = 0;
 
-		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) = 0;
-		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Image> img) = 0;
-
 		ACFT_API virtual RenderAPI GetRenderAPI() = 0;
 
 		ACFT_API virtual ~Renderer() = default;
@@ -63,6 +60,14 @@ namespace ACFT
 		Renderer() = default;
 		Renderer(const Renderer&) = delete;
 		Renderer(Renderer&&) = delete;
+
+		friend class Sprite;
+		friend class Shader;
+		
+		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) = 0;
+		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Image> img) = 0;
+
+		ACFT_API virtual RenderObjectIdentifier MakeShader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed) = 0;
 
 	protected:
 		Ref<Window> m_Window;

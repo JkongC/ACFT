@@ -13,6 +13,7 @@ import Window;
 import :GLVertexArray;
 import :GLIndexBuilder;
 import :GLTexture;
+import :GLShader;
 
 #include "gldbg.h"
 
@@ -26,9 +27,9 @@ namespace ACFT
 		InitContext();
 	}
 	
-	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator, RenderContext context = {})
+	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator, RenderContext context)
 	{
-		bool imediate_draw = false;
+		bool immediate_draw = false;
 		
 		auto vao_it = this->m_VAOs.find(tesselator.GetMode());
 		if (vao_it == this->m_VAOs.end())
@@ -52,26 +53,40 @@ namespace ACFT
 		if (context.shader != m_RenderContextCache.shader)
 		{
 			m_RenderContextCache.shader = context.shader;
-			imediate_draw = true;
+			immediate_draw = true;
 		}
 
-		m_RenderContextCache.shader->Use();
+		GLuint shader_id;
+		RenderObjectIdentifier _id = context.shader->GetIdentifier();
+		if (auto* idptr = std::get_if<unsigned int>(&_id))
+		{
+			shader_id = *idptr;
+		}
+		else
+			shader_id = 0;
+
+		if (auto it = m_ShaderCache.find(shader_id); 
+			it != m_ShaderCache.end())
+		{
+			auto& [id, shader] = *it;
+			shader.Bind();
+		}
 
 		auto& vertices = tesselator.GetVertices();
 		for (const Vertex& vtx : vertices)
 		{
-			while (imediate_draw || !vbo.Submit(vtx))
+			while (immediate_draw || !vbo.Submit(vtx))
 			{
 				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(tesselator.GetMode()) * IndexCountPerPrimitive(tesselator.GetMode())),
 					GL_UNSIGNED_INT, nullptr);
 
 				vbo.Clear();
-				imediate_draw = false;
+				immediate_draw = false;
 			}
 		}
 	}
 
-	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {})
+	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context)
 	{
 		auto& texture = sprite.GetCurrentImage();
 		if (auto* idptr = std::get_if<unsigned int>(&texture.m_Identifier))
@@ -85,19 +100,15 @@ namespace ACFT
 
 			tesselator.NewVertex()
 				.Pos(xpos, ypos, 0.0f)
-				.Texture(atlas_texture_id)
 				.UVCoords(uv.min_u, uv.max_v);
 			tesselator.NewVertex()
 				.Pos(xpos, ypos - height, 0.0f)
-				.Texture(atlas_texture_id)
 				.UVCoords(uv.min_u, uv.min_v);
 			tesselator.NewVertex()
 				.Pos(xpos + width, ypos - height, 0.0f)
-				.Texture(atlas_texture_id)
 				.UVCoords(uv.max_u, uv.min_v);
 			tesselator.NewVertex()
 				.Pos(xpos + width, ypos, 0.0f)
-				.Texture(atlas_texture_id)
 				.UVCoords(uv.max_u, uv.max_v);
 
 			DrawTesselator(tesselator, context);
@@ -118,7 +129,6 @@ namespace ACFT
 	{
 		VertexBufferLayout basic_layout;
 		basic_layout.Push<float>(3); // position
-		basic_layout.Push<unsigned int>(1); // texture
 		basic_layout.Push<float>(2); // uv coords
 		
 		InitBuffers<Primitive::point>(basic_layout);
@@ -166,17 +176,26 @@ namespace ACFT
 
 	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Atlas> atlas)
 	{
-		GLTexture* texture = new GLTexture(atlas);
+		Scope<GLTexture> texture = MakeScope<GLTexture>(atlas);
 		unsigned int id = texture->GetID();
-		this->m_TextureCache.insert({ id, std::move(*texture) });
+		m_TextureCache.try_emplace(id, std::move(*texture));
 		return id;
 	}
 
 	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Image> img)
 	{
-		GLTexture* texture = new GLTexture(img);
+		Scope<GLTexture> texture = MakeScope<GLTexture>(img);
 		unsigned int id = texture->GetID();
-		this->m_TextureCache.insert({ id, std::move(*texture) });
+		m_TextureCache.try_emplace(id, std::move(*texture));
+		return id;
+	}
+
+	RenderObjectIdentifier OpenGLRenderer::MakeShader(const std::filesystem::path& shader_path, ShaderLang language, ShaderType type)
+	{
+		Scope<GLShader> shader = MakeScope<GLShader>(shader_path);
+		RenderObjectIdentifier _id = shader->GetIdentifier();
+		unsigned int id = *std::get_if<unsigned int>(&_id);
+		m_ShaderCache.try_emplace(id, std::move(*shader));
 		return id;
 	}
 }

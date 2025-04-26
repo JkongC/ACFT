@@ -10,6 +10,8 @@ import Atlas;
 
 namespace GLImplementations
 {
+	using namespace ACFT;
+
 	GLTexture::GLTexture(Ref<Atlas> atlas)
 	{
 		const unsigned char* data = atlas->GetInternalData();
@@ -48,6 +50,20 @@ namespace GLImplementations
 			m_ID, 0, 0, 0, m_Width, m_Height,
 			GL_RGBA, GL_UNSIGNED_BYTE, data
 		);
+	}
+
+	GLTexture::GLTexture(GLTexture&& other)
+	{
+		this->m_Width = other.m_Width;
+		this->m_Height = other.m_Height;
+		this->m_ID = other.m_ID;
+		other.m_ID = 0;
+	}
+
+	GLTexture::~GLTexture()
+	{
+		if (m_ID != 0)
+			glDeleteTextures(1, &m_ID);
 	}
 
 	void GLTexture::Bind(unsigned int id)

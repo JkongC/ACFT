@@ -12,7 +12,8 @@ namespace GLImplementations
 	public:
 		GLTexture(Ref<Atlas> atlas);
 		GLTexture(Ref<Image> img);
-		GLTexture(GLTexture&&) = default;
+		GLTexture(GLTexture&&);
+		~GLTexture();
 
 		inline unsigned int GetID() const { return m_ID; }
 

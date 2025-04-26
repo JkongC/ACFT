@@ -17,8 +17,10 @@ import Tesselator;
 import Atlas;
 import UUID;
 import Window;
+import Shader;
 import :GLVertexArray;
 import :GLTexture;
+import :GLShader;
 
 namespace ACFT
 {
@@ -39,12 +41,15 @@ namespace ACFT
 
 		virtual void SwapWindowFrameBuffers() override;
 
-		RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) override;
-		RenderObjectIdentifier MakeTexture(Ref<Image> img) override;
-
 		RenderAPI GetRenderAPI() override;
 
 		OpenGLRenderer();
+
+	protected:
+		RenderObjectIdentifier MakeTexture(Ref<Atlas> atlas) override;
+		RenderObjectIdentifier MakeTexture(Ref<Image> img) override;
+
+		RenderObjectIdentifier MakeShader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed) override;
 
 	private:
 		void InitContext();
@@ -69,6 +74,8 @@ namespace ACFT
 		std::unordered_map<Primitive, VertexArray> m_VAOs;
 		std::unordered_map<Primitive, VertexBuffer> m_VBOs;
 		std::unordered_map<GLuint, GLTexture> m_TextureCache;
+		std::unordered_map<GLuint, GLShader> m_ShaderCache;
+		RenderContext m_RenderContextCache;
 
 		Primitive m_CurrentPrimitive;
 	};

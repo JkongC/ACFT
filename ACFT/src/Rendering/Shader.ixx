@@ -24,10 +24,7 @@ namespace ACFT
 	public:
 		static Ref<Shader> Create(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed);
 
-		virtual RenderObjectIdentifier GetIdentifier() = 0;
-
-		virtual void Use() = 0;
-		virtual void Unuse() = 0;
+		RenderObjectIdentifier GetIdentifier() const;
 
 	protected:
 		Shader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed);
@@ -35,5 +32,6 @@ namespace ACFT
 		std::filesystem::path m_Path;
 		ShaderLang m_Lang;
 		ShaderType m_Type{ShaderType::glsl_mixed};
+		RenderObjectIdentifier m_Identifier;
 	};
 }
