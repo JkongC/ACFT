@@ -17,4 +17,5 @@ export struct ACFTItems
 namespace ACFT
 {
 	export ACFTItems Initialize();
+	export void Clean();
 }

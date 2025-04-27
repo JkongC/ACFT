@@ -10,7 +10,7 @@ namespace ACFT
 {
 	void Logger::Init()
 	{
-		spdlog::set_pattern("%^[%T] %n: %v%$");
+		spdlog::set_pattern("%^[%T] [%n] %v%$");
 		acft_logger = spdlog::stdout_color_mt("AnotherCraft");
 		gl_logger = spdlog::stdout_color_mt("OpenGL");
 

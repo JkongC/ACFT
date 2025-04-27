@@ -50,7 +50,14 @@ namespace ACFT
 		ACFT_API virtual void SetClearColor(float r, float g, float b, float a) = 0;
 		ACFT_API virtual void SetPrimitive(Primitive primitive) = 0;
 
+		ACFT_API virtual void EnableVSync() = 0;
+		ACFT_API virtual void DisableVSync() = 0;
+
+		ACFT_API virtual void EnableBlend() = 0;
+		ACFT_API virtual void DisableBlend() = 0;
+
 		ACFT_API virtual void SwapWindowFrameBuffers() = 0;
+		ACFT_API virtual void Clear() = 0;
 
 		ACFT_API virtual RenderAPI GetRenderAPI() = 0;
 

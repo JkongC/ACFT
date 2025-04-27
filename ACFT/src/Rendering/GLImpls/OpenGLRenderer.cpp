@@ -10,6 +10,7 @@ import Tesselator;
 import UUID;
 import Log;
 import Window;
+import Camera;
 import :GLVertexArray;
 import :GLIndexBuilder;
 import :GLTexture;
@@ -70,15 +71,17 @@ namespace ACFT
 		{
 			auto& [id, shader] = *it;
 			shader.Bind();
+
+			shader.SetUniformMat4f("mvp", m_SceneContext.camera->GetVPMatrix(m_Window->GetWidth(), m_Window->GetHeight()));
 		}
 
 		auto& vertices = tesselator.GetVertices();
-		for (const Vertex& vtx : vertices)
+		for (const Scope<Vertex>& vtx : vertices)
 		{
-			while (immediate_draw || !vbo.Submit(vtx))
+			while (immediate_draw || !vbo.Submit(*vtx))
 			{
-				glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(tesselator.GetMode()) * IndexCountPerPrimitive(tesselator.GetMode())),
-					GL_UNSIGNED_INT, nullptr);
+				GLCall(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(tesselator.GetMode()) * IndexCountPerPrimitive(tesselator.GetMode())),
+					GL_UNSIGNED_INT, nullptr));
 
 				vbo.Clear();
 				immediate_draw = false;
@@ -141,6 +144,7 @@ namespace ACFT
 	void OpenGLRenderer::BeginScene(SceneContext context)
 	{
 		m_SceneContext = context;
+		Clear();
 	}
 
 	void OpenGLRenderer::EndScene()
@@ -150,13 +154,14 @@ namespace ACFT
 			auto& [p, vbo] = *this->m_VBOs.find(primitive);
 			vao.Bind();
 			vbo.Bind();
-
-			glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(primitive) * IndexCountPerPrimitive(primitive)),
-				GL_UNSIGNED_INT, nullptr);
+			
+			GLCall(glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vbo.GetCurrentVertexCount() / VertexCountPerPrimitive(primitive) * IndexCountPerPrimitive(primitive)),
+				GL_UNSIGNED_INT, nullptr));
 
 			vbo.Clear();
-			SwapWindowFrameBuffers();
 		}
+
+		SwapWindowFrameBuffers();
 	}
 
 	void OpenGLRenderer::SetClearColor(float r, float g, float b, float a)
@@ -172,6 +177,32 @@ namespace ACFT
 	void OpenGLRenderer::SwapWindowFrameBuffers()
 	{
 		m_Window->SwapFrameBuffers();
+	}
+
+	void OpenGLRenderer::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	void OpenGLRenderer::EnableVSync()
+	{
+		glfwSwapInterval(1);
+	}
+
+	void OpenGLRenderer::DisableVSync()
+	{
+		glfwSwapInterval(0);
+	}
+
+	void OpenGLRenderer::EnableBlend()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	void OpenGLRenderer::DisableBlend()
+	{
+		glDisable(GL_BLEND);
 	}
 
 	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Atlas> atlas)

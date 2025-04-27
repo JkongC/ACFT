@@ -14,7 +14,8 @@ namespace ACFT
 
 	Atlas::~Atlas()
 	{
-		delete[] this->m_AtlasData;
+		if (this->m_AtlasData != nullptr)
+			delete[] this->m_AtlasData;
 	}
 
 	void Atlas::InitAtlas(int channels)
@@ -64,7 +65,7 @@ namespace ACFT
 		size_t atl_per_row_offset = static_cast<size_t>(m_MaxHorizontalTextures) * m_WidthPerTexture * m_Channels;
 		for (size_t row = 0; row < img.GetHeight(); row++)
 		{
-			size_t atl_row_offset = atl_per_row_offset * (m_CurrentRow + row);
+			size_t atl_row_offset = atl_per_row_offset * (m_HeightPerTexture * m_CurrentRow + row);
 			memcpy(&this->m_AtlasData[atl_row_offset + atl_col_offset], &img.GetInternalData()[static_cast<size_t>(img.GetWidth()) * m_Channels * row], static_cast<size_t>(img.GetWidth()) * m_Channels);
 		}
 		

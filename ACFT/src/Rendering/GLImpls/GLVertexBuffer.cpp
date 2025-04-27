@@ -10,18 +10,22 @@ module Renderer:GLVertexBuffer;
 import Log;
 import Vertex;
 
+#include "gldbg.h"
+
 namespace GLImplementations
 {
 	VertexBuffer::VertexBuffer()
 	{
-		glGenBuffers(1, &m_BufferID);
+		GLCall(glGenBuffers(1, &m_BufferID));
 	}
 	
 	VertexBuffer::VertexBuffer(size_t max_size)
 		: m_MaxBufferSize(max_size)
 	{
-		glGenBuffers(1, &m_BufferID);
-		glBufferData(GL_ARRAY_BUFFER, m_MaxBufferSize, nullptr, GL_DYNAMIC_DRAW);
+		GLCall(glGenBuffers(1, &m_BufferID));
+		Bind();
+		GLCall(glBufferData(GL_ARRAY_BUFFER, m_MaxBufferSize, nullptr, GL_DYNAMIC_DRAW));
+		Unbind();
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -57,6 +61,7 @@ namespace GLImplementations
 		PushSingleAttribute<ACFT::VertexUVCoords>(vtx);
 
 		this->m_CurrentVertexCount++;
+
 		return true;
 	}
 

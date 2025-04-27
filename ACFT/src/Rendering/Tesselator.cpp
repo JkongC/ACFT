@@ -92,16 +92,16 @@ namespace ACFT
 
 	void Tesselator::PushVertex(Vertex vtx)
 	{
-		m_VertexList.push_back(vtx);
+		m_VertexList.push_back(MakeScope<Vertex>(vtx));
 	}
 
-	Vertex& Tesselator::NewVertex()
+	VertexBuilder Tesselator::NewVertex()
 	{
-		m_VertexList.emplace_back();
-		return m_VertexList.back();
+		m_VertexList.emplace_back(MakeScope<Vertex>());
+		return VertexBuilder(*m_VertexList.back());
 	}
 
-	const std::vector<Vertex>& Tesselator::GetVertices() const
+	const std::vector<Scope<Vertex>>& Tesselator::GetVertices() const
 	{
 		return m_VertexList;
 	}

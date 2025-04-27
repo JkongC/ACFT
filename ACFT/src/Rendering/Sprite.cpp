@@ -5,6 +5,7 @@ import <vector>;
 import Types;
 import Image;
 import Renderer;
+import Log;
 
 namespace ACFT
 {
@@ -16,6 +17,8 @@ namespace ACFT
 		{
 			m_Textures.push_back({ atlas->GetTextureInfo(i), id });
 		}
+
+		m_ImgCount = atlas->GetTextureCount();
 	}
 
 	void Sprite::UseAtlas(Scope<Atlas> atlas)
@@ -26,6 +29,8 @@ namespace ACFT
 		{
 			m_Textures.push_back({ atlas->GetTextureInfo(i), id });
 		}
+
+		m_ImgCount = atlas->GetTextureCount();
 	}
 
 	void Sprite::SetInterval(float interval_ms)

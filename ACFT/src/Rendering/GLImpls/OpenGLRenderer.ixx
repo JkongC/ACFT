@@ -18,9 +18,13 @@ import Atlas;
 import UUID;
 import Window;
 import Shader;
+import Log;
+import :GLVertexBuffer;
 import :GLVertexArray;
 import :GLTexture;
 import :GLShader;
+
+#include "gldbg.h"
 
 namespace ACFT
 {
@@ -40,6 +44,13 @@ namespace ACFT
 		void SetPrimitive(Primitive primitive) override;
 
 		virtual void SwapWindowFrameBuffers() override;
+		virtual void Clear() override;
+
+		virtual void EnableVSync() override;
+		virtual void DisableVSync() override;
+
+		virtual void EnableBlend() override;
+		virtual void DisableBlend() override;
 
 		RenderAPI GetRenderAPI() override;
 
@@ -59,14 +70,18 @@ namespace ACFT
 		{
 			IndexBuffer index;
 			index.GenerateByMode<primitive>();
-			this->m_VAOs.try_emplace(primitive, layout, std::move(index));
+
 			if constexpr (primitive == Primitive::triangle_fan)
 			{
-				this->m_VBOs.try_emplace(Primitive::triangle_fan, 2 + 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(Primitive::triangle_fan));
+				auto [it, success] = this->m_VBOs.try_emplace(Primitive::triangle_fan, 2 + 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(Primitive::triangle_fan));
+				auto& vbo = it->second;
+				this->m_VAOs.try_emplace(primitive, layout, vbo, std::move(index));
 			}
 			else
 			{
-				this->m_VBOs.try_emplace(primitive, 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(primitive));
+				auto [it, success] = this->m_VBOs.try_emplace(primitive, 3 * defaultPrimitivePerDraw * VertexCountPerPrimitive(primitive));
+				auto& vbo = it->second;
+				this->m_VAOs.try_emplace(primitive, layout, vbo, std::move(index));
 			}
 		}
 

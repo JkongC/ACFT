@@ -64,10 +64,10 @@ namespace GLImplementations
 				rs.reserve(count);
 				for (unsigned int group_idx = 0; group_idx < count / IndexCountPerPrimitive(square); group_idx++)
 				{
-					rs.push_back(0);
+					rs.push_back(0 + group_idx * 4);
 					rs.push_back(1 + group_idx * 4);
 					rs.push_back(2 + group_idx * 4);
-					rs.push_back(0);
+					rs.push_back(0 + group_idx * 4);
 					rs.push_back(2 + group_idx * 4);
 					rs.push_back(3 + group_idx * 4);
 				}

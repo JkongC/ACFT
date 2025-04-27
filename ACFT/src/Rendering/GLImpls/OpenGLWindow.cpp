@@ -14,6 +14,8 @@ module Window:OpenGLWindow;
 import Log;
 import Event;
 
+#include "gldbg.h"
+
 namespace ACFT
 {
 	std::atomic<size_t> WindowCount{ 0 };
@@ -30,6 +32,7 @@ namespace ACFT
 
 		icon[0].pixels = stbi_load("resources/acft_icon.png", &icon[0].width, &icon[0].height, nullptr, 4);
 
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 		m_RawWindow = glfwCreateWindow(m_Width, m_Height, "AnotherCraft", nullptr, nullptr);
 		if (!m_RawWindow)
 		{
@@ -48,10 +51,14 @@ namespace ACFT
 			exit(-1);
 		}
 
+		ACFT_GL_LOG("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
 		glfwSetCursorPosCallback(m_RawWindow, MousePosCallback);
 		glfwSetMouseButtonCallback(m_RawWindow, MouseButtonCallback);
 		glfwSetKeyCallback(m_RawWindow, KeyCallback);
 		glfwSetFramebufferSizeCallback(m_RawWindow, WindowResizeCallback);
+
+		GLCall();
 
 		WindowCount++;
 	}

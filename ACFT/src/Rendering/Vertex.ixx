@@ -6,6 +6,8 @@ module;
 
 export module Vertex;
 
+import Log;
+
 namespace ACFT
 {
 	export struct VertexPos
@@ -45,16 +47,16 @@ namespace ACFT
 	{
 	public:
 		ACFT_API Vertex();
-		ACFT_API Vertex(const Vertex&) = default;
-		ACFT_API Vertex(Vertex&&) = default;
+		ACFT_API Vertex(const Vertex&);
+		ACFT_API Vertex(Vertex&&) noexcept;
 
 		ACFT_API ~Vertex();
 
-		ACFT_API Vertex& Pos(float x, float y, float z);
-		ACFT_API Vertex& Color(float r, float g, float b);
-		ACFT_API Vertex& Color(float r, float g, float b, float a);
-		ACFT_API Vertex& Texture(unsigned int texture);
-		ACFT_API Vertex& UVCoords(float u, float v);
+		ACFT_API void SetPos(float x, float y, float z);
+		ACFT_API void SetColor(float r, float g, float b);
+		ACFT_API void SetColor(float r, float g, float b, float a);
+		ACFT_API void SetTexture(unsigned int texture);
+		ACFT_API void SetUVCoords(float u, float v);
 
 		/**
 		 * Get a specific attribute of the vertex.
@@ -70,8 +72,40 @@ namespace ACFT
 		ACFT_API size_t GetSize() const { return m_VertexSize; }
 
 	private:
+		template<typename... Components>
+		static void CopyComponents(entt::entity src, entt::entity dst)
+		{
+			([&] {
+				if (auto* cpn = Vertex::g_Manager.try_get<Components>(src))
+				{
+					Vertex::g_Manager.emplace_or_replace<Components>(dst, *cpn);
+				}
+			}(), ...);
+		}
+
+	private:
 		entt::entity m_InternalID;
 		size_t m_VertexSize{ 0 };
 		static inline entt::registry g_Manager;
+	};
+
+	export class VertexBuilder
+	{
+	public:
+		ACFT_API VertexBuilder& Pos(float x, float y, float z);
+		ACFT_API VertexBuilder& Color(float r, float g, float b);
+		ACFT_API VertexBuilder& Color(float r, float g, float b, float a);
+		ACFT_API VertexBuilder& Texture(unsigned int texture);
+		ACFT_API VertexBuilder& UVCoords(float u, float v);
+
+		~VertexBuilder();
+
+	private:
+		friend class Vertex;
+		friend class Tesselator;
+		VertexBuilder(Vertex& vtx) : r_Vtx(vtx) {}
+
+	private:
+		Vertex& r_Vtx;
 	};
 }

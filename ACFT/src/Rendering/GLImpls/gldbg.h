@@ -1,8 +1,16 @@
 #pragma once
 
+#if defined(ACFT_DEBUG)
+
 #define GLCall(x) GLClearError();\
 				x;\
 				GLLogCall()
+
+#else
+
+#define GLCall(x) x
+
+#endif
 
 inline void GLClearError()
 {

@@ -5,27 +5,31 @@ module;
 
 module Renderer:GLIndexBuffer;
 
+import Log;
+
+#include "gldbg.h"
+
 namespace GLImplementations
 {
 	using namespace ACFT;
 
 	IndexBuffer::IndexBuffer()
 	{
-		glGenBuffers(1, &m_BufferID);
+		GLCall(glGenBuffers(1, &m_BufferID));
 	}
 
 	IndexBuffer::~IndexBuffer()
 	{
-		glDeleteBuffers(1, &m_BufferID);
+		GLCall(glDeleteBuffers(1, &m_BufferID));
 	}
 
 	void IndexBuffer::Bind() const
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_BufferID);
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_BufferID));
 	}
 
 	void IndexBuffer::Unbind() const
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 	}
 }

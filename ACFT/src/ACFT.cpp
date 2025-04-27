@@ -19,4 +19,9 @@ namespace ACFT
 
 		return { window, renderer };
 	}
+
+	void Clean()
+	{
+		Renderer::ShutdownRenderer();
+	}
 }

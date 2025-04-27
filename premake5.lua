@@ -38,8 +38,8 @@ project "ACFT"
   objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
   links {
-    "glew32",
     "opengl32",
+    "glew32",
     "glfw3",
     "spdlog",
     "fmt"
@@ -67,8 +67,8 @@ project "ACFT"
     }
   
   filter { "configurations:Debug" }
-    defines { "DEBUG" }
-    symbols "On"
+    defines { "NDEBUG", "ACFT_DEBUG" }
+    optimize "Off"
   
   filter { "configurations:Release" }
     defines { "NDEBUG" }

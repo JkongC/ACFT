@@ -10,16 +10,29 @@ import Window;
 
 namespace ACFT
 {
+	export enum class CameraType
+	{
+		ortho, perspective
+	};
+	
 	export class Camera
 	{
+	public:
+		CameraType GetType() const { return m_Type; }
+
+		virtual glm::mat4 GetVPMatrix(int window_width, int window_height) const = 0;
+
 	protected:
-		Camera() = default;
+		Camera(CameraType type) : m_Type(type) {}
+
+	protected:
+		CameraType m_Type;
 	};
 	
 	export class OrthographicCamera : public Camera
 	{
 	public:
-		OrthographicCamera() = default;
+		OrthographicCamera();
 		OrthographicCamera(Ref<Window> window);
 
 		std::pair<float, float> GetPos() const;
@@ -34,7 +47,7 @@ namespace ACFT
 		void SetScale(float scale);
 		void MultiplyScale(float scale);
 
-		glm::mat4 GetVPMatrix(int window_width, int window_height) const;
+		glm::mat4 GetVPMatrix(int window_width, int window_height) const override;
 
 	private:
 		float m_XPos = 0.0f;

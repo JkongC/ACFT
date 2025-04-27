@@ -5,7 +5,8 @@ module;
 export module Tesselator;
 
 import <vector>;
-import <memory>;
+
+import Types;
 import Vertex;
 
 namespace ACFT
@@ -28,12 +29,12 @@ namespace ACFT
 		ACFT_API ~Tesselator() = default;
 
 		ACFT_API void PushVertex(Vertex vtx);
-		ACFT_API Vertex& NewVertex();
-		ACFT_API const std::vector<Vertex>& GetVertices() const;
+		ACFT_API VertexBuilder NewVertex();
+		ACFT_API const std::vector<Scope<Vertex>>& GetVertices() const;
 		ACFT_API Primitive GetMode() const;
 
 	private:
 		Primitive m_VertexMode;
-		std::vector<Vertex> m_VertexList;
+		std::vector<Scope<Vertex>> m_VertexList;
 	};
 }

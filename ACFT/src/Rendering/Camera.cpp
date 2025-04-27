@@ -10,11 +10,13 @@ import Window;
 
 namespace ACFT
 {
+	OrthographicCamera::OrthographicCamera()
+		: Camera(CameraType::ortho)
+	{ }
+	
 	OrthographicCamera::OrthographicCamera(Ref<Window> window)
-		: m_XPos(window->GetWidth() / 2.0f), m_YPos(window->GetHeight() / 2.0f)
-	{
-
-	}
+		: Camera(CameraType::ortho), m_XPos(window->GetWidth() / 2.0f), m_YPos(window->GetHeight() / 2.0f)
+	{ }
 
 	std::pair<float, float> OrthographicCamera::GetPos() const
 	{

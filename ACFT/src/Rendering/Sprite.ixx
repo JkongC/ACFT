@@ -25,6 +25,8 @@ namespace ACFT
 
 		ACFT_API const Texture& GetCurrentImage() const;
 
+		ACFT_API int GetImageCount() const { return m_ImgCount; }
+
 	private:
 		int m_ImgCount = 0;
 		mutable int m_CurrentIdx = 0;
