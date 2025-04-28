@@ -1,316 +1,211 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{E9A3153E-D55B-578B-3E63-30E72A3AF27B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Event">
+      <UniqueIdentifier>{E70B220D-5320-4ABE-1CA2-ED1D887546EF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Log">
+      <UniqueIdentifier>{E704880B-530E-887C-DC89-9E7C4892937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Profiler">
+      <UniqueIdentifier>{28AC12A2-1479-6DAD-3D92-5B5529BEA23B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{E3AE1F7C-4F19-D4F2-9857-85980401B247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\GLImpls">
+      <UniqueIdentifier>{6A8D717A-D6A3-6F10-1F1B-FB318B704098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{23A78D7C-0FDE-8E0D-B8CA-7410A4E00A0F}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Entry.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Util\Timer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Log\Log.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Block\Block.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Tick\TickManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Tick\Tick.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Controller\InputQuery.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ResourceManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Block\Blocks.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Block\BlockState.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Chunk\Chunk.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Chunk\ChunkManager.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Serialization\Serializer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UUID.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UUID.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Components.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Util\Direction.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Util\LockfreeQueue.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Util\Util.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Util\Node.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Base.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\entt\src\entt\entity\registry.hpp">
-      <Filter>头文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\glm\glm\glm.hpp">
-      <Filter>头文件</Filter>
-    </ClCompile>
-    <ClCompile Include="vendor\glm\glm\gtc\matrix_transform.hpp">
-      <Filter>头文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Base_std.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Base_glm.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Base_entt.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Renderer.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Vertex.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Renderer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Vertex.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Tesselator.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Tesselator.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Log\Log.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLShader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Camera.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Camera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Window.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Window.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Config.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Config.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Shader.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Sprite.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Sprite.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Image.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Image.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Atlas.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Atlas.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Texture.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Types.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Game.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\Layer.ixx">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Event\Event.ixx">
-      <Filter>源文件</Filter>
+    <ClInclude Include="src\ACFTEngine.h" />
+    <ClInclude Include="src\Platform.h" />
+    <ClInclude Include="src\Rendering\GLImpls\gldbg.h">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ACFT.cpp" />
+    <ClCompile Include="src\ACFT.ixx" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Application.ixx" />
+    <ClCompile Include="src\Base_entt.ixx" />
+    <ClCompile Include="src\Base_glm.ixx" />
+    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\Config.ixx" />
+    <ClCompile Include="src\Controller\Input.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Controller\Input.ixx">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Controller\KeyInput.ixx">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Controller\MouseInput.ixx">
+      <Filter>Controller</Filter>
     </ClCompile>
     <ClCompile Include="src\Event\Event.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Event\Event.ixx">
+      <Filter>Event</Filter>
     </ClCompile>
     <ClCompile Include="src\Event\EventInfo.ixx">
-      <Filter>源文件</Filter>
+      <Filter>Event</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Util\Timer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\Voxel.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\Texture.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Block\Block.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\VertexBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\IndexBuffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\VertexArray.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Util\Vec.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\VertexBufferLayout.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\Camera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tick\Tick.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Tick\TickManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Controller\InputQuery.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\RenderCommand.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\RenderQueue.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\RenderSystem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ResourceManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Render\Sky\Sky.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Util\MathHelper.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Chunk\Chunk.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Block\Blocks.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Block\BlockState.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Chunk\ChunkManager.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Serialization\Serializer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Rendering\GLImpls\gldbg.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shader\basic.shader" />
-    <None Include="shader\sky.shader" />
+    <ClCompile Include="src\Log\Log.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Log\Log.ixx">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Profiler\FPSProfiler.cpp">
+      <Filter>Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Profiler\FPSProfiler.ixx">
+      <Filter>Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Atlas.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Atlas.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Camera.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Camera.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuffer.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLIndexBuilder.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLShader.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLShader.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLTexture.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLTexture.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexArray.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\GLVertexBuffer.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLRenderer.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.cpp">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\GLImpls\OpenGLWindow.ixx">
+      <Filter>Rendering\GLImpls</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Image.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Image.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Layer.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Layer.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Renderer.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Renderer.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Shader.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Shader.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Sprite.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Sprite.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Tesselator.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Tesselator.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Texture.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Vertex.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Vertex.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Window.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Window.ixx">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Types.ixx" />
+    <ClCompile Include="src\UUID.cpp" />
+    <ClCompile Include="src\UUID.ixx" />
+    <ClCompile Include="src\Util\Direction.ixx">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\LockfreeQueue.ixx">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\MathHelper.ixx">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Node.ixx">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\RefCount.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\RefCount.ixx">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Timer.ixx">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

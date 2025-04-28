@@ -19,16 +19,12 @@ namespace ACFT
 
 	Image::Image(const Image& other)
 	{
-		int buffer_size = WideCharToMultiByte(CP_UTF8, 0, other.m_ImagePath.c_str(), -1, nullptr, 0, nullptr, nullptr);
-		char* path_buffer = static_cast<char*>(alloca(buffer_size));
-		WideCharToMultiByte(CP_UTF8, 0, other.m_ImagePath.c_str(), -1, path_buffer, buffer_size, nullptr, nullptr);
-		stbi_set_flip_vertically_on_load(1);
-		this->m_Data = stbi_load(path_buffer, &this->m_Width, &this->m_Height, &this->m_Channels, 0);
+		InitImage(other.GetImagePath());
 	}
 	
-	Image::Image(std::filesystem::path path)
+	Image::Image(const std::filesystem::path& path, bool flip_vertically)
 	{
-		InitImage(path);
+		InitImage(path, flip_vertically);
 	}
 
 	Image::~Image()
@@ -36,18 +32,18 @@ namespace ACFT
 		stbi_image_free(this->m_Data);
 	}
 
-	void Image::InitImage(std::filesystem::path path)
+	void Image::InitImage(const std::filesystem::path& path, bool flip_vertically)
 	{
 		if (m_Data)
 		{
 			ACFT_LOG_WARN("Trying to init an image that is already initialized.");
 			return;
 		}
-		
-		int buffer_size = WideCharToMultiByte(CP_UTF8, 0, path.c_str(), -1, nullptr, 0, nullptr, nullptr);
-		char* path_buffer = static_cast<char*>(alloca(buffer_size));
-		WideCharToMultiByte(CP_UTF8, 0, path.c_str(), -1, path_buffer, buffer_size, nullptr, nullptr);
-		stbi_set_flip_vertically_on_load(1);
-		this->m_Data = stbi_load(path_buffer, &this->m_Width, &this->m_Height, &this->m_Channels, 0);
+	
+		stbi_set_flip_vertically_on_load(flip_vertically ? 1 : 0);
+		this->m_Data = stbi_load(path.string().c_str(), &this->m_Width, &this->m_Height, &this->m_Channels, 0);
+
+		if (this->m_Data == nullptr)
+			ACFT_LOG_WARN("Failed to load Image \"{}\"!", path.string());
 	}
 }

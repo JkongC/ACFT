@@ -1,7 +1,12 @@
+module;
+
+#include "Platform.h"
+
 export module Tesselator;
 
 import <vector>;
-import <memory>;
+
+import Types;
 import Vertex;
 
 namespace ACFT
@@ -19,17 +24,17 @@ namespace ACFT
 	export class Tesselator
 	{
 	public:
-		Tesselator(Primitive mode);
-		Tesselator(Tesselator&&) = default;
-		~Tesselator() = default;
+		ACFT_API Tesselator(Primitive mode);
+		ACFT_API Tesselator(Tesselator&&) = default;
+		ACFT_API ~Tesselator() = default;
 
-		void PushVertex(Vertex vtx);
-		Vertex& NewVertex();
-		const std::vector<Vertex>& GetVertices() const;
-		inline Primitive GetMode() const;
+		ACFT_API void PushVertex(Vertex vtx);
+		ACFT_API VertexBuilder NewVertex();
+		ACFT_API const std::vector<Scope<Vertex>>& GetVertices() const;
+		ACFT_API Primitive GetMode() const;
 
 	private:
 		Primitive m_VertexMode;
-		std::vector<Vertex> m_VertexList;
+		std::vector<Scope<Vertex>> m_VertexList;
 	};
 }

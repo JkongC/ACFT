@@ -3,15 +3,15 @@ export module Renderer:GLVertexArray;
 export import :GLVertexBuffer;
 export import :GLIndexBuffer;
 
-import <memory>;
+import Types;
 
 namespace GLImplementations
 {
 	class VertexArray
 	{
 	public:
-		VertexArray(const VertexBufferLayout& layout, IndexBuffer&& ibo);
-		VertexArray(const VertexBufferLayout& layout, const std::shared_ptr<IndexBuffer>& ibo);
+		VertexArray(const VertexBufferLayout& layout, const VertexBuffer& vbo, IndexBuffer&& ibo);
+		VertexArray(const VertexBufferLayout& layout, const ACFT::Ref<VertexBuffer>& vbo, const ACFT::Ref<IndexBuffer>& ibo);
 		~VertexArray();
 
 		void Bind() const;
@@ -20,10 +20,10 @@ namespace GLImplementations
 		inline std::shared_ptr<IndexBuffer> GetIndexBuffer() const { return m_IBO; }
 
 	private:
-		void Init(const VertexBufferLayout& layout) const;
+		void Init(const VertexBuffer& vbo, const VertexBufferLayout& layout) const;
 
 	private:
-		std::shared_ptr<IndexBuffer> m_IBO;
+		ACFT::Ref<IndexBuffer> m_IBO;
 		unsigned int m_ArrayID;
 	};
 }

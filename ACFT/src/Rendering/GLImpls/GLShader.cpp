@@ -1,62 +1,63 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 #include <malloc.h>
 #include <sstream>
+#include <fstream>
 
-#include "gldbg.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 module Renderer:GLShader;
 
 import <string>;
-import <fstream>;
+import <filesystem>;
 import Log;
+import Shader;
 
-namespace GLImplementions
+#include "gldbg.h"
+
+namespace GLImplementations
 {
-	Shader::Shader(const std::string& filepath)
-		: m_FilePath(filepath), m_ShaderID(0)
+	GLShader::GLShader(const std::filesystem::path& filepath)
+		: m_Path(filepath)
 	{
-		m_ShaderID = CreateShader();
+		m_Identifier = CreateShader();
 	}
 
-	void Shader::Bind() const
+	void GLShader::Bind() const
 	{
-		GLCall(glUseProgram(m_ShaderID));
+		GLCall(glUseProgram(m_Identifier));
 	}
 
-	void Shader::Unbind() const
+	void GLShader::Unbind() const
 	{
 		GLCall(glUseProgram(0));
 	}
 
-	void Shader::SetUniform1i(const std::string& name, int value)
+	void GLShader::SetUniform1i(const std::string& name, int value)
 	{
 		GLCall(glUniform1i(GetUniformLocation(name), value));
 	}
 
-	void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
+	void GLShader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 	{
 		GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
 	}
 
-	void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
+	void GLShader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
 		GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 	}
 
-	void Shader::SetUniformVec3f(const std::string& name, const glm::vec3& vec)
+	void GLShader::SetUniformVec3f(const std::string& name, const glm::vec3& vec)
 	{
 		GLCall(glUniform3fv(GetUniformLocation(name), 1, &vec.x));
 	}
 
-	ShaderSources Shader::ParseShader()
+	ShaderSources GLShader::ParseShader()
 	{
-		std::ifstream file(m_FilePath);
+		std::ifstream file(m_Path);
 		if (!file.is_open()) {
 			ACFT_LOG_ERROR("Failed to open shader file!");
 		}
@@ -86,7 +87,7 @@ namespace GLImplementions
 		return { ss[0].str(), ss[1].str() };
 	}
 
-	unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
+	unsigned int GLShader::CompileShader(unsigned int type, const std::string& source)
 	{
 		unsigned int ID = glCreateShader(type);
 		const char* sc = source.c_str();
@@ -111,7 +112,7 @@ namespace GLImplementions
 		return ID;
 	}
 
-	unsigned int Shader::CreateShader()
+	unsigned int GLShader::CreateShader()
 	{
 		ShaderSources shadersources = ParseShader();
 
@@ -130,16 +131,21 @@ namespace GLImplementions
 		return program;
 	}
 
-	unsigned int Shader::GetUniformLocation(const std::string& name) const
+	unsigned int GLShader::GetUniformLocation(const std::string& name) const
 	{
 		if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
 			return m_UniformLocationCache[name];
 
-		int location = glGetUniformLocation(m_ShaderID, name.c_str());
+		int location = glGetUniformLocation(m_Identifier, name.c_str());
 		if (location == -1)
 			ACFT_GL_LOG("Uniform '{}' doesn't exist.", name);
 
 		m_UniformLocationCache[name] = location;
 		return location;
+	}
+
+	ACFT::RenderObjectIdentifier GLShader::GetIdentifier()
+	{
+		return m_Identifier;
 	}
 }

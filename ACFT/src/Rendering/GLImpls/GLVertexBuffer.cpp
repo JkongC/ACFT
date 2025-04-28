@@ -1,29 +1,31 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
+
+#include <entt/entity/registry.hpp>
 
 module Renderer:GLVertexBuffer;
 
 import Log;
 import Vertex;
 
+#include "gldbg.h"
+
 namespace GLImplementations
 {
 	VertexBuffer::VertexBuffer()
 	{
-		glGenBuffers(1, &m_BufferID);
+		GLCall(glGenBuffers(1, &m_BufferID));
 	}
 	
 	VertexBuffer::VertexBuffer(size_t max_size)
 		: m_MaxBufferSize(max_size)
 	{
-		glGenBuffers(1, &m_BufferID);
-		glBufferData(GL_ARRAY_BUFFER, m_MaxBufferSize, nullptr, GL_DYNAMIC_DRAW);
+		GLCall(glGenBuffers(1, &m_BufferID));
+		Bind();
+		GLCall(glBufferData(GL_ARRAY_BUFFER, m_MaxBufferSize, nullptr, GL_DYNAMIC_DRAW));
+		Unbind();
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -56,19 +58,11 @@ namespace GLImplementations
 		PushSingleAttribute<ACFT::VertexColorRGB>(vtx);
 		PushSingleAttribute<ACFT::VertexColorRGBA>(vtx);
 		PushSingleAttribute<ACFT::VertexTexture>(vtx);
+		PushSingleAttribute<ACFT::VertexUVCoords>(vtx);
 
 		this->m_CurrentVertexCount++;
-		return true;
-	}
 
-	template<typename Attribute>
-	void VertexBuffer::PushSingleAttribute(const ACFT::Vertex& vtx)
-	{
-		if (Attribute* attr = vtx.GetAttribute<Attribute>())
-		{
-			glBufferSubData(GL_ARRAY_BUFFER, GetCurrentBufferSize(), sizeof(Attribute), attr);
-			this->m_CurrentSize += sizeof(Attribute);
-		}
+		return true;
 	}
 
 	void VertexBuffer::Clear()

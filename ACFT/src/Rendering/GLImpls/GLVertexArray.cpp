@@ -1,46 +1,49 @@
 module;
 
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-
 #include <glew.h>
 #include <glfw3.h>
 
 module Renderer:GLVertexArray;
 
-import <memory>;
+import Types;
+
+import Log;
+
+#include "gldbg.h"
 
 namespace GLImplementations
 {
-	VertexArray::VertexArray(const VertexBufferLayout& layout, IndexBuffer&& ibo)
-		: m_IBO(std::make_shared<IndexBuffer>(std::move(ibo)))
+	using namespace ACFT;
+	VertexArray::VertexArray(const VertexBufferLayout& layout, const VertexBuffer& vbo, IndexBuffer&& ibo)
+		: m_IBO(MakeRef<IndexBuffer>(std::move(ibo)))
 	{
 		glGenVertexArrays(1, &m_ArrayID);
-		Init(layout);
+		Init(vbo, layout);
 	}
 
-	VertexArray::VertexArray(const VertexBufferLayout& layout, const std::shared_ptr<IndexBuffer>& ibo)
+	VertexArray::VertexArray(const VertexBufferLayout& layout, const Ref<VertexBuffer>& vbo, const Ref<IndexBuffer>& ibo)
 		: m_IBO(ibo)
 	{
 		glGenVertexArrays(1, &m_ArrayID);
-		Init(layout);
+		Init(*vbo, layout);
 	}
 
-	void VertexArray::Init(const VertexBufferLayout& layout) const
+	void VertexArray::Init(const VertexBuffer& vbo, const VertexBufferLayout& layout) const
 	{
 		Bind();
+		vbo.Bind();
 		m_IBO->Bind();
 		const auto& elements = layout.GetElements();
 		uintptr_t offset = 0;
 		for (unsigned int i = 0; i < elements.size(); i++) {
 			const auto& element = elements[i];
-			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, element.count, element.type,
-				element.normalized, layout.GetStride(), reinterpret_cast<const void*>(offset));
+			GLCall(glEnableVertexAttribArray(i));
+			GLCall(glVertexAttribPointer(i, static_cast<GLsizei>(element.count), element.type,
+				element.normalized, static_cast<GLsizei>(layout.GetStride()), reinterpret_cast<const void*>(offset)));
 			offset += element.count * VertexBufferElement::GetSizeOfType(element.type);
 		}
 		Unbind();
+		vbo.Unbind();
 		m_IBO->Unbind();
 	}
 

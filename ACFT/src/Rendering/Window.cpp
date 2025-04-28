@@ -1,7 +1,6 @@
 module Window;
 
 import Types;
-import Renderer;
 import Config;
 import :OpenGLWindow;
 
