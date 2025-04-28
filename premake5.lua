@@ -7,7 +7,6 @@ workspace "ACFT"
 
   startproject "Sandbox"
   
-  -- 全局模块输出目录
   moduleoutdir = "%{wks.location}/ifc"
 
   outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
@@ -27,7 +26,6 @@ project "ACFT"
 
   -- defines { "ACFT_EXPORTS" }
   
-  -- 源文件配置（保持原始结构）
   files {
     "%{prj.name}/src/**.ixx",
     "%{prj.name}/src/**.cpp",
@@ -111,5 +109,9 @@ project "Sandbox"
   buildoptions (ref_options)
   
   postbuildcommands {
-    "{COPYFILE} ../lib/*.dll %{cfg.targetdir}/"
+    "{COPYFILE} ../lib/*.dll %{cfg.targetdir}/",
+    "{MKDIR} %{cfg.targetdir}/resources/imgs/",
+    "{MKDIR} %{cfg.targetdir}/resources/shaders/",
+    "{COPYFILE} resources/imgs/* %{cfg.targetdir}/resources/imgs/",
+    "{COPYFILE} resources/shaders/* %{cfg.targetdir}/resources/shaders/"
   }

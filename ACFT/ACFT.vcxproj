@@ -139,6 +139,10 @@ copy /B /Y ..\bin\Release-windows-x86_64\ACFT\ACFT.lib ..\bin\Release-windows-x8
     <ClCompile Include="src\Log\Log.ixx">
       <ObjectFileName>$(IntDir)\Log1.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="src\Profiler\FPSProfiler.cpp" />
+    <ClCompile Include="src\Profiler\FPSProfiler.ixx">
+      <ObjectFileName>$(IntDir)\FPSProfiler1.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="src\Rendering\Atlas.cpp" />
     <ClCompile Include="src\Rendering\Atlas.ixx">
       <ObjectFileName>$(IntDir)\Atlas1.obj</ObjectFileName>

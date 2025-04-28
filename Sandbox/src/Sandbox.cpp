@@ -5,15 +5,18 @@ class MyApp : public ACFT::Application
 public:
 	virtual int Entry(int argc, char** argv) override
 	{
+		ACFT::Config::SetWindowIcon("resources/imgs/acft_icon.png");
+		ACFT::Config::SetWindowName("Sandbox");
+		
 		ACFTItems items = ACFT::Initialize();
 		auto& [window, renderer] = items;
 		
-		ACFT::Image left_0{"resources/imgs/enemy_left_0.png"};
-		ACFT::Image left_1{"resources/imgs/enemy_left_1.png"};
-		ACFT::Image left_2{"resources/imgs/enemy_left_2.png"};
-		ACFT::Image left_3{"resources/imgs/enemy_left_3.png"};
-		ACFT::Image left_4{"resources/imgs/enemy_left_4.png"};
-		ACFT::Image left_5{"resources/imgs/enemy_left_5.png"};
+		ACFT::Image left_0{"resources/imgs/enemy_left_0.png", true};
+		ACFT::Image left_1{"resources/imgs/enemy_left_1.png", true};
+		ACFT::Image left_2{"resources/imgs/enemy_left_2.png", true};
+		ACFT::Image left_3{"resources/imgs/enemy_left_3.png", true};
+		ACFT::Image left_4{"resources/imgs/enemy_left_4.png", true};
+		ACFT::Image left_5{"resources/imgs/enemy_left_5.png", true};
 
 		ACFT::Ref<ACFT::Atlas> atlas = ACFT::MakeRef<ACFT::Atlas>(6, 1);
 		atlas->AddTexture(left_0);
@@ -24,7 +27,7 @@ public:
 		atlas->AddTexture(left_5);
 
 		ACFT::Sprite sprite;
-		sprite.SetInterval(150);
+		sprite.SetInterval(70);
 		sprite.UseAtlas(atlas);
 
 		auto shader = ACFT::Shader::Create("resources/shaders/basic.shader");
@@ -36,22 +39,13 @@ public:
 		renderer.EnableVSync();
 		renderer.EnableBlend();
 
-		double fps_log_timer = 0;
-		size_t frame_count_rc = 0;
+		auto fps_profiler = ACFT::FPSProfiler();
 
 		while (!window->ShouldClose())
 		{
 			float elapsed = timer.GetElapsed();
 			sprite.AccumulateTime(elapsed);
-			fps_log_timer += elapsed;
 			timer.Flush();
-
-			if (fps_log_timer >= 1000.0)
-			{
-				ACFT_LOG_INFO("Current FPS: {}", static_cast<size_t>(frame_count_rc / (fps_log_timer / 1000.0)));
-				fps_log_timer = 0;
-				frame_count_rc = 0;
-			}
 
 			renderer.BeginScene({camera});
 
@@ -64,7 +58,7 @@ public:
 
 			window->PollEvents();
 
-			frame_count_rc++;
+			fps_profiler.RecordFrame();
 		}
 
 		ACFT::Clean();

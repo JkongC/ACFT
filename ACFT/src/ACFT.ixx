@@ -7,6 +7,7 @@ export import Config;
 export import Atlas;
 export import Renderer;
 export import Timer;
+export import FPSProfiler;
 
 export struct ACFTItems
 {

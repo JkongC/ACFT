@@ -14,10 +14,10 @@ namespace ACFT
 		ACFT_API Image();
 		ACFT_API Image(const Image&);
 		ACFT_API Image(Image&&) = default;
-		ACFT_API Image(const std::filesystem::path& path);
+		ACFT_API Image(const std::filesystem::path& path, bool flip_vertically = false);
 		ACFT_API ~Image();
 
-		ACFT_API void InitImage(const std::filesystem::path& path);
+		ACFT_API void InitImage(const std::filesystem::path& path, bool flip_vertically = false);
 
 		ACFT_API inline unsigned char* GetInternalData() { return this->m_Data; }
 		ACFT_API inline int GetWidth() const { return this->m_Width; }

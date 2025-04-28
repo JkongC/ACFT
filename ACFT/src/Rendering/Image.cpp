@@ -22,9 +22,9 @@ namespace ACFT
 		InitImage(other.GetImagePath());
 	}
 	
-	Image::Image(const std::filesystem::path& path)
+	Image::Image(const std::filesystem::path& path, bool flip_vertically)
 	{
-		InitImage(path);
+		InitImage(path, flip_vertically);
 	}
 
 	Image::~Image()
@@ -32,7 +32,7 @@ namespace ACFT
 		stbi_image_free(this->m_Data);
 	}
 
-	void Image::InitImage(const std::filesystem::path& path)
+	void Image::InitImage(const std::filesystem::path& path, bool flip_vertically)
 	{
 		if (m_Data)
 		{
@@ -40,7 +40,7 @@ namespace ACFT
 			return;
 		}
 	
-		stbi_set_flip_vertically_on_load(1);
+		stbi_set_flip_vertically_on_load(flip_vertically ? 1 : 0);
 		this->m_Data = stbi_load(path.string().c_str(), &this->m_Width, &this->m_Height, &this->m_Channels, 0);
 
 		if (this->m_Data == nullptr)

@@ -10,6 +10,9 @@
     <Filter Include="Log">
       <UniqueIdentifier>{E704880B-530E-887C-DC89-9E7C4892937C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Profiler">
+      <UniqueIdentifier>{28AC12A2-1479-6DAD-3D92-5B5529BEA23B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{E3AE1F7C-4F19-D4F2-9857-85980401B247}</UniqueIdentifier>
     </Filter>
@@ -62,6 +65,12 @@
     </ClCompile>
     <ClCompile Include="src\Log\Log.ixx">
       <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Profiler\FPSProfiler.cpp">
+      <Filter>Profiler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Profiler\FPSProfiler.ixx">
+      <Filter>Profiler</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Atlas.cpp">
       <Filter>Rendering</Filter>

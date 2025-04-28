@@ -13,6 +13,7 @@ module Window:OpenGLWindow;
 
 import Log;
 import Event;
+import Config;
 
 #include "gldbg.h"
 
@@ -20,7 +21,7 @@ namespace ACFT
 {
 	std::atomic<size_t> WindowCount{ 0 };
 	
-	GLFWimage icon[1];
+	GLFWimage icon_img[1];
 	
 	OpenGLWindow::OpenGLWindow()
 	{
@@ -30,10 +31,8 @@ namespace ACFT
 			exit(-1);
 		}
 
-		icon[0].pixels = stbi_load("resources/acft_icon.png", &icon[0].width, &icon[0].height, nullptr, 4);
-
 		glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
-		m_RawWindow = glfwCreateWindow(m_Width, m_Height, "AnotherCraft", nullptr, nullptr);
+		m_RawWindow = glfwCreateWindow(m_Width, m_Height, Config::GetWindowName().data(), nullptr, nullptr);
 		if (!m_RawWindow)
 		{
 			glfwTerminate();
@@ -41,7 +40,14 @@ namespace ACFT
 			exit(-1);
 		}
 
-		glfwSetWindowIcon(m_RawWindow, 1, icon);
+		if (auto& icon = Config::GetWindowIcon();
+			icon.GetInternalData() != nullptr)
+		{
+			icon_img[0].pixels = icon.GetInternalData();
+			icon_img[0].width = icon.GetWidth();
+			icon_img[0].height = icon.GetHeight();
+			glfwSetWindowIcon(m_RawWindow, 1, icon_img);
+		}
 
 		glfwMakeContextCurrent(m_RawWindow);
 
@@ -57,8 +63,6 @@ namespace ACFT
 		glfwSetMouseButtonCallback(m_RawWindow, MouseButtonCallback);
 		glfwSetKeyCallback(m_RawWindow, KeyCallback);
 		glfwSetFramebufferSizeCallback(m_RawWindow, WindowResizeCallback);
-
-		GLCall();
 
 		WindowCount++;
 	}
