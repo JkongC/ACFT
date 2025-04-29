@@ -67,9 +67,14 @@ namespace ACFT
 
 	glm::mat4 OrthographicCamera::GetVPMatrix(int window_width, int window_height) const
 	{
-		auto proj = glm::ortho(m_XPos - window_width / 2.0f, m_XPos + window_width / 2.0f,
+		auto proj = glm::ortho(m_XPos - (window_width / m_Scale) / 2.0f, m_XPos + (window_width / m_Scale) / 2.0f,
 			m_YPos - window_height / 2.0f, m_YPos + window_height / 2.0f);
 		auto scale = glm::scale(proj, glm::vec3(m_Scale, m_Scale, 1.0f));
 		return glm::rotate(scale, m_RotateAngle, glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+
+	std::pair<float, float> OrthographicCamera::WindowPosToCamPos(int window_width, int window_height, float xpos, float ypos)
+	{
+		return {m_XPos + (xpos - window_width / 2.0f) / m_Scale, m_YPos - (ypos - window_height / 2.0f)};
 	}
 }

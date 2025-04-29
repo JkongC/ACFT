@@ -4,9 +4,9 @@ module;
 
 export module Layer;
 
-import <vector>;
-import <unordered_set>;
-import <mutex>;
+export import <vector>;
+export import <unordered_set>;
+export import <mutex>;
 
 import Types;
 import Event;

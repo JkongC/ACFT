@@ -53,4 +53,9 @@ namespace ACFT
 
 		return s_Instance;
 	}
+
+	Ref<Window> Renderer::GetWindow()
+	{
+		return m_Window;
+	}
 }

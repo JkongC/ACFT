@@ -5,6 +5,8 @@ module;
 
 export module Camera;
 
+import <utility>;
+
 import Types;
 import Window;
 
@@ -46,6 +48,8 @@ namespace ACFT
 		float GetScale() const;
 		void SetScale(float scale);
 		void MultiplyScale(float scale);
+
+		std::pair<float, float> WindowPosToCamPos(int window_width, int window_height, float xpos, float ypos);
 
 		glm::mat4 GetVPMatrix(int window_width, int window_height) const override;
 

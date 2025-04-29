@@ -21,6 +21,8 @@ namespace ACFT
 
 		virtual void SwapFrameBuffers() override;
 
+		virtual void* GetRawWindow() override;
+
 	private:
 		static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

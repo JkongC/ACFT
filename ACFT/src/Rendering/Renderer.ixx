@@ -62,6 +62,8 @@ namespace ACFT
 
 		ACFT_API virtual RenderAPI GetRenderAPI() = 0;
 
+		ACFT_API Ref<Window> GetWindow();
+
 		ACFT_API virtual ~Renderer() = default;
 
 	protected:

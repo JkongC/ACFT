@@ -124,4 +124,9 @@ namespace ACFT
 	{
 		glfwSwapBuffers(m_RawWindow);
 	}
+
+	void* OpenGLWindow::GetRawWindow()
+	{
+		return m_RawWindow;
+	}
 }

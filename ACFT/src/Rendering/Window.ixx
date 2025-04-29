@@ -26,6 +26,8 @@ namespace ACFT
 
 		ACFT_API virtual void SwapFrameBuffers() = 0;
 
+		ACFT_API virtual void* GetRawWindow() = 0;
+
 	protected:
 		Window() = default;
 
