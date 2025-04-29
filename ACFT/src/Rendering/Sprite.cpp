@@ -11,7 +11,7 @@ namespace ACFT
 {
 	void Sprite::UseAtlas(Ref<Atlas> atlas)
 	{
-		RenderObjectIdentifier id = Renderer::GetRenderer().MakeTexture(atlas);
+		RenderObjectIdentifier id = Renderer::GetRenderer()->MakeTexture(atlas);
 
 		for (int i = 0; i < atlas->GetTextureCount(); i++)
 		{
@@ -23,7 +23,7 @@ namespace ACFT
 
 	void Sprite::UseAtlas(Scope<Atlas> atlas)
 	{
-		RenderObjectIdentifier id = Renderer::GetRenderer().MakeTexture(std::move(atlas));
+		RenderObjectIdentifier id = Renderer::GetRenderer()->MakeTexture(std::move(atlas));
 
 		for (int i = 0; i < atlas->GetTextureCount(); i++)
 		{

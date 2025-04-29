@@ -190,7 +190,7 @@ namespace ACFT
 		static ACFT_API EventManager& Global();
 		
 		void JoinEvent(Ref<Event> event);
-		Ref<Event> FetchEvent();
+		Ref<Event> FetchEvent(bool consume = true);
 
 		ACFT_API void DistributeEvent(Ref<Event> event);
 

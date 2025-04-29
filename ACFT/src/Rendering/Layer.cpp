@@ -49,7 +49,7 @@ namespace ACFT
 		for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); it++)
 		{
 			Ref<Layer>& layer = *it;
-			if (layer->HandleEvent(event))
+			if (layer->OnEvent(event))
 				break;
 		}
 	}
@@ -63,5 +63,21 @@ namespace ACFT
 		}
 
 		return m_Layers.at(index);
+	}
+
+	void LayerStack::OnUpdate(float time_step)
+	{
+		for (auto& layer : m_Layers)
+		{
+			layer->OnUpdate(time_step);
+		}
+	}
+
+	void LayerStack::OnRender()
+	{
+		for (auto& layer : m_Layers)
+		{
+			layer->OnRender();
+		}
 	}
 }

@@ -7,30 +7,41 @@ module Renderer;
 import Types;
 import Log;
 import Config;
+import Event;
 import :OpenGLRenderer;
 
 namespace ACFT
 {
-	Renderer& Renderer::InitRenderer(Ref<Window> window)
+	Ref<Renderer>& Renderer::InitRenderer(Ref<Window> window)
 	{
 		std::lock_guard<std::mutex> lock(s_Mtx);
 		
 		if (s_Instance)
-			return *s_Instance;
+			return s_Instance;
 		
 		switch (Config::GetRenderAPI())
 		{
 		default:
 			ACFT_LOG_ERROR("[Renderer] Trying to use an invalid Render API type!");
 		case RenderAPI::OpenGL:
-			s_Instance = new OpenGLRenderer();
+			s_Instance = MakeRef<OpenGLRenderer>();
 			s_Instance->m_Window = window;
-			return *s_Instance;
 			break;
 		}
+
+		auto resize_callback = [&renderer = s_Instance](Ref<Event> event) -> void
+			{
+				if (event->GetType() == Events::WINDOW_RESIZE)
+				{
+					renderer->m_EventQueue.Push(event);
+				}
+			};
+		EventManager::Global().Subscribe(s_Instance, Events::WINDOW_RESIZE, resize_callback);
+
+		return s_Instance;
 	}
 
-	Renderer& Renderer::GetRenderer()
+	Ref<Renderer>& Renderer::GetRenderer()
 	{
 		std::lock_guard<std::mutex> lock(s_Mtx);
 
@@ -40,14 +51,6 @@ namespace ACFT
 			exit(-1);
 		}
 
-		return *s_Instance;
-	}
-
-	void Renderer::ShutdownRenderer()
-	{
-		std::lock_guard<std::mutex> lock(s_Mtx);
-
-		if (s_Instance)
-			delete s_Instance;
+		return s_Instance;
 	}
 }

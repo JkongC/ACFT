@@ -3,16 +3,17 @@ export module ACFT;
 export import Types;
 export import Log;
 export import Application;
+export import Layer;
 export import Config;
 export import Atlas;
 export import Renderer;
-export import Timer;
+export import Utils;
 export import FPSProfiler;
 
 export struct ACFTItems
 {
 	ACFT::Ref<ACFT::Window> window;
-	ACFT::Renderer& renderer;
+	ACFT::Ref<ACFT::Renderer> renderer;
 };
 
 namespace ACFT

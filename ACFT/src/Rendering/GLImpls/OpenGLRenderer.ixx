@@ -8,10 +8,10 @@ module;
 
 export module Renderer:OpenGLRenderer;
 
-import <vector>;
 import <string>;
 import <unordered_map>;
 
+import Types;
 import Renderer;
 import Tesselator;
 import Atlas;
@@ -88,10 +88,10 @@ namespace ACFT
 	private:
 		std::unordered_map<Primitive, VertexArray> m_VAOs;
 		std::unordered_map<Primitive, VertexBuffer> m_VBOs;
+
 		std::unordered_map<GLuint, GLTexture> m_TextureCache;
 		std::unordered_map<GLuint, GLShader> m_ShaderCache;
-		RenderContext m_RenderContextCache;
-
+		
 		Primitive m_CurrentPrimitive;
 	};
 }

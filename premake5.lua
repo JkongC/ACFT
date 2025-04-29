@@ -1,5 +1,5 @@
 workspace "ACFT"
-  configurations { "Debug", "Release" }
+  configurations { "Release", "Debug" }
   system "Windows"
   architecture "x64"
   cppdialect "C++20"

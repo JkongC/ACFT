@@ -207,5 +207,6 @@
     <ClCompile Include="src\Util\Timer.ixx">
       <Filter>Util</Filter>
     </ClCompile>
+    <ClCompile Include="src\Util\Utils.ixx" />
   </ItemGroup>
 </Project>

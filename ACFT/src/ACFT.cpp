@@ -22,6 +22,6 @@ namespace ACFT
 
 	void Clean()
 	{
-		Renderer::ShutdownRenderer();
+		
 	}
 }

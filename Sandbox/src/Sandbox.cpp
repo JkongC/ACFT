@@ -1,5 +1,34 @@
 #include "ACFTEngine.h"
 
+class MyLayer : public ACFT::Layer
+{
+protected:
+	MyLayer()
+	{
+
+	}
+
+	virtual bool OnEvent(ACFT::Ref<ACFT::Event> event) override
+	{
+
+	}
+
+	virtual void OnUpdate(float time_step) override
+	{
+
+	}
+
+	virtual void OnRender() override
+	{
+		auto& renderer = ACFT::Renderer::GetRenderer();
+
+	}
+
+private:
+	ACFT::LockfreeQueue<ACFT::Event> m_EventQueue;
+	ACFT::Sprite m_Sprite;
+};
+
 class MyApp : public ACFT::Application
 {
 public:
@@ -35,9 +64,9 @@ public:
 		auto camera = MakeRef<ACFT::OrthographicCamera>(window);
 
 		auto timer = ACFT::NormalTimer();
-		renderer.SetClearColor(0.4f, 0.8f, 0.5f, 1.0f);
-		renderer.EnableVSync();
-		renderer.EnableBlend();
+		renderer->SetClearColor(0.4f, 0.8f, 0.5f, 1.0f);
+		renderer->EnableVSync();
+		renderer->EnableBlend();
 
 		auto fps_profiler = ACFT::FPSProfiler();
 
@@ -47,14 +76,14 @@ public:
 			sprite.AccumulateTime(elapsed);
 			timer.Flush();
 
-			renderer.BeginScene({camera});
+			renderer->BeginScene({camera});
 
 			ACFT::RenderContext ctx{};
 			ctx.shader = shader;
 
-			renderer.DrawSprite(sprite, 500.0f, 600.0f, 150.0f, 150.0f, ctx);
+			renderer->DrawSprite(sprite, 500.0f, 600.0f, 150.0f, 150.0f, ctx);
 
-			renderer.EndScene();
+			renderer->EndScene();
 
 			window->PollEvents();
 

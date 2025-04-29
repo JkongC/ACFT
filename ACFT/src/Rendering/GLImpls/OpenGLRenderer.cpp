@@ -3,6 +3,8 @@ module;
 #include <glew.h>
 #include <glfw3.h>
 
+#include <entt/entity/registry.hpp>
+
 module Renderer:OpenGLRenderer;
 
 import Types;
@@ -11,6 +13,8 @@ import UUID;
 import Log;
 import Window;
 import Camera;
+import Event;
+import LockfreeQueue;
 import :GLVertexArray;
 import :GLIndexBuilder;
 import :GLTexture;
@@ -161,6 +165,14 @@ namespace ACFT
 			vbo.Clear();
 		}
 
+		if (auto event_opt = m_EventQueue.Pop())
+		{
+			Ref<Event> event = event_opt.value();
+			if (auto* info = event->GetInfo<WindowSizeInfo>())
+			{
+				GLCall(glViewport(0, 0, info->width, info->height));
+			}
+		}
 		SwapWindowFrameBuffers();
 	}
 

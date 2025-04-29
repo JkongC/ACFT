@@ -6,7 +6,7 @@ import Node;
 
 namespace ACFT
 {
-	export template<typename T, template <typename> typename NodeType = Scope>
+	export template<typename T, template <typename> typename NodeType = Scope, size_t MaxSize = 0>
 		requires std::is_same_v<NodeType<T>, Ref<T>> || std::is_same_v<NodeType<T>, Scope<T>>
 	class LockfreeQueue
 	{
@@ -31,9 +31,22 @@ namespace ACFT
 			}
 		}
 
+		size_t GetSize()
+		{
+			return m_Size;
+		}
+
+		size_t GetMaxSize()
+		{
+			return MaxSize;
+		}
+
 		template<typename T, typename... Args>
 		void Emplace(Args&&... args)
 		{
+			if (MaxSize != 0 && m_Size >= MaxSize)
+				return;
+			
 			if constexpr (std::is_same_v<NodeType<T>, Ref<T>>)
 			{
 				Push(MakeRef<T>(std::forward<Args...>(args)...));
@@ -42,10 +55,15 @@ namespace ACFT
 			{
 				Push(std::move(MakeScope<T>(std::forward<Args...>(args)...)));
 			}
+
+			m_Size++;
 		}
 
 		void Push(NodeType<T> item)
 		{
+			if (MaxSize != 0 && m_Size >= MaxSize)
+				return;
+
 			InnerNodeType* new_node = new InnerNodeType(std::move(item));
 			InnerNodeType* old_tail = nullptr;
 			InnerNodeType* old_next = nullptr;
@@ -71,6 +89,8 @@ namespace ACFT
 					}
 				}
 			}
+
+			m_Size++;
 		}
 
 		std::optional<NodeType<T>> Pop()
@@ -105,10 +125,13 @@ namespace ACFT
 					}
 				}
 			}
+
+			m_Size--;
 		}
 
 	private:
 		std::atomic<InnerNodeType*> head;
 		std::atomic<InnerNodeType*> tail;
+		std::atomic<size_t> m_Size;
 	};
 }

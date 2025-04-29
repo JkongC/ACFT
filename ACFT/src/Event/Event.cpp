@@ -89,7 +89,7 @@ namespace ACFT
 		return;
 	}
 
-	Ref<Event> EventManager::FetchEvent()
+	Ref<Event> EventManager::FetchEvent(bool consume)
 	{
 		ACFT_LOG_WARN("Event queue currently not supported!");
 		return nullptr;

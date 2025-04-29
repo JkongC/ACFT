@@ -14,6 +14,8 @@ export import Sprite;
 export import Window;
 export import Camera;
 export import Shader;
+import Event;
+import LockfreeQueue;
 import Atlas;
 
 namespace ACFT
@@ -37,9 +39,8 @@ namespace ACFT
 	export class Renderer
 	{
 	public:
-		ACFT_API static Renderer& InitRenderer(Ref<Window> window);
-		ACFT_API static Renderer& GetRenderer();
-		ACFT_API static void ShutdownRenderer();
+		ACFT_API static Ref<Renderer>& InitRenderer(Ref<Window> window);
+		ACFT_API static Ref<Renderer>& GetRenderer();
 
 		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator, RenderContext context = {}) = 0;
 		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {}) = 0;
@@ -81,8 +82,10 @@ namespace ACFT
 		SceneContext m_SceneContext;
 		RenderContext m_RenderContextCache;
 
+		LockfreeQueue<Event, Ref, 500> m_EventQueue;
+
 	private:
-		static inline Renderer* s_Instance = nullptr;
+		static inline Ref<Renderer> s_Instance = nullptr;
 		static inline std::mutex s_Mtx;
 	};
 }
