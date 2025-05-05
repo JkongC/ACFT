@@ -10,5 +10,13 @@ namespace ACFT
 		mouse = 0, keyboard
 	};
 
-	export bool IsKeyDown(Controller type, int keycode);
+	export class Key
+	{
+	private:
+
+	};
+
+	export bool operator==(const int& keycode, const Key& key_obj);
+
+	export bool IsKeyDown(const Key& key);
 }

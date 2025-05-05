@@ -6,6 +6,9 @@ module;
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <string>
+#include <functional>
+
 export module Types;
 
 namespace ACFT
@@ -84,3 +87,18 @@ namespace ACFT
 
 	export using ModelMatrix = glm::mat4;
 }
+
+export struct StringHash
+{
+	using is_transparent = int;
+
+	size_t operator()(const std::string& s) const
+	{
+		return std::hash<std::string>{}(s);
+	}
+
+	size_t operator()(std::string_view v) const
+	{
+		return std::hash<std::string_view>{}(v);
+	}
+};

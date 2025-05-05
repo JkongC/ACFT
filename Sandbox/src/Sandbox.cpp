@@ -2,6 +2,12 @@
 
 import Base.entt;
 
+struct Pos
+{
+	float x;
+	float y;
+};
+
 class MyLayer : public ACFT::Layer
 {
 public:
@@ -11,6 +17,8 @@ public:
 		, r_Renderer(ACFT::Renderer::GetRenderer())
 		, r_Window(r_Renderer->GetWindow())
 	{
+		LoadPos();
+		
 		ACFT::Image left_0{ "resources/imgs/enemy_left_0.png", true };
 		ACFT::Image left_1{ "resources/imgs/enemy_left_1.png", true };
 		ACFT::Image left_2{ "resources/imgs/enemy_left_2.png", true };
@@ -29,15 +37,31 @@ public:
 		m_Sprite.UseAtlas(atlas);
 		m_Sprite.SetInterval(70);
 
-		r_Renderer->SetClearColor(0.4f, 0.8f, 0.5f, 1.0f);
-		r_Renderer->EnableVSync();
+		r_Renderer->SetClearColor(0.5f, 0.8f, 0.9f, 1.0f);
+		//r_Renderer->EnableVSync();
 		r_Renderer->EnableBlend();
-		
-		//Initialize the position of the sprite to (200, 200) in the window.
-		auto [cam_x, cam_y] = m_Camera->WindowPosToCamPos(r_Window->GetWidth(), r_Window->GetHeight(),
+	}
+
+	~MyLayer()
+	{
+		SavePos();
+	}
+
+	void LoadPos()
+	{
+		using namespace ACFT::Serialization;
+		auto pos_data = ACFT::DataFormat::ObjDataFile::Open("data/pos_data.ado");
+		Pos default_pos;
+		std::tie(default_pos.x, default_pos.y) = m_Camera->WindowPosToCamPos(r_Window->GetWidth(), r_Window->GetHeight(),
 			200.0f, 200.0f);
-		m_SpriteX = cam_x;
-		m_SpriteY = cam_y;
+		m_SpritePos = Deserialize<Pos>(ACFT::Codecs::PLAIN_CODEC<Pos>, pos_data).Or(default_pos);
+	}
+
+	void SavePos()
+	{
+		using namespace ACFT::Serialization;
+		auto pos_data = ACFT::DataFormat::ObjDataFile::Open("data/pos_data.ado");
+		Serialize<Pos>(m_SpritePos, ACFT::Codecs::PLAIN_CODEC<Pos>, pos_data);
 	}
 
 	virtual bool OnEvent(ACFT::Ref<ACFT::Event> event) override
@@ -51,8 +75,7 @@ public:
 				auto [xpos, ypos] = ACFT::GetCursorPos(r_Window);
 				auto [cam_x, cam_y] = m_Camera->WindowPosToCamPos(r_Window->GetWidth(), r_Window->GetHeight(),
 					static_cast<float>(xpos), static_cast<float>(ypos));
-				m_SpriteX = cam_x;
-				m_SpriteY = cam_y;
+				m_SpritePos = { cam_x, cam_y };
 				ACFT_LOG_INFO("Sprite moved to pos [x = {0}, y = {1}]!", cam_x, cam_y);
 			}
 		}
@@ -72,7 +95,7 @@ public:
 		ACFT::RenderContext ctx{};
 		ctx.shader = m_Shader;
 
-		r_Renderer->DrawSprite(m_Sprite, m_SpriteX, m_SpriteY, 150.0f, 150.0f, ctx);
+		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f, ctx);
 
 		r_Renderer->EndScene();
 	}
@@ -84,8 +107,7 @@ private:
 	ACFT::Ref<ACFT::OrthographicCamera> m_Camera;
 	ACFT::Ref<ACFT::Renderer> r_Renderer;
 	ACFT::Ref<ACFT::Window> r_Window;
-	float m_SpriteX;
-	float m_SpriteY;
+	Pos m_SpritePos;
 };
 
 class MyApp : public ACFT::Application

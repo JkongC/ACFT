@@ -36,21 +36,21 @@ namespace GLImplementations
 		GLCall(glUseProgram(0));
 	}
 
-	void GLShader::SetUniform1i(const std::string& name, int value)
+	void GLShader::SetUniform1i(std::string_view name, int value)
 	{
 		GLCall(glUniform1i(GetUniformLocation(name), value));
 	}
 
-	void GLShader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
+	void GLShader::SetUniform4f(std::string_view name, float v0, float v1, float v2, float v3)
 	{
 		GLCall(glUniform4f(GetUniformLocation(name), v0, v1, v2, v3));
 	}
 
-	void GLShader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix) {
+	void GLShader::SetUniformMat4f(std::string_view name, const glm::mat4& matrix) {
 		GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 	}
 
-	void GLShader::SetUniformVec3f(const std::string& name, const glm::vec3& vec)
+	void GLShader::SetUniformVec3f(std::string_view name, const glm::vec3& vec)
 	{
 		GLCall(glUniform3fv(GetUniformLocation(name), 1, &vec.x));
 	}
@@ -131,16 +131,17 @@ namespace GLImplementations
 		return program;
 	}
 
-	unsigned int GLShader::GetUniformLocation(const std::string& name) const
-	{
-		if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
-			return m_UniformLocationCache[name];
+	unsigned int GLShader::GetUniformLocation(std::string_view name) const
+	{	
+		if (auto it = m_UniformLocationCache.find(name);
+			it != m_UniformLocationCache.end())
+			return it->second;
 
-		int location = glGetUniformLocation(m_Identifier, name.c_str());
+		int location = glGetUniformLocation(m_Identifier, name.data());
 		if (location == -1)
 			ACFT_GL_LOG("Uniform '{}' doesn't exist.", name);
 
-		m_UniformLocationCache[name] = location;
+		m_UniformLocationCache.emplace(name, location);
 		return location;
 	}
 

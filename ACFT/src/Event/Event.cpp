@@ -18,7 +18,7 @@ namespace ACFT
 		EventRegistry::GetRegistry().destroy(m_Identifier);
 	}
 
-	bool EventType::IsSame(Ref<EventType> type)
+	bool EventType::IsSame(const Ref<EventType>& type)
 	{
 		return m_Identifier == type->m_Identifier;
 	}

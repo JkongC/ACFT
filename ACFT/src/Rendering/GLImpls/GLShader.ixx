@@ -5,6 +5,7 @@ module;
 
 #include <string>
 #include <unordered_map>
+#include <functional>
 
 export module Renderer:GLShader;
 
@@ -27,12 +28,12 @@ namespace GLImplementations
 		void Bind() const;
 		void Unbind() const;
 
-		unsigned int GetUniformLocation(const std::string& name) const;
+		unsigned int GetUniformLocation(std::string_view name) const;
 
-		void SetUniform1i(const std::string& name, int value);
-		void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
-		void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
-		void SetUniformVec3f(const std::string& name, const glm::vec3& vec);
+		void SetUniform1i(std::string_view name, int value);
+		void SetUniform4f(std::string_view name, float v0, float v1, float v2, float v3);
+		void SetUniformMat4f(std::string_view name, const glm::mat4& matrix);
+		void SetUniformVec3f(std::string_view name, const glm::vec3& vec);
 
 		ACFT::RenderObjectIdentifier GetIdentifier();
 
@@ -44,6 +45,6 @@ namespace GLImplementations
 	private:
 		std::filesystem::path m_Path;
 		unsigned int m_Identifier;
-		mutable std::unordered_map<std::string, int> m_UniformLocationCache;
+		mutable std::unordered_map<std::string, int, StringHash, std::less<>> m_UniformLocationCache;
 	};
 }

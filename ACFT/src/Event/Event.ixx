@@ -33,7 +33,7 @@ namespace ACFT
 			return EventRegistry::GetRegistry().try_get<Info>(m_Identifier) != nullptr;
 		}
 
-		ACFT_API bool IsSame(Ref<EventType> type);
+		ACFT_API bool IsSame(const Ref<EventType>& type);
 
 		inline const std::string& GetName() const { return m_Name; }
 

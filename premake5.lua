@@ -72,6 +72,9 @@ project "ACFT"
     defines { "NDEBUG" }
     optimize "Speed"
 
+  filter { "toolset:msc*" }
+    linkoptions { "/IGNORE:4006" }
+
 
 project "Sandbox"
   kind "ConsoleApp"
