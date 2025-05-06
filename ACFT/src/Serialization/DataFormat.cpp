@@ -17,6 +17,13 @@ namespace ACFT::DataFormat
 	ObjDataFile::ObjDataFile(const std::filesystem::path& file)
 		: m_Path(file)
 	{	
+		// std::ofstream can't create the file if its directory doesn't exist.
+		// Check if the directory exists, otherwise create it.
+		if (file.has_parent_path() && !std::filesystem::exists(file.parent_path()))
+		{
+			std::filesystem::create_directories(file.parent_path());
+		}
+		
 		// std::fstream can't create a new file if using std::ios::in.
 		// Thus I use std::ofstream to create if the file doesn't exist.
 		if (!std::filesystem::exists(file))
