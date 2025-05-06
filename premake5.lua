@@ -1,5 +1,5 @@
 workspace "ACFT"
-  configurations { "Release", "Debug" }
+  configurations { "Dist", "Release", "Debug" }
   system "Windows"
   architecture "x64"
   cppdialect "C++20"
@@ -65,10 +65,14 @@ project "ACFT"
     }
   
   filter { "configurations:Debug" }
-    defines { "NDEBUG", "ACFT_DEBUG" }
+    defines { "NDEBUG", "ACFT_DEBUG", "ACFT_ENABLE_LOG" }
     optimize "Off"
   
   filter { "configurations:Release" }
+    defines { "NDEBUG", "ACFT_ENABLE_LOG" }
+    optimize "Speed"
+
+  filter { "configurations:Dist" }
     defines { "NDEBUG" }
     optimize "Speed"
 

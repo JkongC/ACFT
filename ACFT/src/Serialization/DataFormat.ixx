@@ -36,12 +36,15 @@ namespace ACFT::DataFormat
 
 	public:
 		ObjDataFile(const std::filesystem::path& file);
+		~ObjDataFile();
 
 		Ref<Buffer> ReadObj();
 
 		void WriteObj(Ref<Buffer> data);
 
 		bool IsReadable();
+
+		void Clear();
 
 	private:
 		std::filesystem::path m_Path;

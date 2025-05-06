@@ -1,7 +1,5 @@
 #include "ACFTEngine.h"
 
-import Base.entt;
-
 struct Pos
 {
 	float x;
@@ -38,7 +36,7 @@ public:
 		m_Sprite.SetInterval(70);
 
 		r_Renderer->SetClearColor(0.5f, 0.8f, 0.9f, 1.0f);
-		//r_Renderer->EnableVSync();
+		r_Renderer->EnableVSync();
 		r_Renderer->EnableBlend();
 	}
 
@@ -140,7 +138,7 @@ public:
 			window->PollEvents();
 
 			//This is to display FPS.
-			//fps_profiler.RecordFrame();
+			fps_profiler.RecordFrame();
 		}
 
 		ACFT::Clean();

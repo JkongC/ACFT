@@ -42,6 +42,11 @@ namespace ACFT::DataFormat
 		m_FStream.seekp(0);
 	}
 
+	ObjDataFile::~ObjDataFile()
+	{
+		m_FStream.close();
+	}
+
 	Ref<Buffer> ObjDataFile::ReadObj()
 	{
 		std::lock_guard<std::mutex> lock(m_Mtx);
@@ -68,5 +73,12 @@ namespace ACFT::DataFormat
 	bool ObjDataFile::IsReadable()
 	{
 		return m_FStream.peek() != std::ifstream::traits_type::eof();
+	}
+
+	void ObjDataFile::Clear()
+	{
+		m_FStream.open(m_Path, std::ios::binary | std::ios::out | std::ios::in | std::ios::trunc);
+		m_FStream.seekg(0);
+		m_FStream.seekp(0);
 	}
 }

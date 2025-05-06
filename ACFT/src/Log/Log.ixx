@@ -38,35 +38,47 @@ namespace ACFT
 export template<typename ...Args>
 void ACFT_LOG_ERROR(spdlog::format_string_t<Args...> fmt, Args&&... args)
 {
+#if defined(ACFT_ENABLE_LOG)
 	::ACFT::Logger::GetACFTLogger()->error(fmt, std::forward<Args>(args)...);
+#endif
 }
 
 export template<typename ...Args>
 void ACFT_LOG_WARN(spdlog::format_string_t<Args...> fmt, Args&&... args)
 {
+#if defined(ACFT_ENABLE_LOG)
 	::ACFT::Logger::GetACFTLogger()->warn(fmt, std::forward<Args>(args)...);
+#endif
 }
 
 export template<typename ...Args>
 void ACFT_LOG_INFO(spdlog::format_string_t<Args...> fmt, Args&&... args)
 {
+#if defined(ACFT_ENABLE_LOG)
 	::ACFT::Logger::GetACFTLogger()->info(fmt, std::forward<Args>(args)...);
+#endif
 }
 
 export template<typename ...Args>
 void ACFT_LOG_TRACE(spdlog::format_string_t<Args...> fmt, Args&&... args)
 {
+#if defined(ACFT_ENABLE_LOG)
 	::ACFT::Logger::GetACFTLogger()->trace(fmt, std::forward<Args>(args)...);
+#endif
 }
 
 export template<typename ...Args>
 void ACFT_LOG_FATAL(spdlog::format_string_t<Args...> fmt, Args&&... args)
 {
+#if defined(ACFT_ENABLE_LOG)
 	::ACFT::Logger::GetACFTLogger()->error(fmt, std::forward<Args>(args)...);
+#endif
 }
 
 export template<typename ...Args>
 void ACFT_GL_LOG(spdlog::format_string_t<Args...> fmt, Args&&... args)
 {
+#if defined(ACFT_ENABLE_LOG)
 	::ACFT::Logger::GetGLLogger()->warn(fmt, std::forward<Args>(args)...);
+#endif
 }

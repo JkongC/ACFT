@@ -45,6 +45,6 @@ namespace GLImplementations
 	private:
 		std::filesystem::path m_Path;
 		unsigned int m_Identifier;
-		mutable std::unordered_map<std::string, int, StringHash, std::less<>> m_UniformLocationCache;
+		mutable std::unordered_map<std::string, int, StringHash, StringEqual> m_UniformLocationCache;
 	};
 }

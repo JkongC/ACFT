@@ -32,6 +32,9 @@ namespace ACFT
 		}
 
 		glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
+		glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
+		glfwWindowHint(GLFW_FOCUS_ON_SHOW, GL_TRUE);
+
 		m_RawWindow = glfwCreateWindow(m_Width, m_Height, Config::GetWindowName().data(), nullptr, nullptr);
 		if (!m_RawWindow)
 		{

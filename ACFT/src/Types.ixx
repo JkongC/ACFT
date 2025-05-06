@@ -102,3 +102,5 @@ export struct StringHash
 		return std::hash<std::string_view>{}(v);
 	}
 };
+
+export using StringEqual = std::less<>;

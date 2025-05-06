@@ -21,4 +21,7 @@ namespace ACFT::Config
 
 	export ACFT_API void SetWindowName(std::string name);
 	export ACFT_API std::string_view GetWindowName();
+
+	export ACFT_API void UseRenderThread(bool use);
+	export ACFT_API bool IsRenderThreadUsed();
 }

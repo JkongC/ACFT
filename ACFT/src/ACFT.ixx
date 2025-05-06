@@ -1,5 +1,7 @@
 export module ACFT;
 
+export import Base.entt;
+
 export import Types;
 export import Log;
 export import Input;
@@ -20,6 +22,6 @@ export struct ACFTItems
 
 namespace ACFT
 {
-	export ACFTItems Initialize();
+	export ACFTItems Start(Ref<Application> app);
 	export void Clean();
 }
