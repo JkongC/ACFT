@@ -4,6 +4,7 @@ namespace ACFT
 {
 	namespace Threads
 	{
-		export const char* RENDER_THREAD = "Render";
+		export const char* RENDER = "Render";
+		export const char* EVENT = "Event";
 	}
 }

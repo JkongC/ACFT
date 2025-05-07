@@ -23,6 +23,8 @@ namespace ACFT
 
 		virtual void* GetRawWindow() override;
 
+		virtual void MakeContextCurrent() override;
+
 	private:
 		static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

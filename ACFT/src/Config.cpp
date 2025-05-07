@@ -10,6 +10,7 @@ namespace ACFT::Config
 	static inline Image WINDOW_ICON{};
 	static inline std::string WINDOW_NAME = "AnotherCraft";
 	static inline bool USE_RENDER_THREAD = true;
+	static inline bool USE_FPS_PROFILER = false;
 	
 	void SetRenderAPI(RenderAPI render_API)
 	{
@@ -59,5 +60,15 @@ namespace ACFT::Config
 	bool IsRenderThreadUsed()
 	{
 		return USE_RENDER_THREAD;
+	}
+
+	void UseFPSProfiler(bool use)
+	{
+		USE_FPS_PROFILER = use;
+	}
+
+	bool IsFPSProfilerUsed()
+	{
+		return USE_FPS_PROFILER;
 	}
 }

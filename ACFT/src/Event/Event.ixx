@@ -189,8 +189,19 @@ namespace ACFT
 	public:
 		static ACFT_API EventManager& Global();
 		
-		void JoinEvent(Ref<Event> event);
-		Ref<Event> FetchEvent(bool consume = true);
+		void QueueEvent(Ref<Event> event);
+
+		template<typename... Infos>
+		void QueueEvent(const Ref<EventType>& type, Infos&&... infos)
+		{
+			Ref<Event> event = MakeRef<Event>(type);
+			(event->AttachInfo<Infos>(std::forward<Infos>(infos)), ...);
+			QueueEvent(event);
+		}
+
+		Ref<Event> PollEvent();
+
+		void PollEventAndDistribute();
 
 		ACFT_API void DistributeEvent(Ref<Event> event);
 
@@ -229,7 +240,7 @@ namespace ACFT
 	
 	private:
 		friend class Event;
-		LockfreeQueue<Event> m_EventQueue;
+		LockfreeQueue<Event, Ref> m_EventQueue;
 		std::unordered_map<Ref<EventType>, std::unordered_map<View<void>, SubscriberFunc, ViewHash<void>, ViewEqual<void>>> m_Subscribers;
 		static inline entt::registry m_AllEvents;
 		std::mutex m_Mtx;

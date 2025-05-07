@@ -18,7 +18,15 @@ namespace ACFT
 	Ref<Renderer>& Renderer::InitRenderer(Ref<Window> window)
 	{
 		std::lock_guard<std::mutex> lock(s_Mtx);
+
+		static Ref<Renderer> null_renderer = nullptr;
 		
+		if (Config::IsRenderThreadUsed() && !ThreadFeatures::is_render_thread)
+		{
+			ACFT_LOG_ERROR("Renderer can only be initialized in render thread!");
+			return null_renderer;
+		}
+
 		if (s_Instance)
 			return s_Instance;
 		
@@ -55,6 +63,11 @@ namespace ACFT
 		}
 
 		return s_Instance;
+	}
+
+	void Renderer::CleanRenderer()
+	{
+		s_Instance.reset();
 	}
 
 	Ref<Window> Renderer::GetWindow()

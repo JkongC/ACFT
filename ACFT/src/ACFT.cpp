@@ -1,6 +1,11 @@
-module ACFT;
+module;
 
-import <semaphore>;
+#include <semaphore>
+
+#include <glew.h>
+#include <glfw3.h>
+
+module ACFT;
 
 import Types;
 import Log;
@@ -13,37 +18,92 @@ import ACFT.Literals;
 import ACFT.RenderingContexts;
 import ACFT.Thread;
 
+#include "Rendering/GLImpls/gldbg.h"
+
 namespace ACFT
 {
-	std::binary_semaphore render_thread_ready{ 0 };
+	std::binary_semaphore renderer_context_ready{ 0 };
+	std::binary_semaphore app_ready{ 0 };
+	std::binary_semaphore renderer_context_cleaned{ 0 };
+	std::atomic<bool> running = true;
 
 	static void RenderThreadFunc()
 	{
 		ThreadFeatures::is_render_thread = true;
 
 		auto window = Window::InitWindow();
-		Renderer::InitRenderer(window);
+		auto& renderer = Renderer::InitRenderer(window);
 
-		render_thread_ready.release();
+		renderer_context_ready.release();
+
+		auto& app = Engine::GetApplication();
+		app->Init();
+		app_ready.release();
+
+		while (!window->ShouldClose())
+		{
+			app->OnRender();
+
+			if (Config::IsFPSProfilerUsed())
+				FPSProfiler::RecordFrame();
+
+			window->PollEvents();
+		}
+
+		running = false;
+
+		Engine::GetApplication().reset();
+
+		Renderer::CleanRenderer();
+
+		renderer_context_cleaned.release();
 	}
 	
-	ACFTItems Start(Ref<Application> app)
+	int Engine::Start(int argc, char** argv)
 	{
 		Logger::Init();
 
-		ThreadManager::CreateThread(Threads::RENDER_THREAD, RenderThreadFunc);
-		ThreadManager::StartThread(Threads::RENDER_THREAD);
+		auto& app = Engine::s_App;
 
-		render_thread_ready.acquire();
+		ThreadManager::CreateThread(Threads::RENDER, true, RenderThreadFunc);
+		ThreadManager::DetachThread(Threads::RENDER);
 
-		auto& renderer = Renderer::GetRenderer();
-		auto window = renderer->GetWindow();
+		NormalTimer timer;
 		
-		return { window, renderer };
+		if (!renderer_context_ready.try_acquire_for(std::chrono::seconds(5)))
+		{
+			ACFT_LOG_ERROR("Render thread failed to initialize!");
+			exit(-1);
+		}
+
+		if (!app_ready.try_acquire_for(std::chrono::seconds(5)))
+		{
+			ACFT_LOG_ERROR("Application failed to initialize!");
+			exit(-1);
+		}
+
+		auto window = Renderer::GetRenderer()->GetWindow();
+		
+		while (running)
+		{
+			app->OnUpdate(timer.GetElapsed());
+			timer.Flush();
+		}
+		
+		Engine::Clean();
+
+		renderer_context_cleaned.acquire();
+		
+		return 0;
+	}
+
+	Ref<Application>& Engine::GetApplication()
+	{
+		return Engine::s_App;
 	}
 	
-	void Clean()
+	void Engine::Clean()
 	{
-		ThreadManager::JoinThread(Threads::RENDER_THREAD);
+		
 	}
 }

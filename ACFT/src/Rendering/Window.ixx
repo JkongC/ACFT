@@ -28,6 +28,8 @@ namespace ACFT
 
 		ACFT_API virtual void* GetRawWindow() = 0;
 
+		ACFT_API virtual void MakeContextCurrent() = 0;
+
 	protected:
 		Window() = default;
 

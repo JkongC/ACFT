@@ -62,7 +62,7 @@ public:
 		Serialize<Pos>(m_SpritePos, ACFT::Codecs::PLAIN_CODEC<Pos>, pos_data);
 	}
 
-	virtual bool OnEvent(ACFT::Ref<ACFT::Event> event) override
+	virtual void OnEvent(ACFT::Ref<ACFT::Event> event) override
 	{
 		if (event->GetType() == ACFT::Events::MOUSE_BUTTON)
 		{
@@ -77,8 +77,6 @@ public:
 				ACFT_LOG_INFO("Sprite moved to pos [x = {0}, y = {1}]!", cam_x, cam_y);
 			}
 		}
-
-		return true;
 	}
 
 	virtual void OnUpdate(float time_step) override
@@ -111,46 +109,34 @@ private:
 class MyApp : public ACFT::Application
 {
 public:
-	virtual int Entry(int argc, char** argv) override
+	virtual void Init() override
 	{
-		ACFT::Config::SetWindowIcon("resources/imgs/acft_icon.png");
-		ACFT::Config::SetWindowName("Sandbox");
-		
-		ACFTItems items = ACFT::Initialize();
-		auto& [window, renderer] = items;
-
-		auto timer = ACFT::NormalTimer();
-
-		auto fps_profiler = ACFT::FPSProfiler();
-
-		ACFT::Ref<ACFT::LayerStack> layers = ACFT::LayerStack::Create();
-
-		ACFT::Ref<MyLayer> my_layer = ACFT::MakeRef<MyLayer>(window);
-		layers->PushLayer(my_layer);
-
-		while (!window->ShouldClose())
-		{
-			layers->OnUpdate(timer.GetElapsed());
-			timer.Flush();
-
-			layers->OnRender();
-
-			window->PollEvents();
-
-			//This is to display FPS.
-			fps_profiler.RecordFrame();
-		}
-
-		ACFT::Clean();
-
-		return 0;
+		m_Layers = ACFT::LayerStack::Create();
+		m_Layers->PushLayer(ACFT::MakeRef<MyLayer>(
+			ACFT::Renderer::GetRenderer()->GetWindow()
+		));
 	}
 
-	virtual void OnUpdate(time_t time_step) override {}
-	virtual void OnRender() override {}
+	virtual void OnUpdate(float time_step) override
+	{
+		m_Layers->OnUpdate(time_step);
+	}
+
+	virtual void OnRender() override
+	{
+		m_Layers->OnRender();
+	}
+
+private:
+	ACFT::Ref<ACFT::LayerStack> m_Layers;
 };
 
-ACFT::Application* CreateApplication()
+int main(int argc, char** argv)
 {
-	return new MyApp();
+	ACFT::Config::SetWindowIcon("resources/imgs/acft_icon.png");
+	ACFT::Config::SetWindowName("Sandbox");
+	ACFT::Config::UseFPSProfiler(true);
+
+	ACFT::Engine::CreateApplication<MyApp>();
+	return ACFT::Engine::Start(argc, argv);
 }

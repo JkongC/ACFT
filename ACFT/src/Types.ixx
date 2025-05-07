@@ -88,7 +88,7 @@ namespace ACFT
 	export using ModelMatrix = glm::mat4;
 }
 
-export struct StringHash
+export struct StringHashFunc
 {
 	using is_transparent = int;
 
@@ -97,10 +97,33 @@ export struct StringHash
 		return std::hash<std::string>{}(s);
 	}
 
-	size_t operator()(std::string_view v) const
+	size_t operator()(const std::string_view& v) const
 	{
 		return std::hash<std::string_view>{}(v);
 	}
 };
 
-export using StringEqual = std::less<>;
+export struct EqualFunc
+{
+	using is_transparent = int;
+
+	template<typename Key>
+		requires requires(Key k1, Key k2)
+	{
+		k1 == k2;
+	}
+	bool operator()(const Key& o1, const Key& o2)
+	{
+		return o1 == o2;
+	}
+	
+	template<typename FindKey, typename StorageKey>
+		requires requires(FindKey f, StorageKey s)
+	{
+		f == s;
+	}
+	bool operator()(const FindKey& o1, const StorageKey& o2) const
+	{
+		return o1 == o2;
+	}
+};

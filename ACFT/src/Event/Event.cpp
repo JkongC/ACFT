@@ -83,16 +83,22 @@ namespace ACFT
 		return global_manager;
 	}
 
-	void EventManager::JoinEvent(Ref<Event> event)
+	void EventManager::QueueEvent(Ref<Event> event)
 	{
-		ACFT_LOG_WARN("Event queue currently not supported!");
-		return;
+		m_EventQueue.Push(event);
 	}
 
-	Ref<Event> EventManager::FetchEvent(bool consume)
+	Ref<Event> EventManager::PollEvent()
 	{
-		ACFT_LOG_WARN("Event queue currently not supported!");
-		return nullptr;
+		return m_EventQueue.Pop().value_or(nullptr);
+	}
+
+	void EventManager::PollEventAndDistribute()
+	{
+		if (auto event = m_EventQueue.Pop().value_or(nullptr))
+		{
+			DistributeEvent(event);
+		}
 	}
 
 	void EventManager::DistributeEvent(Ref<Event> event)

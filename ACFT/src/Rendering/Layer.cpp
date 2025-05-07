@@ -10,15 +10,20 @@ import Log;
 
 namespace ACFT
 {
-	void Layer::CaptureEventType(const Ref<EventType>& type)
+	void Layer::ConsumeEventType(const Ref<EventType>& type)
 	{
-		m_CaptureEventTypes.insert(type);
+		m_ConsumeEventTypes.insert(type);
 	}
 
 	void Layer::ReleaseEventType(const Ref<EventType>& type)
 	{
-		if (auto it = m_CaptureEventTypes.find(type); it != m_CaptureEventTypes.end())
-			m_CaptureEventTypes.erase(it);
+		if (auto it = m_ConsumeEventTypes.find(type); it != m_ConsumeEventTypes.end())
+			m_ConsumeEventTypes.erase(it);
+	}
+
+	bool Layer::WillConsume(const Ref<EventType>& event_type)
+	{
+		return m_ConsumeEventTypes.contains(event_type);
 	}
 
 	
@@ -49,7 +54,8 @@ namespace ACFT
 		for (auto it = m_Layers.rbegin(); it != m_Layers.rend(); it++)
 		{
 			Ref<Layer>& layer = *it;
-			if (layer->OnEvent(event))
+			layer->OnEvent(event);
+			if (layer->WillConsume(event->GetType()))
 				break;
 		}
 	}

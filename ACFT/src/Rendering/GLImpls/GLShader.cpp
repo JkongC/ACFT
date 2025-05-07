@@ -91,8 +91,8 @@ namespace GLImplementations
 	{
 		unsigned int ID = glCreateShader(type);
 		const char* sc = source.c_str();
-		glShaderSource(ID, 1, &sc, 0);
-		glCompileShader(ID);
+		GLCall(glShaderSource(ID, 1, &sc, 0));
+		GLCall(glCompileShader(ID));
 
 		int result;
 		glGetShaderiv(ID, GL_COMPILE_STATUS, &result);

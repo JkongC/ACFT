@@ -24,4 +24,7 @@ namespace ACFT::Config
 
 	export ACFT_API void UseRenderThread(bool use);
 	export ACFT_API bool IsRenderThreadUsed();
+
+	export ACFT_API void UseFPSProfiler(bool use);
+	export ACFT_API bool IsFPSProfilerUsed();
 }

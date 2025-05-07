@@ -16,17 +16,7 @@ import :OpenGLWindow;
 namespace ACFT
 {
 	Ref<Window> Window::InitWindow()
-	{
-		if (Config::IsRenderThreadUsed() && !ThreadManager::GetThread(Threads::RENDER_THREAD)->IsCurrentThread())
-		{
-			ACFT_LOG_ERROR("Window can only be initialized in render thread!");
-			return nullptr;
-		}
-		else
-		{
-			ThreadFeatures::is_render_thread = true;
-		}
-			
+	{		
 		Ref<Window> window;
 		
 		switch (Config::GetRenderAPI())

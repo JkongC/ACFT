@@ -14,14 +14,30 @@ export import Utils;
 export import FPSProfiler;
 export import ACFT.Serialization;
 
-export struct ACFTItems
-{
-	ACFT::Ref<ACFT::Window> window;
-	ACFT::Ref<ACFT::Renderer> renderer;
-};
-
 namespace ACFT
 {
-	export ACFTItems Start(Ref<Application> app);
-	export void Clean();
+	export class Engine
+	{
+	public:
+		static int Start(int argc, char** argv);
+		static Ref<Application>& GetApplication();
+
+		template<typename T, typename... Args>
+		requires std::is_base_of_v<Application, T>
+		static void CreateApplication(Args&&... args)
+		{
+			Engine::s_App = MakeRef<T>(std::forward<Args>(args)...);
+		}
+
+	private:
+		Engine() = default;
+		Engine(const Engine&) = delete;
+		Engine(Engine&&) = delete;
+		Engine& operator=(const Engine&) = delete;
+
+		static void Clean();
+
+	private:
+		static inline Ref<Application> s_App = nullptr;
+	};
 }

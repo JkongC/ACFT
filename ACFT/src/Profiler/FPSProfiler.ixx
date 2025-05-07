@@ -7,15 +7,21 @@ namespace ACFT
 	export class FPSProfiler
 	{
 	public:
-		FPSProfiler() = default;
-		FPSProfiler(float internal) : m_Interval(internal) {}
-
-		void RecordFrame();
+		static void SetInterval(float interval) { s_Interval = interval; }
+		static float GetInterval() { return s_Interval; }
+		
+		static void RecordFrame();
 
 	private:
-		float m_TimeCounter = 0;
-		float m_FrameCounter = 0;
-		float m_Interval = 1000.0f;
-		NormalTimer<float, ACFT::millisecond> m_Timer;
+		FPSProfiler() = default;
+		FPSProfiler(const FPSProfiler&) = delete;
+		FPSProfiler(FPSProfiler&&) = delete;
+		FPSProfiler& operator=(const FPSProfiler&) = delete;
+
+	private:
+		static inline float s_TimeCounter = 0;
+		static inline float s_FrameCounter = 0;
+		static inline float s_Interval = 1000.0f;
+		static inline NormalTimer<float, ACFT::millisecond> m_Timer;
 	};
 }

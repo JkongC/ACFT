@@ -41,6 +41,7 @@ namespace ACFT
 	public:
 		ACFT_API static Ref<Renderer>& InitRenderer(Ref<Window> window);
 		ACFT_API static Ref<Renderer>& GetRenderer();
+		ACFT_API static void CleanRenderer();
 
 		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator, RenderContext context = {}) = 0;
 		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {}) = 0;

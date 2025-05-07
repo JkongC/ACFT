@@ -21,23 +21,20 @@ namespace ACFT
 		ACFT_API Layer() = default;
 		ACFT_API virtual ~Layer() = default;
 
-		ACFT_API void CaptureEventType(const Ref<EventType>& type);
+		ACFT_API void ConsumeEventType(const Ref<EventType>& type);
 		ACFT_API void ReleaseEventType(const Ref<EventType>& type);
 
 	public:
-		/**
-		 * Handle an event passed into the layer.
-		 *
-		 * \return Whether this event is captured by this layer;
-		 */
-		ACFT_API virtual bool OnEvent(Ref<Event> event) { return false; }
+		ACFT_API virtual void OnEvent(Ref<Event> event) {}
 
 		ACFT_API virtual void OnUpdate(float time_step) {}
 
 		ACFT_API virtual void OnRender() {}
 
+		ACFT_API bool WillConsume(const Ref<EventType>& event_type);
+
 	protected:
-		std::unordered_set<Ref<EventType>> m_CaptureEventTypes;
+		std::unordered_set<Ref<EventType>> m_ConsumeEventTypes;
 	};
 
 	export class LayerStack
@@ -55,7 +52,7 @@ namespace ACFT
 		void PushLayer(Ref<Layer> layer, const Ref<EventT>&... event_type)
 		{
 			m_Layers.push_back(layer);
-			(layer->CaptureEventType(event_type), ...);
+			(layer->ConsumeEventType(event_type), ...);
 		}
 
 		Ref<Layer> PopLayer();

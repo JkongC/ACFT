@@ -6,16 +6,16 @@ namespace ACFT
 {
 	void FPSProfiler::RecordFrame()
 	{
-		m_TimeCounter += m_Timer.GetElapsed();
-		m_FrameCounter += 1;
+		s_TimeCounter += m_Timer.GetElapsed();
+		s_FrameCounter += 1;
 
 		m_Timer.Flush();
 
-		if (m_TimeCounter >= m_Interval)
+		if (s_TimeCounter >= s_Interval)
 		{
-			ACFT_LOG_INFO("Current FPS: {}", static_cast<size_t>(m_FrameCounter / (m_TimeCounter / 1000.0f)));
-			m_FrameCounter = 0;
-			m_TimeCounter = 0;
+			ACFT_LOG_INFO("Current FPS: {}", static_cast<size_t>(s_FrameCounter / (s_TimeCounter / 1000.0f)));
+			s_FrameCounter = 0;
+			s_TimeCounter = 0;
 		}
 	}
 }

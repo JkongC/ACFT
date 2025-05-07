@@ -27,7 +27,7 @@ namespace ACFT
 		ACFT_API static void Init();
 
 		ACFT_API inline static std::shared_ptr<spdlog::logger>& GetACFTLogger() { return acft_logger; }
-		ACFT_API inline static std::shared_ptr<spdlog::logger>& GetGLLogger() { return gl_logger; }
+		ACFT_API inline static std::shared_ptr<spdlog::logger>& GetGLLogger() {	return gl_logger; }
 
 	private:
 		inline static std::shared_ptr<spdlog::logger> acft_logger;

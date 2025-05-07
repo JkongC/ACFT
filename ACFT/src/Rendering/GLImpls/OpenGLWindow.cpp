@@ -62,6 +62,7 @@ namespace ACFT
 
 		ACFT_GL_LOG("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
+		
 		glfwSetCursorPosCallback(m_RawWindow, MousePosCallback);
 		glfwSetMouseButtonCallback(m_RawWindow, MouseButtonCallback);
 		glfwSetKeyCallback(m_RawWindow, KeyCallback);
@@ -131,5 +132,10 @@ namespace ACFT
 	void* OpenGLWindow::GetRawWindow()
 	{
 		return m_RawWindow;
+	}
+
+	void OpenGLWindow::MakeContextCurrent()
+	{
+		glfwMakeContextCurrent(m_RawWindow);
 	}
 }
