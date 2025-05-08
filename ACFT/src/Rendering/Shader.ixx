@@ -4,8 +4,10 @@ module;
 
 export module Shader;
 
+import <filesystem>;
+import <unordered_map>;
+
 import Types;
-export import <filesystem>;
 
 namespace ACFT
 {
@@ -33,5 +35,22 @@ namespace ACFT
 		ShaderLang m_Lang;
 		ShaderType m_Type{ShaderType::glsl_mixed};
 		RenderObjectIdentifier m_Identifier;
+	};
+
+	export class ShaderLib
+	{
+	public:
+		static void Init();
+		static Ref<Shader> GetShader(std::string_view shader_name);
+
+	private:
+		ShaderLib() = default;
+		ShaderLib(const ShaderLib&) = delete;
+		ShaderLib(ShaderLib&&) = delete;
+		ShaderLib& operator=(const ShaderLib&) = delete;
+
+	private:
+		static inline bool s_Initialized = false;
+		static inline std::unordered_map<std::string, Ref<Shader>, StringHashFunc, EqualFunc> s_Shaders;
 	};
 }

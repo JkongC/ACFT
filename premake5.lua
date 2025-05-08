@@ -6,8 +6,6 @@ workspace "ACFT"
   systemversion "latest"
 
   startproject "Sandbox"
-  
-  moduleoutdir = "%{wks.location}/ifc"
 
   outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -23,8 +21,6 @@ project "ACFT"
   language "C++"
   location "ACFT"
   targetdir "bin"
-
-  defines { "ACFT_RENDER_THREAD" }
   
   files {
     "%{prj.name}/src/**.ixx",
@@ -53,16 +49,10 @@ project "ACFT"
   postbuildcommands {
     "{MKDIR} ../bin/" .. outputdir .. "/Sandbox/",
     "{COPYFILE} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox/%{cfg.buildtarget.name}"
-    --"{MKDIR} ../ifc"
-    --"{COPYFILE} %{cfg.objdir}*.ifc ../ifc"
   }
-  
-  filter { "files:src/**.ixx" }
-    compileas "Module"
-    buildoutputs { 
-      "%{moduleoutdir}/%{file.basename}.ifc",
-      "%{cfg.objdir}/%{file.basename}.obj" 
-    }
+
+  filter { "files:ACFT/src/Config/Config-Thread.ixx" }
+    defines { "ACFT_RENDER_THREAD", "ACFT_EVENT_THREAD" }
   
   filter { "configurations:Debug" }
     defines { "NDEBUG", "ACFT_DEBUG", "ACFT_ENABLE_LOG" }
@@ -90,7 +80,6 @@ project "Sandbox"
     "%{prj.name}/src/**.ixx",
     "%{prj.name}/src/**.cpp",
     "%{prj.name}/src/**.h"
-    -- "ACFT/src/**.ixx"
   }
 
   includedirs {
@@ -104,16 +93,6 @@ project "Sandbox"
   objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
   links { "ACFT" }
-  
-
-  local ifc_files = os.matchfiles("ACFT/src/**.ixx")
-  local ref_options = {}
-
-  for _, f in ipairs(ifc_files) do
-    table.insert(ref_options, "/reference \"%{wks.location}/ifc/" .. path.getname(f) .. ".ifc\"")
-  end
-
-  buildoptions (ref_options)
   
   postbuildcommands {
     "{COPYFILE} ../lib/*.dll %{cfg.targetdir}/",

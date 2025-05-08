@@ -9,6 +9,8 @@ module;
 
 export module Renderer:GLShader;
 
+import <filesystem>;
+
 import Types;
 import Shader;
 

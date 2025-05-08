@@ -7,6 +7,7 @@ module Shader;
 
 import Types;
 import Config;
+import Log;
 import Renderer;
 
 namespace ACFT
@@ -26,5 +27,36 @@ namespace ACFT
 	RenderObjectIdentifier Shader::GetIdentifier() const
 	{
 		return m_Identifier;
+	}
+
+	void ShaderLib::Init()
+	{
+		if (ShaderLib::s_Initialized)
+		{
+			ACFT_LOG_WARN("ShaderLib is already initialized!");
+			return;
+		}
+		
+		for (const auto& file : std::filesystem::recursive_directory_iterator(Config::GetShaderPath()))
+		{
+			ShaderLib::s_Shaders.try_emplace(file.path().stem().string(), Shader::Create(file.path()));
+		}
+
+		ShaderLib::s_Initialized = true;
+	}
+
+	Ref<Shader> ShaderLib::GetShader(std::string_view shader_name)
+	{
+		auto& shaders = ShaderLib::s_Shaders;
+		if (auto it = shaders.find(shader_name);
+			it != shaders.end())
+		{
+			return it->second;
+		}
+		else
+		{
+			ACFT_LOG_ERROR("Trying to get an unexisted shader \"{}\"!", shader_name);
+			return nullptr;
+		}
 	}
 }

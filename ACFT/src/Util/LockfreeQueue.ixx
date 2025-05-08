@@ -6,7 +6,7 @@ import Node;
 
 namespace ACFT
 {
-	export template<typename T, template <typename> typename NodeType = Scope, size_t MaxSize = 0>
+	export template<typename T, template<typename> typename NodeType = Scope, size_t MaxSize = 0>
 		requires std::is_same_v<NodeType<T>, Ref<T>> || std::is_same_v<NodeType<T>, Scope<T>>
 	class LockfreeQueue
 	{

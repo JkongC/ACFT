@@ -37,9 +37,17 @@ namespace ACFT
 		static void RenderThreadFunc();
 		static void EventThreadFunc();
 
-		static void CleanRenderer();
+		static void ReleaseRenderer();
+		static void ReleaseWindow();
+		static void ReleaseApp();
+
+		static void InitWindow();
+		static void InitWindowAndDetachContext();
+		static void InitRendererContext();
+		static void InitApp();
+
+		static void CleanRendererContext();
 		static void CleanWindow();
-		static void CleanApp();
 
 	private:
 		static inline Ref<Application> s_App = nullptr;

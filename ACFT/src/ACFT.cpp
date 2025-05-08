@@ -10,7 +10,7 @@ module ACFT;
 import Types;
 import Log;
 import Application;
-import Config;
+import Config.Thread;
 import Atlas;
 import Renderer;
 import Timer;
@@ -20,48 +20,119 @@ import ACFT.Thread;
 
 #include "Rendering/GLImpls/gldbg.h"
 
+#define MTOp(x) if constexpr (fThreads != 0) x
+
 namespace ACFT
 {
+	constexpr int fThreads = Config::CompileTime::GetFunctionalThreadCount();
+	
 	std::binary_semaphore windowReady{ 0 };
-	std::binary_semaphore appReady{ 0 };
+	std::counting_semaphore<fThreads> appReady{ 0 };
 	std::binary_semaphore rendererContextCleaned{ 0 };
 	std::binary_semaphore windowCleaned{ 0 };
 	std::atomic<bool> running = true;
+
+	template<ptrdiff_t SignalCount>
+	void AnnounceStage(std::counting_semaphore<SignalCount>& stage)
+	{
+		MTOp(stage.release(SignalCount));
+	}
+
+	template<ptrdiff_t SignalCount>
+	void WaitStage(std::counting_semaphore<SignalCount>& stage)
+	{
+		MTOp(stage.acquire());
+	}
+
+	void Engine::ReleaseRenderer()
+	{
+		Renderer::GetRenderer().reset();
+	}
+
+	void Engine::ReleaseWindow()
+	{
+		Engine::s_Window.reset();
+	}
+
+	void Engine::ReleaseApp()
+	{
+		Engine::s_App.reset();
+	}
 	
-	void Engine::EventThreadFunc()
+	void Engine::InitWindow()
 	{
 		Engine::s_Window = Window::InitWindow();
+
+		AnnounceStage(windowReady);
+	}
+	
+	void Engine::InitWindowAndDetachContext()
+	{
+		Engine::s_Window = Window::InitWindow();
+		Engine::s_Window->DetachContext();
+
+		AnnounceStage(windowReady);
+	}
+
+	void Engine::InitRendererContext()
+	{
+		WaitStage(windowReady);
+
+		Engine::s_Window->MakeContextCurrent();
+		Renderer::InitRenderer(Engine::s_Window);
+		ShaderLib::Init();
+	}
+
+	void Engine::InitApp()
+	{
+		Engine::s_App->Init();
+
+		AnnounceStage(appReady);
+	}
+
+	void Engine::CleanRendererContext()
+	{
+		Engine::ReleaseApp();
+		Engine::ReleaseRenderer();
+
+		AnnounceStage(rendererContextCleaned);
+	}
+
+	void Engine::CleanWindow()
+	{
+		WaitStage(rendererContextCleaned);
+
+		Engine::ReleaseWindow();
+
+		AnnounceStage(windowCleaned);
+	}
+	
+// ------------------------------------------------------------------------
+// Engine running logic.
+
+	void Engine::EventThreadFunc()
+	{
+		InitWindowAndDetachContext();
+
+		WaitStage(appReady);
+
 		auto& window = Engine::s_Window;
-
-		window->DetachContext();
-
-		windowReady.release();
-
 		while (running)
 		{
 			window->WaitEvents();
 		}
 
-		rendererContextCleaned.acquire();
-
 		Engine::CleanWindow();
-
-		windowCleaned.release();
 	}
 	
 	void Engine::RenderThreadFunc()
 	{
-		ThreadFeatures::is_render_thread = true;
+		ThreadFeatures::SetRenderThread();
 		
-		Engine::s_Window->MakeContextCurrent();
-		
-		auto& renderer = Renderer::InitRenderer(Engine::s_Window);
+		Engine::InitRendererContext();
+		Engine::InitApp();
 
 		auto& app = Engine::s_App;
-		app->Init();
-
-		appReady.release();
-
 		while (running)
 		{
 			app->OnRender();
@@ -70,11 +141,7 @@ namespace ACFT
 				FPSProfiler::RecordFrame();
 		}
 
-		Engine::CleanApp();
-
-		Engine::CleanRenderer();
-
-		rendererContextCleaned.release();
+		Engine::CleanRendererContext();
 	}
 	
 	int Engine::Start(int argc, char** argv)
@@ -90,13 +157,9 @@ namespace ACFT
 			ThreadManager::CreateThread(Threads::EVENT, true, Engine::EventThreadFunc);
 			ThreadManager::DetachThread(Threads::EVENT);
 
-			windowReady.acquire();
-
 			if constexpr (!IsRenderThreadUsed())
 			{
-				Engine::s_Window->MakeContextCurrent();
-				Renderer::InitRenderer(Engine::s_Window);
-				app->Init();
+				Engine::InitRendererContext();
 			}
 		}
 
@@ -104,23 +167,21 @@ namespace ACFT
 		{
 			if constexpr (!IsEventThreadUsed())
 			{
-				Engine::s_Window = Window::InitWindow();
-				Engine::s_Window->DetachContext();
-				windowReady.release();
+				Engine::InitWindowAndDetachContext();
 			}
 			
 			ThreadManager::CreateThread(Threads::RENDER, true, Engine::RenderThreadFunc);
 			ThreadManager::DetachThread(Threads::RENDER);
-
-			appReady.acquire();
 		}
 
 		if constexpr (!IsEventThreadUsed() && !IsRenderThreadUsed())
 		{
-			Engine::s_Window = Window::InitWindow();
-			Renderer::InitRenderer(Engine::s_Window);
-			app->Init();
+			Engine::InitWindow();
+			Engine::InitRendererContext();
+			Engine::InitApp();
 		}
+
+		WaitStage(appReady);
 
 		auto& window = Engine::s_Window;
 		NormalTimer timer;
@@ -143,36 +204,18 @@ namespace ACFT
 
 		if constexpr (!IsRenderThreadUsed())
 		{
-			Engine::CleanApp();
-			Engine::CleanRenderer();
-			rendererContextCleaned.release();
+			Engine::CleanRendererContext();
 		}
 
 		if constexpr (IsEventThreadUsed())
 		{
-			windowCleaned.acquire();
+			WaitStage(windowCleaned);
 		}
 		else
 		{
-			rendererContextCleaned.acquire();
 			Engine::CleanWindow();
 		}
 		
 		return 0;
-	}
-
-	void Engine::CleanRenderer()
-	{
-		Renderer::GetRenderer().reset();
-	}
-
-	void Engine::CleanWindow()
-	{
-		Engine::s_Window.reset();
-	}
-
-	void Engine::CleanApp()
-	{
-		Engine::s_App.reset();
 	}
 }

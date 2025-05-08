@@ -7,6 +7,7 @@ namespace ACFT::Config
 {
 	static inline RenderAPI RENDER_API = RenderAPI::OpenGL;
 	static inline std::filesystem::path TEXTURE_PATH = "textures";
+	static inline std::filesystem::path SHADER_PATH = "resources/shaders";
 	static inline Image WINDOW_ICON{};
 	static inline std::string WINDOW_NAME = "AnotherCraft";
 	static inline bool USE_FPS_PROFILER = false;
@@ -29,6 +30,16 @@ namespace ACFT::Config
 	std::filesystem::path GetTexturePath()
 	{
 		return TEXTURE_PATH;
+	}
+
+	void SetShaderPath(std::filesystem::path path)
+	{
+		SHADER_PATH = path;
+	}
+
+	std::filesystem::path GetShaderPath()
+	{
+		return SHADER_PATH;
 	}
 
 	void SetWindowIcon(std::filesystem::path icon)

@@ -10,7 +10,7 @@ class MyLayer : public ACFT::Layer
 {
 public:
 	MyLayer(ACFT::Ref<ACFT::Window> window)
-		: m_Shader(ACFT::Shader::Create("resources/shaders/basic.shader"))
+		: m_Shader(ACFT::ShaderLib::GetShader("basic"))
 		, m_Camera(MakeRef<ACFT::OrthographicCamera>(window))
 		, r_Renderer(ACFT::Renderer::GetRenderer())
 		, r_Window(r_Renderer->GetWindow())

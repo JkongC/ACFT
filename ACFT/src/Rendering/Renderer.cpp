@@ -7,6 +7,7 @@ module Renderer;
 import Types;
 import Log;
 import Config;
+import Config.Thread;
 import Event;
 import ACFT.Thread;
 import ACFT.Literals;
@@ -21,7 +22,7 @@ namespace ACFT
 
 		static Ref<Renderer> null_renderer = nullptr;
 		
-		if (Config::CompileTime::IsRenderThreadUsed() && !ThreadFeatures::is_render_thread)
+		if (Config::CompileTime::IsRenderThreadUsed() && !ThreadFeatures::IsRenderThread())
 		{
 			ACFT_LOG_ERROR("Renderer can only be initialized in render thread!");
 			return null_renderer;
