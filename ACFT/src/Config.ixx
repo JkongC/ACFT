@@ -8,6 +8,18 @@ import <filesystem>;
 import Image;
 import Renderer;
 
+#if defined (ACFT_RENDER_THREAD)
+constexpr bool USE_RENDER_THREAD = true;
+#else
+constexpr bool USE_RENDER_THREAD = false;
+#endif
+
+#if defined (ACFT_EVENT_THREAD)
+constexpr bool USE_EVENT_THREAD = true;
+#else
+constexpr bool USE_EVENT_THREAD = false;
+#endif
+
 namespace ACFT::Config
 {	
 	export ACFT_API void SetRenderAPI(RenderAPI render_API);
@@ -21,10 +33,20 @@ namespace ACFT::Config
 
 	export ACFT_API void SetWindowName(std::string name);
 	export ACFT_API std::string_view GetWindowName();
-
-	export ACFT_API void UseRenderThread(bool use);
-	export ACFT_API bool IsRenderThreadUsed();
-
+	
 	export ACFT_API void UseFPSProfiler(bool use);
 	export ACFT_API bool IsFPSProfilerUsed();
+
+	namespace CompileTime
+	{
+		export constexpr bool IsRenderThreadUsed()
+		{
+			return USE_RENDER_THREAD;
+		}
+
+		export constexpr bool IsEventThreadUsed()
+		{
+			return USE_EVENT_THREAD;
+		}
+	}
 }

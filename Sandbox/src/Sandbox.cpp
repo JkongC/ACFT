@@ -33,7 +33,7 @@ public:
 		atlas->AddTexture(left_5);
 
 		m_Sprite.UseAtlas(atlas);
-		m_Sprite.SetInterval(70);
+		m_Sprite.SetInterval(80.0f);
 
 		r_Renderer->SetClearColor(0.5f, 0.8f, 0.9f, 1.0f);
 		r_Renderer->EnableVSync();
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 {
 	ACFT::Config::SetWindowIcon("resources/imgs/acft_icon.png");
 	ACFT::Config::SetWindowName("Sandbox");
-	ACFT::Config::UseFPSProfiler(true);
+	ACFT::Config::UseFPSProfiler(false);
 
 	ACFT::Engine::CreateApplication<MyApp>();
 	return ACFT::Engine::Start(argc, argv);

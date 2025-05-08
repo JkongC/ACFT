@@ -89,6 +89,11 @@ namespace ACFT
 		glfwPollEvents();
 	}
 
+	void OpenGLWindow::WaitEvents()
+	{
+		glfwWaitEvents();
+	}
+
 	void OpenGLWindow::MousePosCallback(GLFWwindow* window, double xpos, double ypos)
 	{
 		EventManager::Global().DistributeEvent(Events::MOUSE_POS,
@@ -137,5 +142,10 @@ namespace ACFT
 	void OpenGLWindow::MakeContextCurrent()
 	{
 		glfwMakeContextCurrent(m_RawWindow);
+	}
+
+	void OpenGLWindow::DetachContext()
+	{
+		glfwMakeContextCurrent(nullptr);
 	}
 }

@@ -22,88 +22,157 @@ import ACFT.Thread;
 
 namespace ACFT
 {
-	std::binary_semaphore renderer_context_ready{ 0 };
-	std::binary_semaphore app_ready{ 0 };
-	std::binary_semaphore renderer_context_cleaned{ 0 };
+	std::binary_semaphore windowReady{ 0 };
+	std::binary_semaphore appReady{ 0 };
+	std::binary_semaphore rendererContextCleaned{ 0 };
+	std::binary_semaphore windowCleaned{ 0 };
 	std::atomic<bool> running = true;
+	
+	void Engine::EventThreadFunc()
+	{
+		Engine::s_Window = Window::InitWindow();
+		auto& window = Engine::s_Window;
 
-	static void RenderThreadFunc()
+		window->DetachContext();
+
+		windowReady.release();
+
+		while (running)
+		{
+			window->WaitEvents();
+		}
+
+		rendererContextCleaned.acquire();
+
+		Engine::CleanWindow();
+
+		windowCleaned.release();
+	}
+	
+	void Engine::RenderThreadFunc()
 	{
 		ThreadFeatures::is_render_thread = true;
+		
+		Engine::s_Window->MakeContextCurrent();
+		
+		auto& renderer = Renderer::InitRenderer(Engine::s_Window);
 
-		auto window = Window::InitWindow();
-		auto& renderer = Renderer::InitRenderer(window);
-
-		renderer_context_ready.release();
-
-		auto& app = Engine::GetApplication();
+		auto& app = Engine::s_App;
 		app->Init();
-		app_ready.release();
 
-		while (!window->ShouldClose())
+		appReady.release();
+
+		while (running)
 		{
 			app->OnRender();
 
 			if (Config::IsFPSProfilerUsed())
 				FPSProfiler::RecordFrame();
-
-			window->PollEvents();
 		}
 
-		running = false;
+		Engine::CleanApp();
 
-		Engine::GetApplication().reset();
+		Engine::CleanRenderer();
 
-		Renderer::CleanRenderer();
-
-		renderer_context_cleaned.release();
+		rendererContextCleaned.release();
 	}
 	
 	int Engine::Start(int argc, char** argv)
 	{
+		using namespace Config::CompileTime;
+		
 		Logger::Init();
 
 		auto& app = Engine::s_App;
 
-		ThreadManager::CreateThread(Threads::RENDER, true, RenderThreadFunc);
-		ThreadManager::DetachThread(Threads::RENDER);
+		if constexpr (IsEventThreadUsed())
+		{
+			ThreadManager::CreateThread(Threads::EVENT, true, Engine::EventThreadFunc);
+			ThreadManager::DetachThread(Threads::EVENT);
 
+			windowReady.acquire();
+
+			if constexpr (!IsRenderThreadUsed())
+			{
+				Engine::s_Window->MakeContextCurrent();
+				Renderer::InitRenderer(Engine::s_Window);
+				app->Init();
+			}
+		}
+
+		if constexpr (IsRenderThreadUsed())
+		{
+			if constexpr (!IsEventThreadUsed())
+			{
+				Engine::s_Window = Window::InitWindow();
+				Engine::s_Window->DetachContext();
+				windowReady.release();
+			}
+			
+			ThreadManager::CreateThread(Threads::RENDER, true, Engine::RenderThreadFunc);
+			ThreadManager::DetachThread(Threads::RENDER);
+
+			appReady.acquire();
+		}
+
+		if constexpr (!IsEventThreadUsed() && !IsRenderThreadUsed())
+		{
+			Engine::s_Window = Window::InitWindow();
+			Renderer::InitRenderer(Engine::s_Window);
+			app->Init();
+		}
+
+		auto& window = Engine::s_Window;
 		NormalTimer timer;
-		
-		if (!renderer_context_ready.try_acquire_for(std::chrono::seconds(5)))
+		while (!window->ShouldClose())
 		{
-			ACFT_LOG_ERROR("Render thread failed to initialize!");
-			exit(-1);
+			app->OnUpdate(timer.GetElapsedAndFlush());
+
+			if constexpr (!IsRenderThreadUsed())
+			{
+				app->OnRender();
+			}
+			
+			if constexpr (!IsEventThreadUsed())
+			{
+				window->PollEvents();
+			}
 		}
 
-		if (!app_ready.try_acquire_for(std::chrono::seconds(5)))
+		running = false;
+
+		if constexpr (!IsRenderThreadUsed())
 		{
-			ACFT_LOG_ERROR("Application failed to initialize!");
-			exit(-1);
+			Engine::CleanApp();
+			Engine::CleanRenderer();
+			rendererContextCleaned.release();
 		}
 
-		auto window = Renderer::GetRenderer()->GetWindow();
-		
-		while (running)
+		if constexpr (IsEventThreadUsed())
 		{
-			app->OnUpdate(timer.GetElapsed());
-			timer.Flush();
+			windowCleaned.acquire();
 		}
-		
-		Engine::Clean();
-
-		renderer_context_cleaned.acquire();
+		else
+		{
+			rendererContextCleaned.acquire();
+			Engine::CleanWindow();
+		}
 		
 		return 0;
 	}
 
-	Ref<Application>& Engine::GetApplication()
+	void Engine::CleanRenderer()
 	{
-		return Engine::s_App;
+		Renderer::GetRenderer().reset();
 	}
-	
-	void Engine::Clean()
+
+	void Engine::CleanWindow()
 	{
-		
+		Engine::s_Window.reset();
+	}
+
+	void Engine::CleanApp()
+	{
+		Engine::s_App.reset();
 	}
 }

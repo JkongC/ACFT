@@ -34,6 +34,14 @@ export namespace ACFT
 			m_Last = std::chrono::steady_clock::now();
 		}
 
+		Type GetElapsedAndFlush()
+		{
+			auto now = std::chrono::steady_clock::now();
+			auto elapsed = std::chrono::duration_cast<std::chrono::duration<Type, Period>>(now - m_Last);
+			m_Last = now;
+			return elapsed.count();
+		}
+
 	private:
 		std::chrono::time_point<std::chrono::steady_clock> m_Last;
 	};

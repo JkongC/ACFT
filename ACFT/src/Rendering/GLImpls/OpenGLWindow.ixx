@@ -19,11 +19,15 @@ namespace ACFT
 		
 		virtual void PollEvents() override;
 
+		virtual void WaitEvents() override;
+
 		virtual void SwapFrameBuffers() override;
 
 		virtual void* GetRawWindow() override;
 
 		virtual void MakeContextCurrent() override;
+		
+		virtual void DetachContext() override;
 
 	private:
 		static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);

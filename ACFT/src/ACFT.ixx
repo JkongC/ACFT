@@ -20,7 +20,6 @@ namespace ACFT
 	{
 	public:
 		static int Start(int argc, char** argv);
-		static Ref<Application>& GetApplication();
 
 		template<typename T, typename... Args>
 		requires std::is_base_of_v<Application, T>
@@ -35,9 +34,15 @@ namespace ACFT
 		Engine(Engine&&) = delete;
 		Engine& operator=(const Engine&) = delete;
 
-		static void Clean();
+		static void RenderThreadFunc();
+		static void EventThreadFunc();
+
+		static void CleanRenderer();
+		static void CleanWindow();
+		static void CleanApp();
 
 	private:
 		static inline Ref<Application> s_App = nullptr;
+		static inline Ref<Window> s_Window = nullptr;
 	};
 }

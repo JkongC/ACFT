@@ -9,7 +9,6 @@ namespace ACFT::Config
 	static inline std::filesystem::path TEXTURE_PATH = "textures";
 	static inline Image WINDOW_ICON{};
 	static inline std::string WINDOW_NAME = "AnotherCraft";
-	static inline bool USE_RENDER_THREAD = true;
 	static inline bool USE_FPS_PROFILER = false;
 	
 	void SetRenderAPI(RenderAPI render_API)
@@ -50,16 +49,6 @@ namespace ACFT::Config
 	std::string_view GetWindowName()
 	{
 		return WINDOW_NAME;
-	}
-
-	void UseRenderThread(bool use)
-	{
-		USE_RENDER_THREAD = use;
-	}
-
-	bool IsRenderThreadUsed()
-	{
-		return USE_RENDER_THREAD;
 	}
 
 	void UseFPSProfiler(bool use)

@@ -21,7 +21,7 @@ namespace ACFT
 
 		static Ref<Renderer> null_renderer = nullptr;
 		
-		if (Config::IsRenderThreadUsed() && !ThreadFeatures::is_render_thread)
+		if (Config::CompileTime::IsRenderThreadUsed() && !ThreadFeatures::is_render_thread)
 		{
 			ACFT_LOG_ERROR("Renderer can only be initialized in render thread!");
 			return null_renderer;

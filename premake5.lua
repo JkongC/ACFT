@@ -24,7 +24,7 @@ project "ACFT"
   location "ACFT"
   targetdir "bin"
 
-  -- defines { "ACFT_EXPORTS" }
+  defines { "ACFT_RENDER_THREAD" }
   
   files {
     "%{prj.name}/src/**.ixx",
