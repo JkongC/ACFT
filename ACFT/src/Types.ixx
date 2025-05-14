@@ -23,6 +23,43 @@ namespace ACFT
 	using View = std::weak_ptr<T>;
 
 	export template<typename T>
+	concept Is_Ref_Or_Scope = requires(T t)
+	{ 
+		typename T::element_type;
+		{ t.get() } -> std::convertible_to<typename T::element_type*>;
+	};
+
+	export template<typename T>
+	concept Is_View = requires(T t)
+	{
+		typename decltype(t.lock())::element_type;
+		{ t.lock().get() } -> std::convertible_to<typename decltype(t.lock())::element_type*>;
+	};
+
+	export template<typename T>
+	concept PtrWrapper = Is_Ref_Or_Scope<T> || Is_View<T>;
+	
+	export template<PtrWrapper Wrapper>
+	struct PtrWrapperTraits
+	{ 
+	private:
+		static constexpr auto choose_type()
+		{
+			if constexpr (Is_View<Wrapper>)
+			{
+				return decltype(std::declval<Wrapper>().lock().get()){};
+			}
+			else
+			{
+				return typename Wrapper::element_type{};
+			}
+		}
+
+	public:
+		using ele_type = decltype(choose_type());
+	};
+
+	export template<typename T>
 	struct ViewHash
 	{
 		size_t operator()(const View<T>& view) const
@@ -82,7 +119,28 @@ namespace ACFT
 	{
 		return std::static_pointer_cast<T1>(scope);
 	}
-	
+
+	export template<PtrWrapper Wrapper>
+	PtrWrapperTraits<Wrapper>::ele_type* GetRawPtr(const Wrapper& wrapper)
+	{
+		if constexpr (Is_View<Wrapper>)
+		{
+			auto sptr = wrapper.lock();
+			if (sptr)
+			{
+				return sptr.get();
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+		else
+		{
+			return wrapper.get();
+		}
+	}
+
 	export using RenderObjectIdentifier = std::variant<std::monostate, unsigned int>;
 
 	export using ModelMatrix = glm::mat4;

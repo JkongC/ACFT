@@ -14,15 +14,13 @@ namespace ACFT
 
 	Atlas::~Atlas()
 	{
-		if (this->m_AtlasData != nullptr)
-			delete[] this->m_AtlasData;
+		
 	}
 
 	void Atlas::InitAtlas(int channels)
 	{
-		this->m_AtlasData = new unsigned char[
-			m_MaxHorizontalTextures * m_WidthPerTexture *
-				m_MaxVerticalTextures * m_HeightPerTexture * channels];
+		this->m_AtlasData = MakeScope<unsigned char[]>(m_MaxHorizontalTextures * m_WidthPerTexture *
+			m_MaxVerticalTextures * m_HeightPerTexture * channels);
 		this->m_Channels = channels;
 	}
 
@@ -110,7 +108,7 @@ namespace ACFT
 
 	const unsigned char* Atlas::GetInternalData()
 	{
-		return m_AtlasData;
+		return GetRawPtr(m_AtlasData);
 	}
 
 	int Atlas::GetTextureWidth()

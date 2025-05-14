@@ -1,3 +1,7 @@
+module;
+
+#include <glfw3.h>
+
 export module Input:MouseInput;
 
 export import <utility>;
@@ -9,9 +13,9 @@ namespace ACFT
 {
 	export namespace GLKeyCode
 	{
-		constexpr int MOUSE_LEFT = 0;
-		constexpr int MOUSE_RIGHT = 1;
-		constexpr int MOUSE_MIDDLE = 2;
+		constexpr int MOUSE_LEFT = GLFW_MOUSE_BUTTON_LEFT;
+		constexpr int MOUSE_RIGHT = GLFW_MOUSE_BUTTON_RIGHT;
+		constexpr int MOUSE_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
 	}
 
 	export std::pair<double, double> GetCursorPos(Ref<Window> window);

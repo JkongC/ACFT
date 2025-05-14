@@ -9,6 +9,7 @@ import <vector>;
 
 export import Image;
 export import Texture;
+import Types;
 
 namespace ACFT
 {
@@ -41,7 +42,7 @@ namespace ACFT
 		ACFT_API int GetTotalHeight();
 
 	private:
-		unsigned char* m_AtlasData{ nullptr };
+		Scope<unsigned char[]> m_AtlasData;
 		int m_WidthPerTexture{ 0 };
 		int m_HeightPerTexture{ 0 };
 		int m_Channels{ 0 };

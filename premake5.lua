@@ -2,7 +2,7 @@ workspace "ACFT"
   configurations { "Dist", "Release", "Debug" }
   system "Windows"
   architecture "x64"
-  cppdialect "C++20"
+  cppdialect "C++23"
   systemversion "latest"
 
   startproject "Sandbox"
