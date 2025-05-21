@@ -3,6 +3,9 @@ export module Input;
 import :KeyInput;
 import :MouseInput;
 
+import Types;
+import Window;
+
 namespace ACFT
 {
 	export enum class Controller
@@ -153,5 +156,7 @@ namespace ACFT
 		constexpr Key MOUSE_MIDDLE = 122;
 	}
 
-	export bool IsKeyDown(const Key& key);
+	export bool IsKeyDown(const Ref<Window>& window, const Key& key);
+
+	export std::pair<double, double> GetCursorPos(const Ref<Window>& window);
 }

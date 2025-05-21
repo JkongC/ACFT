@@ -1,3 +1,8 @@
+module;
+
+#include <glew.h>
+#include <glfw3.h>
+
 module Input;
 
 import <unordered_map>;
@@ -142,7 +147,7 @@ namespace ACFT
 		case RenderAPI::OpenGL:
 			if (m_ID >= GLKeyCodes.size())
 			{
-				ACFT_LOG_WARN("Using a invalid key id \"{}\" !", m_ID);
+				ACFT_LOG_WARN("Using an invalid key id \"{}\" !", m_ID);
 				return GLKeyCodes[0];
 			}
 			else
@@ -151,9 +156,30 @@ namespace ACFT
 			}
 			break;
 		default:
+			ACFT_LOG_WARN("Using an invalid render API!");
 			return GLKeyCodes[0];
 			break;
 		}
+	}
+
+	bool IsKeyDown(const Ref<Window>& window, const Key& key)
+	{
+		switch (Config::GetRenderAPI())
+		{
+		case RenderAPI::OpenGL:
+			return glfwGetKey(static_cast<GLFWwindow*>(window->GetRawWindow()), key);
+		default:
+			ACFT_LOG_WARN("Using an invalid render API!");
+			return false;
+			break;
+		}
+	}
+
+	std::pair<double, double> GetCursorPos(const Ref<Window>& window)
+	{
+		std::pair<double, double> ret;
+		glfwGetCursorPos(static_cast<GLFWwindow*>(window->GetRawWindow()), &ret.first, &ret.second);
+		return ret;
 	}
 
 }

@@ -42,8 +42,10 @@ project "ACFT"
   includedirs {
     "ACFT/src",
     "ACFT/vendor",
+    "ACFT/vendor/GL",
+    "ACFT/vendor/GLFW",
     "ACFT/vendor/glm",
-    "ACFT/vendor/entt/src",
+    "ACFT/vendor/entt/src"
   }
 
   postbuildcommands {

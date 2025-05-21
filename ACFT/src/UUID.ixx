@@ -6,6 +6,7 @@ export module UUID;
 
 import <cstdint>;
 import <functional>;
+import <string_view>;
 
 namespace ACFT
 {
@@ -15,13 +16,16 @@ namespace ACFT
 		UUID();
 		UUID(const UUID&);
 
-		inline uint64_t GetID() const { return internal_id; }
-
-		bool operator==(const UUID& other) const { return this->internal_id == other.internal_id; }
-		bool operator!=(const UUID& other) const { return this->internal_id != other.internal_id; }
+		bool operator==(const UUID& other) const;
+		bool operator!=(const UUID& other) const;
 
 	private:
-		uint64_t internal_id;
+		friend struct std::hash<UUID>;
+		struct
+		{
+			uint64_t low;
+			uint64_t high;
+		} pack;
 	};
 }
 
@@ -32,7 +36,8 @@ namespace std
 	{
 		size_t operator()(const ACFT::UUID& uuid) const
 		{
-			return std::hash<uint64_t>()(uuid.GetID());
+			std::string_view v{reinterpret_cast<const char*>(&uuid.pack), sizeof(uuid.pack)};
+			return std::hash<std::string_view>()(v);
 		}
 	};
 }

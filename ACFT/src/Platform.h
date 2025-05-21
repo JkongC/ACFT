@@ -11,4 +11,17 @@
 #else
 #define ACFT_API
 
+#include <cstdint>
+
+static consteval bool IsLittleEndian()
+{
+	union
+	{
+		uint32_t whole;
+		uint8_t part[4];
+	} test{0x01020304};
+
+	return test.part[0] == 0x04;
+}
+
 #endif // _WIN32

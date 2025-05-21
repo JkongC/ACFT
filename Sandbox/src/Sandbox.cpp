@@ -67,7 +67,7 @@ public:
 		if (event->GetType() == ACFT::Events::MOUSE_BUTTON)
 		{
 			auto& button = *event->GetInfo<ACFT::MouseButtonInfo>();
-			if (button.keycode == ACFT::GLKeyCode::MOUSE_LEFT && !button.pressed)
+			if (button.keycode == ACFT::Keys::MOUSE_LEFT && !button.pressed)
 			{
 				//This is to ensure accurate position of the sprite.
 				auto [xpos, ypos] = ACFT::GetCursorPos(r_Window);
