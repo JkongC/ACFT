@@ -24,6 +24,7 @@ namespace GLImplementations
 	export class GLShader
 	{
 	public:
+		GLShader();
 		GLShader(const std::filesystem::path& path);
 		GLShader(GLShader&&) = default;
 
@@ -41,8 +42,10 @@ namespace GLImplementations
 
 	private:
 		ShaderSources ParseShader();
+		ShaderSources ParseShader(const std::string& source);
 		unsigned int CompileShader(unsigned int type, const std::string& source);
 		unsigned int CreateShader();
+		unsigned int CreateBasicShader();
 
 	private:
 		std::filesystem::path m_Path;

@@ -61,6 +61,7 @@ namespace ACFT
 		RenderObjectIdentifier MakeTexture(Ref<Image> img) override;
 
 		RenderObjectIdentifier MakeShader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed) override;
+		RenderObjectIdentifier MakeBasicShader() override;
 
 	private:
 		void InitContext();

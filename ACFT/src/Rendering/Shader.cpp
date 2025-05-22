@@ -18,10 +18,31 @@ namespace ACFT
 		return Ref<Shader>(shader);
 	}
 
+	Ref<Shader> Shader::CreateBasic()
+	{
+		Shader* shader = new Shader();
+		return Ref<Shader>(shader);
+	}
+
 	Shader::Shader(const std::filesystem::path& shader_path, ShaderLang language, ShaderType type)
 		: m_Path(shader_path), m_Lang(language), m_Type(type)
 	{
 		m_Identifier = Renderer::GetRenderer()->MakeShader(m_Path, m_Lang, m_Type);
+	}
+
+	Shader::Shader()
+		: m_Path()
+	{
+		switch (Config::GetRenderAPI())
+		{
+		case RenderAPI::OpenGL:
+			m_Lang = ShaderLang::GLSL;
+			m_Type = ShaderType::glsl_mixed;
+			m_Identifier = Renderer::GetRenderer()->MakeBasicShader();
+			break;
+		default:
+			break;
+		}
 	}
 
 	RenderObjectIdentifier Shader::GetIdentifier() const
@@ -36,6 +57,8 @@ namespace ACFT
 			ACFT_LOG_WARN("ShaderLib is already initialized!");
 			return;
 		}
+		
+		ShaderLib::s_Shaders.try_emplace("basic", Shader::CreateBasic());
 		
 		for (const auto& file : std::filesystem::recursive_directory_iterator(Config::GetShaderPath()))
 		{
@@ -58,5 +81,10 @@ namespace ACFT
 			ACFT_LOG_ERROR("Trying to get an unexisted shader \"{}\"!", shader_name);
 			return nullptr;
 		}
+	}
+
+	Ref<Shader> ShaderLib::GetBasicShader()
+	{
+		return ShaderLib::GetShader("basic");
 	}
 }

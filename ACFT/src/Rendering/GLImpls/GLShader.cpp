@@ -20,6 +20,12 @@ import Shader;
 
 namespace GLImplementations
 {
+	GLShader::GLShader()
+		: m_Path()
+	{
+
+	}
+	
 	GLShader::GLShader(const std::filesystem::path& filepath)
 		: m_Path(filepath)
 	{
@@ -53,6 +59,35 @@ namespace GLImplementations
 	void GLShader::SetUniformVec3f(std::string_view name, const glm::vec3& vec)
 	{
 		GLCall(glUniform3fv(GetUniformLocation(name), 1, &vec.x));
+	}
+
+	ShaderSources GLShader::ParseShader(const std::string& source)
+	{
+		std::istringstream src{ source };
+		
+		enum class ShaderType
+		{
+			NONE = -1, VERTEX = 0, FRAGMENT = 1
+		};
+
+		std::string line;
+		std::stringstream ss[2];
+		ShaderType type = ShaderType::NONE;
+		while (std::getline(src, line)) {
+			if (line.find("#shader") != std::string::npos) {
+				if (line.find("vertex") != std::string::npos) {
+					type = ShaderType::VERTEX;
+				}
+				else if (line.find("fragment") != std::string::npos) {
+					type = ShaderType::FRAGMENT;
+				}
+			}
+			else {
+				ss[static_cast<int>(type)] << line << "\n";
+			}
+		}
+
+		return { ss[0].str(), ss[1].str() };
 	}
 
 	ShaderSources GLShader::ParseShader()
@@ -115,6 +150,58 @@ namespace GLImplementations
 	unsigned int GLShader::CreateShader()
 	{
 		ShaderSources shadersources = ParseShader();
+
+		unsigned int program = glCreateProgram();
+		unsigned int vertex = CompileShader(GL_VERTEX_SHADER, shadersources.vertex);
+		unsigned int fragment = CompileShader(GL_FRAGMENT_SHADER, shadersources.fragment);
+
+		glAttachShader(program, vertex);
+		glAttachShader(program, fragment);
+		glLinkProgram(program);
+		glValidateProgram(program);
+
+		glDeleteShader(vertex);
+		glDeleteShader(fragment);
+
+		return program;
+	}
+
+	unsigned int GLShader::CreateBasicShader()
+	{
+		static std::string basic_src = R"(
+			#shader vertex
+			#version 420 core
+
+			layout(location = 0) in vec4 position;
+			layout(location = 1) in vec2 texture_uv;
+
+			out vec2 v_TexCoord;
+
+			uniform mat4 mvp;
+
+			void main()
+			{
+				gl_Position = mvp * position;
+				v_TexCoord = texture_uv;
+			}
+
+
+			#shader fragment
+			#version 420 core
+
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_TexCoord;
+
+			uniform sampler2D u_Texture;
+
+			void main()
+			{
+				color = texture(u_Texture, v_TexCoord);
+			}
+		)";
+		
+		ShaderSources shadersources = ParseShader(basic_src);
 
 		unsigned int program = glCreateProgram();
 		unsigned int vertex = CompileShader(GL_VERTEX_SHADER, shadersources.vertex);

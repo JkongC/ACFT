@@ -1,9 +1,53 @@
 export module ACFT.EnhancingFuncs;
 
 import <vector>;
+import <variant>;
+import <functional>;
 
 namespace ACFT
 {
+	namespace TemplateHelper
+	{
+		template<typename T>
+		struct primary
+		{
+			using type = void;
+		};
+
+		template<typename R>
+		struct primary<R&> : primary<R> {};
+
+		template<typename R>
+		struct primary<R&&> : primary<R> {};
+
+		template<template<typename> typename T, typename... Args>
+		struct primary<T<Args...>>
+		{
+			using type = std::decay_t<T<void>>;
+		};
+
+		template<typename T>
+		using primary_t = primary<T>::type;
+
+		export template<typename T, template<typename> typename Primary>
+		concept SpecializationOf = std::is_same_v<primary_t<T>, Primary<void>>;
+
+		export template<typename T1, typename T2>
+		concept OfSamePrimary = std::is_same_v<primary_t<T1>, primary_t<T2>>;
+
+		export template<typename T, template<typename> typename Primary>
+		constexpr bool IsSpecializationOf()
+		{
+			return SpecializationOf<T, Primary>;
+		}
+
+		export template<typename T1, typename T2>
+		constexpr bool IsOfSamePrimary()
+		{
+			return OfSamePrimary<T1, T2>;
+		}
+	}
+	
 	namespace StorageHelper
 	{
 		export struct unordered
@@ -16,7 +60,7 @@ namespace ACFT
 			requires requires{ typename Storage::value_type; }
 		struct UnorderedRemove
 		{
-			bool operator()(Storage& storage, typename Storage::iterator it)
+			static bool operator()(Storage& storage, typename Storage::iterator it)
 			{
 				return false;
 			}
@@ -27,7 +71,7 @@ namespace ACFT
 		export template<typename T>
 		struct UnorderedRemove<std::vector<T>>
 		{
-			bool operator()(std::vector<T>& storage, std::vector<T>::iterator it)
+			static bool operator()(std::vector<T>& storage, std::vector<T>::iterator it)
 			{
 				if (it == storage.end())
 					return false;
@@ -52,8 +96,42 @@ namespace ACFT
 			}
 			else
 			{
-				return UnorderedRemove<Storage>()(storage, it);
+				return UnorderedRemove<Storage>(storage, it);
 			}
+		}
+	}
+
+	namespace VariantHelper
+	{
+		using namespace TemplateHelper;
+		
+		export template<typename T, SpecializationOf<std::variant> Var>
+		T ValueOr(Var&& variant, const T& alternative)
+		{
+			T* result = std::get_if<T>(&variant);
+			if (result)
+				return *result;
+			else
+				return alternative;
+		}
+
+		export template<typename T, SpecializationOf<std::variant> Var>
+		T ValueOrDo(Var&& variant, const T& alternative, std::function<void()> reaction)
+		{
+			T* result = std::get_if<T>(&variant);
+			if (result)
+				return *result;
+			else
+			{
+				reaction();
+				return alternative;
+			}
+		}
+
+		export template<typename T, SpecializationOf<std::variant> Var>
+		T Value(Var&& variant)
+		{
+			return ValueOr<T>(std::forward<Var>(variant), T{});
 		}
 	}
 }

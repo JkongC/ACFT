@@ -19,6 +19,7 @@ import :GLVertexArray;
 import :GLIndexBuilder;
 import :GLTexture;
 import :GLShader;
+import ACFT.EnhancingFuncs;
 
 #include "gldbg.h"
 
@@ -57,18 +58,17 @@ namespace ACFT
 
 		if (context.shader != m_RenderContextCache.shader)
 		{
-			m_RenderContextCache.shader = context.shader;
+			if (context.shader != nullptr)
+				m_RenderContextCache.shader = context.shader;
+			else
+				m_RenderContextCache.shader = ShaderLib::GetBasicShader();
+
 			immediate_draw = true;
 		}
 
 		GLuint shader_id;
 		RenderObjectIdentifier _id = context.shader->GetIdentifier();
-		if (auto* idptr = std::get_if<unsigned int>(&_id))
-		{
-			shader_id = *idptr;
-		}
-		else
-			shader_id = 0;
+		shader_id = VariantHelper::ValueOr<unsigned int>(_id, 0);
 
 		if (auto it = m_ShaderCache.find(shader_id); 
 			it != m_ShaderCache.end())
@@ -236,8 +236,15 @@ namespace ACFT
 	RenderObjectIdentifier OpenGLRenderer::MakeShader(const std::filesystem::path& shader_path, ShaderLang language, ShaderType type)
 	{
 		Scope<GLShader> shader = MakeScope<GLShader>(shader_path);
-		RenderObjectIdentifier _id = shader->GetIdentifier();
-		unsigned int id = *std::get_if<unsigned int>(&_id);
+		unsigned int id = VariantHelper::Value<unsigned int>(shader->GetIdentifier());
+		m_ShaderCache.try_emplace(id, std::move(*shader));
+		return id;
+	}
+
+	RenderObjectIdentifier OpenGLRenderer::MakeBasicShader()
+	{
+		Scope<GLShader> shader = MakeScope<GLShader>();
+		unsigned int id = VariantHelper::Value<unsigned int>(shader->GetIdentifier());
 		m_ShaderCache.try_emplace(id, std::move(*shader));
 		return id;
 	}

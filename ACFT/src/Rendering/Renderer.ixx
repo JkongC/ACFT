@@ -79,6 +79,7 @@ namespace ACFT
 		ACFT_API virtual RenderObjectIdentifier MakeTexture(Ref<Image> img) = 0;
 
 		ACFT_API virtual RenderObjectIdentifier MakeShader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed) = 0;
+		ACFT_API virtual RenderObjectIdentifier MakeBasicShader() = 0;
 
 	protected:
 		Ref<Window> m_Window;

@@ -10,8 +10,7 @@ class MyLayer : public ACFT::Layer
 {
 public:
 	MyLayer(ACFT::Ref<ACFT::Window> window)
-		: m_Shader(ACFT::ShaderLib::GetShader("basic"))
-		, m_Camera(MakeRef<ACFT::OrthographicCamera>(window))
+		, m_Camera(ACFT::MakeRef<ACFT::OrthographicCamera>(window))
 		, r_Renderer(ACFT::Renderer::GetRenderer())
 		, r_Window(r_Renderer->GetWindow())
 	{
@@ -88,10 +87,7 @@ public:
 	{
 		r_Renderer->BeginScene({ m_Camera });
 
-		ACFT::RenderContext ctx{};
-		ctx.shader = m_Shader;
-
-		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f, ctx);
+		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f, {});
 
 		r_Renderer->EndScene();
 	}
@@ -99,7 +95,6 @@ public:
 private:
 	ACFT::LockfreeQueue<ACFT::Event> m_EventQueue;
 	ACFT::Sprite m_Sprite;
-	ACFT::Ref<ACFT::Shader> m_Shader;
 	ACFT::Ref<ACFT::OrthographicCamera> m_Camera;
 	ACFT::Ref<ACFT::Renderer> r_Renderer;
 	ACFT::Ref<ACFT::Window> r_Window;

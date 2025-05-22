@@ -29,11 +29,15 @@ namespace ACFT
 		RenderObjectIdentifier GetIdentifier() const;
 
 	protected:
+		friend class ShaderLib;
 		Shader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed);
+		Shader();
+		
+		static Ref<Shader> CreateBasic();
 
 		std::filesystem::path m_Path;
 		ShaderLang m_Lang;
-		ShaderType m_Type{ShaderType::glsl_mixed};
+		ShaderType m_Type;
 		RenderObjectIdentifier m_Identifier;
 	};
 
@@ -42,6 +46,7 @@ namespace ACFT
 	public:
 		static void Init();
 		static Ref<Shader> GetShader(std::string_view shader_name);
+		static Ref<Shader> GetBasicShader();
 
 	private:
 		ShaderLib() = default;
