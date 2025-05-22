@@ -98,8 +98,6 @@ project "Sandbox"
   
   postbuildcommands {
     "{COPYFILE} ../lib/*.dll %{cfg.targetdir}/",
-    "{MKDIR} %{cfg.targetdir}/resources/imgs/",
-    "{MKDIR} %{cfg.targetdir}/resources/shaders/",
-    "{COPYFILE} resources/imgs/* %{cfg.targetdir}/resources/imgs/",
-    "{COPYFILE} resources/shaders/* %{cfg.targetdir}/resources/shaders/"
+    "{COPYDIR} resources/imgs/ %{cfg.targetdir}/resources/imgs/",
+    "{COPYDIR} resources/shaders/ %{cfg.targetdir}/resources/shaders/"
   }
