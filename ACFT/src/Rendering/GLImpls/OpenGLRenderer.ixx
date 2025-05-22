@@ -94,6 +94,8 @@ namespace ACFT
 		std::unordered_map<GLuint, GLShader> m_ShaderCache;
 		
 		Primitive m_CurrentPrimitive;
+
+		bool m_UsingBasicShader = false;
 	};
 }
 

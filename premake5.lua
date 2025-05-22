@@ -69,7 +69,7 @@ project "ACFT"
     optimize "Speed"
 
   filter { "toolset:msc*" }
-    linkoptions { "/IGNORE:4006" }
+    linkoptions { "/IGNORE:4006", "/IGNORE:4009" }
 
 
 project "Sandbox"
