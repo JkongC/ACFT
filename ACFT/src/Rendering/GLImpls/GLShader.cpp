@@ -23,7 +23,7 @@ namespace GLImplementations
 	GLShader::GLShader()
 		: m_Path()
 	{
-
+		m_Identifier = CreateBasicShader();
 	}
 	
 	GLShader::GLShader(const std::filesystem::path& filepath)
@@ -67,22 +67,22 @@ namespace GLImplementations
 		
 		enum class ShaderType
 		{
-			NONE = -1, VERTEX = 0, FRAGMENT = 1
+			none = -1, vertex = 0, fragment = 1
 		};
 
 		std::string line;
 		std::stringstream ss[2];
-		ShaderType type = ShaderType::NONE;
+		ShaderType type = ShaderType::none;
 		while (std::getline(src, line)) {
 			if (line.find("#shader") != std::string::npos) {
 				if (line.find("vertex") != std::string::npos) {
-					type = ShaderType::VERTEX;
+					type = ShaderType::vertex;
 				}
 				else if (line.find("fragment") != std::string::npos) {
-					type = ShaderType::FRAGMENT;
+					type = ShaderType::fragment;
 				}
 			}
-			else {
+			else if (type != ShaderType::none) {
 				ss[static_cast<int>(type)] << line << "\n";
 			}
 		}
@@ -99,22 +99,22 @@ namespace GLImplementations
 
 		enum class ShaderType
 		{
-			NONE = -1, VERTEX = 0, FRAGMENT = 1
+			none = -1, vertex = 0, fragment = 1
 		};
 
 		std::string line;
 		std::stringstream ss[2];
-		ShaderType type = ShaderType::NONE;
+		ShaderType type = ShaderType::none;
 		while (std::getline(file, line)) {
 			if (line.find("#shader") != std::string::npos) {
 				if (line.find("vertex") != std::string::npos) {
-					type = ShaderType::VERTEX;
+					type = ShaderType::vertex;
 				}
 				else if (line.find("fragment") != std::string::npos) {
-					type = ShaderType::FRAGMENT;
+					type = ShaderType::fragment;
 				}
 			}
-			else {
+			else if (type != ShaderType::none) {
 				ss[static_cast<int>(type)] << line << "\n";
 			}
 		}

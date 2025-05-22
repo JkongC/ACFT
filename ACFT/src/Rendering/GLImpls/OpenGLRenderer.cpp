@@ -56,18 +56,20 @@ namespace ACFT
 		vao.Bind();
 		vbo.Bind();
 
+		if (m_RenderContextCache.shader == nullptr)
+			m_RenderContextCache.shader = ShaderLib::GetBasicShader();
+		
 		if (context.shader != m_RenderContextCache.shader)
 		{
-			if (context.shader != nullptr)
-				m_RenderContextCache.shader = context.shader;
-			else
-				m_RenderContextCache.shader = ShaderLib::GetBasicShader();
-
 			immediate_draw = true;
+			if (context.shader == nullptr)
+				m_RenderContextCache.shader = ShaderLib::GetBasicShader();
+			else
+				m_RenderContextCache.shader = context.shader;
 		}
 
 		GLuint shader_id;
-		RenderObjectIdentifier _id = context.shader->GetIdentifier();
+		RenderObjectIdentifier _id = m_RenderContextCache.shader->GetIdentifier();
 		shader_id = VariantHelper::ValueOr<unsigned int>(_id, 0);
 
 		if (auto it = m_ShaderCache.find(shader_id); 

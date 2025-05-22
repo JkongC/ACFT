@@ -10,7 +10,7 @@ class MyLayer : public ACFT::Layer
 {
 public:
 	MyLayer(ACFT::Ref<ACFT::Window> window)
-		, m_Camera(ACFT::MakeRef<ACFT::OrthographicCamera>(window))
+		: m_Camera(ACFT::MakeRef<ACFT::OrthographicCamera>(window))
 		, r_Renderer(ACFT::Renderer::GetRenderer())
 		, r_Window(r_Renderer->GetWindow())
 	{
