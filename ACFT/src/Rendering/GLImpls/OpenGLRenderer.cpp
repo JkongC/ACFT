@@ -176,6 +176,7 @@ namespace ACFT
 				GLCall(glViewport(0, 0, info->width, info->height));
 			}
 		}
+
 		SwapWindowFrameBuffers();
 	}
 

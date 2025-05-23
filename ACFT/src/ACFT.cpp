@@ -61,14 +61,14 @@ namespace ACFT
 	
 	void Engine::InitWindow()
 	{
-		Engine::s_Window = Window::InitWindow();
+		Engine::s_Window = Window::InitWindow(false);
 
 		AnnounceStage(windowReady);
 	}
 	
 	void Engine::InitWindowAndDetachContext()
 	{
-		Engine::s_Window = Window::InitWindow();
+		Engine::s_Window = Window::InitWindow(false);
 		Engine::s_Window->DetachContext();
 
 		AnnounceStage(windowReady);

@@ -1,5 +1,6 @@
 export module ACFT.Screen;
 
+import Types;
 import Layer;
 import ACFT.Button;
 
@@ -17,7 +18,13 @@ namespace ACFT
 
 		virtual void OnRender() override;
 
+		void OnOpen();
+
+		void OnClose();
+
 	private:
+		Ref<Screen> m_Parent;
+
 		std::vector<Button> m_Buttons;
 		std::vector<Menu> m_Menus;
 	};

@@ -12,7 +12,7 @@ namespace ACFT
 	export class OpenGLWindow : public Window
 	{
 	public:
-		OpenGLWindow();
+		OpenGLWindow(bool caption_bar);
 		~OpenGLWindow();
 
 		virtual bool ShouldClose() override;

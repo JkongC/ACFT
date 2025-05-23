@@ -15,14 +15,14 @@ import :OpenGLWindow;
 
 namespace ACFT
 {
-	Ref<Window> Window::InitWindow()
+	Ref<Window> Window::InitWindow(bool caption_bar)
 	{		
 		Ref<Window> window;
 		
 		switch (Config::GetRenderAPI())
 		{
 		case RenderAPI::OpenGL:
-			window = MakeRef<OpenGLWindow>();
+			window = MakeRef<OpenGLWindow>(caption_bar);
 			break;
 		default:
 			window = nullptr;

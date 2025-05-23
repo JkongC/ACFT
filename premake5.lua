@@ -68,6 +68,9 @@ project "ACFT"
     defines { "NDEBUG" }
     optimize "Speed"
 
+  filter { "system:Windows" }
+    defines { "ACFT_PLATFORM_WINDOWS" }
+
   filter { "toolset:msc*" }
     linkoptions { "/IGNORE:4006", "/IGNORE:4009" }
 
