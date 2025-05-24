@@ -32,6 +32,7 @@ namespace ACFT
 	GLFWimage icon_img[1];
 	
 	OpenGLWindow::OpenGLWindow(bool caption_bar)
+		: m_Info(MakeScope<WindowInfo>())
 	{
 		m_HasCaptionBar = caption_bar;
 
@@ -87,10 +88,14 @@ namespace ACFT
 		ACFT_GL_LOG("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 		
-		glfwSetCursorPosCallback(m_RawWindow, MousePosCallback);
-		glfwSetMouseButtonCallback(m_RawWindow, MouseButtonCallback);
+		glfwSetCursorPosCallback(m_RawWindow, caption_bar ? MousePosCallback : MousePosCallbackBorderless);
+		glfwSetMouseButtonCallback(m_RawWindow, caption_bar ? MouseButtonCallback : MouseButtonCallbackBorderless);
 		glfwSetKeyCallback(m_RawWindow, KeyCallback);
 		glfwSetFramebufferSizeCallback(m_RawWindow, WindowResizeCallback);
+
+		glfwSetWindowUserPointer(m_RawWindow, m_Info.get());
+
+		glfwGetWindowContentScale(m_RawWindow, &m_Info->ScaleX, &m_Info->ScaleY);
 
 		WindowCount++;
 	}
@@ -101,6 +106,18 @@ namespace ACFT
 		WindowCount--;
 		if (WindowCount == 0)
 			glfwTerminate();
+	}
+
+	std::pair<int, int> OpenGLWindow::GetPos()
+	{
+		std::pair<int, int> ret{};
+		glfwGetWindowPos(m_RawWindow, &ret.first, &ret.second);
+		return ret;
+	}
+
+	void OpenGLWindow::SetPos(int x, int y)
+	{
+		glfwSetWindowPos(m_RawWindow, x, y);
 	}
 
 	bool OpenGLWindow::ShouldClose()
@@ -116,6 +133,16 @@ namespace ACFT
 	void OpenGLWindow::WaitEvents()
 	{
 		glfwWaitEvents();
+	}
+
+	void OpenGLWindow::Minimize()
+	{
+		glfwIconifyWindow(m_RawWindow);
+	}
+
+	void OpenGLWindow::Maximize()
+	{
+		glfwMaximizeWindow(m_RawWindow);
 	}
 
 	void OpenGLWindow::MousePosCallback(GLFWwindow* window, double xpos, double ypos)
@@ -153,6 +180,54 @@ namespace ACFT
 		);
 	}
 
+	void OpenGLWindow::MousePosCallbackBorderless(GLFWwindow* window, double xpos, double ypos)
+	{	
+#if defined (ACFT_PLATFORM_WINDOWS)
+		WindowInfo& info = *static_cast<WindowInfo*>(glfwGetWindowUserPointer(window));
+		
+		if (info.Dragging)
+		{
+			HWND hwnd = glfwGetWin32Window(window);
+			POINT cursor_pos;
+			GetCursorPos(&cursor_pos);
+			int new_window_x = info.WindowStartX + (cursor_pos.x - info.DragStartX);
+			int new_window_y = info.WindowStartY + (cursor_pos.y - info.DragStartY);
+			SetWindowPos(hwnd, NULL, new_window_x, new_window_y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_NOCOPYBITS);
+		}
+#endif
+		EventManager::Global().DistributeEvent(Events::MOUSE_POS,
+			MousePosInfo{ xpos, ypos }
+		);
+	}
+
+	void OpenGLWindow::MouseButtonCallbackBorderless(GLFWwindow* window, int button, int action, int mods)
+	{
+		EventManager::Global().DistributeEvent(Events::MOUSE_BUTTON,
+			MouseButtonInfo{ button, action == GLFW_PRESS, mods }
+		);
+#if defined (ACFT_PLATFORM_WINDOWS)
+		WindowInfo& info = *static_cast<WindowInfo*>(glfwGetWindowUserPointer(window));
+
+		if (info.CanDrag && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+		{
+			HWND hwnd = glfwGetWin32Window(window);
+			POINT cursor_pos;
+			GetCursorPos(&cursor_pos);
+			RECT window_rect;
+			GetWindowRect(hwnd, &window_rect);
+			info.DragStartX = cursor_pos.x;
+			info.DragStartY = cursor_pos.y;
+			info.WindowStartX = window_rect.left;
+			info.WindowStartY = window_rect.top;
+			info.Dragging = true;
+		}
+		else if (button == GLFW_MOUSE_BUTTON_LEFT && action != GLFW_PRESS)
+		{
+			info.Dragging = false;
+		}
+#endif
+	}
+
 	void OpenGLWindow::SwapFrameBuffers()
 	{
 		glfwSwapBuffers(m_RawWindow);
@@ -171,5 +246,52 @@ namespace ACFT
 	void OpenGLWindow::DetachContext()
 	{
 		glfwMakeContextCurrent(nullptr);
+	}
+
+	void OpenGLWindow::SetCursor(CursorType cursor)
+	{
+		GLFWcursor* new_cursor = nullptr;
+
+		switch (cursor)
+		{
+		case CursorType::input:
+			new_cursor = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
+			break;
+		case CursorType::crosshair:
+			new_cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+			break;
+		case CursorType::pointing_hand:
+			new_cursor = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR);
+			break;
+		case CursorType::h_resize:
+			new_cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+			break;
+		case CursorType::v_resize:
+			new_cursor = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
+			break;
+		case CursorType::nwse_resize:
+			new_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
+			break;
+		case CursorType::nesw_resize:
+			new_cursor = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+			break;
+		case CursorType::all_resize:
+			new_cursor = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
+			break;
+		default:
+			break;
+		}
+
+		glfwSetCursor(m_RawWindow, new_cursor);
+	}
+
+	void OpenGLWindow::SetDragAbility(bool allow_drag)
+	{
+		m_Info->CanDrag = allow_drag;
+	}
+
+	void OpenGLWindow::MarkShouldClose()
+	{
+		glfwSetWindowShouldClose(m_RawWindow, GLFW_TRUE);
 	}
 }

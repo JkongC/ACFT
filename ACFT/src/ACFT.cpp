@@ -117,10 +117,12 @@ namespace ACFT
 		WaitStage(appReady);
 
 		auto& window = Engine::s_Window;
-		while (running)
+		while (!window->ShouldClose())
 		{
 			window->WaitEvents();
 		}
+
+		running = false;
 
 		Engine::CleanWindow();
 	}
@@ -185,23 +187,36 @@ namespace ACFT
 
 		auto& window = Engine::s_Window;
 		NormalTimer timer;
-		while (!window->ShouldClose())
-		{
-			app->OnUpdate(timer.GetElapsedAndFlush());
 
-			if constexpr (!IsRenderThreadUsed())
+		if (IsEventThreadUsed())
+		{
+			while (running)
 			{
-				app->OnRender();
-			}
-			
-			if constexpr (!IsEventThreadUsed())
-			{
-				window->PollEvents();
+				app->OnUpdate(timer.GetElapsedAndFlush());
+
+				if constexpr (!IsRenderThreadUsed())
+				{
+					app->OnRender();
+				}
 			}
 		}
+		else
+		{
+			while (!window->ShouldClose())
+			{
+				app->OnUpdate(timer.GetElapsedAndFlush());
 
-		running = false;
+				if constexpr (!IsRenderThreadUsed())
+				{
+					app->OnRender();
+				}
 
+				window->PollEvents();
+			}
+
+			running = false;
+		}
+		
 		if constexpr (!IsRenderThreadUsed())
 		{
 			Engine::CleanRendererContext();

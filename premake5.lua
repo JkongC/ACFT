@@ -54,7 +54,7 @@ project "ACFT"
   }
 
   filter { "files:ACFT/src/Config/Config-Thread.ixx" }
-    defines { "ACFT_RENDER_THREAD", "ACFT_EVENT_THREAD" }
+    defines { "ACFT_RENDER_THREAD" }
   
   filter { "configurations:Debug" }
     defines { "NDEBUG", "ACFT_DEBUG", "ACFT_ENABLE_LOG" }
