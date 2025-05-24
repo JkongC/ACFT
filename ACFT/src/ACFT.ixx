@@ -13,6 +13,7 @@ export import Renderer;
 export import Utils;
 export import FPSProfiler;
 export import ACFT.Serialization;
+export import ACFT.CoTask;
 
 namespace ACFT
 {

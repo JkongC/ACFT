@@ -101,7 +101,7 @@ public:
 			auto& key = *event->GetInfo<KeyInfo>();
 			if (key.keycode == ACFT::Keys::ESCAPE && !key.pressed)
 			{
-				r_Window->MarkShouldClose();
+				m_Running = false;
 			}
 		}
 	}
@@ -109,6 +109,19 @@ public:
 	virtual void OnUpdate(float time_step) override
 	{
 		m_Sprite.AccumulateTime(time_step);
+		if (!m_Running)
+			m_ShutdownProc(time_step);
+	}
+
+	Coroutine::TimestepTask<void> ShutdownProc()
+	{
+		float total_time = 0.0f;
+		while (total_time <= 1100.0f)
+		{
+			total_time += co_await Coroutine::TimestepTask<void>::TimestepAwaitable{};
+			r_Window->SetOpacity(1.0f - 0.7f * total_time / 1100.0f);
+		}
+		r_Window->MarkShouldClose();
 	}
 
 	virtual void OnRender() override
@@ -132,6 +145,8 @@ private:
 	double m_CursorXCache;
 	double m_CursorYCache;
 	bool m_MouseLeftPressed = false;
+	bool m_Running = true;
+	Coroutine::TimestepTask<void> m_ShutdownProc = ShutdownProc();
 };
 
 class MyApp : public Application

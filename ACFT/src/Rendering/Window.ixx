@@ -50,6 +50,8 @@ namespace ACFT
 
 		ACFT_API virtual void MarkShouldClose() = 0;
 
+		ACFT_API virtual void SetOpacity(float alpha) = 0;
+
 	protected:
 		Window() = default;
 

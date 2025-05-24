@@ -294,4 +294,9 @@ namespace ACFT
 	{
 		glfwSetWindowShouldClose(m_RawWindow, GLFW_TRUE);
 	}
+
+	void OpenGLWindow::SetOpacity(float alpha)
+	{
+		glfwSetWindowOpacity(m_RawWindow, alpha);
+	}
 }

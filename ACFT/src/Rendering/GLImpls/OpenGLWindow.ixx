@@ -40,6 +40,8 @@ namespace ACFT
 
 		virtual void MarkShouldClose() override;
 
+		virtual void SetOpacity(float alpha) override;
+
 	private:
 		static void MousePosCallback(GLFWwindow* window, double xpos, double ypos);
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods);

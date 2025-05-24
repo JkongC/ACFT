@@ -20,6 +20,7 @@ namespace ACFT::Coroutine
 			std::suspend_always initial_suspend() noexcept { return {}; }
 			std::suspend_always final_suspend() noexcept { return {}; }
 			void return_void() {}
+			void unhandled_exception() {}
 
 			template<std::convertible_to<T> From>
 			std::suspend_always yield_value(From&& val)
