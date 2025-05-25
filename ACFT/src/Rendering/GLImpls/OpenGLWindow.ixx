@@ -5,14 +5,17 @@ module;
 
 export module Window:OpenGLWindow;
 
+import <variant>;
+
 import Window;
+import ACFT.EnhancingFuncs;
 
 namespace ACFT
 {
 	export class OpenGLWindow : public Window
 	{
 	public:
-		OpenGLWindow(bool caption_bar);
+		OpenGLWindow(int width, int height, bool caption_bar);
 		~OpenGLWindow();
 
 		virtual std::pair<int, int> GetPos() override;
@@ -55,19 +58,8 @@ namespace ACFT
 	private:
 		GLFWwindow* m_RawWindow{nullptr};
 
-		struct WindowInfo
-		{
-			float ScaleX = 1.0f;
-			float ScaleY = 1.0f;
-			
-			int DragStartX = 0;
-			int DragStartY = 0;
-			int WindowStartX = 0;
-			int WindowStartY = 0;
-			bool CanDrag = false;
-			bool Dragging = false;
-		};
+		struct WindowInfo;
 
-		Scope<WindowInfo> m_Info;
+		WindowInfo* m_Info;
 	};
 }

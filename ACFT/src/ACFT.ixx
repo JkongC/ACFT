@@ -20,7 +20,7 @@ namespace ACFT
 	export class Engine
 	{
 	public:
-		static int Start(int argc, char** argv);
+		static int Start(int argc = 0, char** argv = nullptr);
 
 		template<typename T, typename... Args>
 		requires std::is_base_of_v<Application, T>

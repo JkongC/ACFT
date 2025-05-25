@@ -10,6 +10,8 @@ import Renderer;
 
 namespace ACFT::Config
 {	
+	export ACFT_API void LockConfig();
+	
 	export ACFT_API void SetRenderAPI(RenderAPI render_API);
 	export ACFT_API RenderAPI GetRenderAPI();
 
@@ -24,6 +26,9 @@ namespace ACFT::Config
 
 	export ACFT_API void SetWindowName(std::string name);
 	export ACFT_API std::string_view GetWindowName();
+
+	export ACFT_API void SetWindowSize(int width, int height);
+	export ACFT_API std::pair<int, int> GetWindowSize();
 	
 	export ACFT_API void UseFPSProfiler(bool use);
 	export ACFT_API bool IsFPSProfilerUsed();

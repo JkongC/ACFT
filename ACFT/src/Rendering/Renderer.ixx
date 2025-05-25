@@ -39,8 +39,9 @@ namespace ACFT
 	export class Renderer
 	{
 	public:
-		ACFT_API static Ref<Renderer>& InitRenderer(Ref<Window> window);
-		ACFT_API static Ref<Renderer>& GetRenderer();
+		ACFT_API static Ref<Renderer>& Init(Ref<Window> window);
+		ACFT_API static Ref<Renderer>& Get();
+		ACFT_API static Ref<Window>& GetWindow();
 		ACFT_API static void CleanRenderer();
 
 		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator, RenderContext context = {}) = 0;
@@ -62,8 +63,6 @@ namespace ACFT
 		ACFT_API virtual void Clear() = 0;
 
 		ACFT_API virtual RenderAPI GetRenderAPI() = 0;
-
-		ACFT_API Ref<Window> GetWindow();
 
 		ACFT_API virtual ~Renderer() = default;
 

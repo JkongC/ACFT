@@ -46,7 +46,7 @@ namespace ACFT
 
 	void Engine::ReleaseRenderer()
 	{
-		Renderer::GetRenderer().reset();
+		Renderer::Get().reset();
 	}
 
 	void Engine::ReleaseWindow()
@@ -61,14 +61,16 @@ namespace ACFT
 	
 	void Engine::InitWindow()
 	{
-		Engine::s_Window = Window::InitWindow(false);
+		auto [width, height] = Config::GetWindowSize();
+		Engine::s_Window = Window::InitWindow(width, height, false);
 
 		AnnounceStage(windowReady);
 	}
 	
 	void Engine::InitWindowAndDetachContext()
 	{
-		Engine::s_Window = Window::InitWindow(false);
+		auto [width, height] = Config::GetWindowSize();
+		Engine::s_Window = Window::InitWindow(width, height, false);
 		Engine::s_Window->DetachContext();
 
 		AnnounceStage(windowReady);
@@ -79,7 +81,7 @@ namespace ACFT
 		WaitStage(windowReady);
 
 		Engine::s_Window->MakeContextCurrent();
-		Renderer::InitRenderer(Engine::s_Window);
+		Renderer::Init(Engine::s_Window);
 		ShaderLib::Init();
 	}
 
@@ -151,6 +153,7 @@ namespace ACFT
 		using namespace Config::CompileTime;
 		
 		Logger::Init();
+		Config::LockConfig();
 
 		auto& app = Engine::s_App;
 

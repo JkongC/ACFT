@@ -81,6 +81,9 @@ namespace ACFT
 
 	void LayerStack::OnRender()
 	{
+		if (!m_Display)
+			return;
+
 		for (auto& layer : m_Layers)
 		{
 			layer->OnRender();

@@ -27,15 +27,30 @@ import Config;
 
 namespace ACFT
 {
+	struct OpenGLWindow::WindowInfo
+	{
+		float ScaleX = 1.0f;
+		float ScaleY = 1.0f;
+
+		int DragStartX = 0;
+		int DragStartY = 0;
+		int WindowStartX = 0;
+		int WindowStartY = 0;
+		bool CanDrag = false;
+		bool Dragging = false;
+
+#if defined (ACFT_PLATFORM_WINDOWS)
+		HWND RawHandle;
+#endif
+	};
+	
 	std::atomic<size_t> WindowCount{ 0 };
 	
 	GLFWimage icon_img[1];
 	
-	OpenGLWindow::OpenGLWindow(bool caption_bar)
-		: m_Info(MakeScope<WindowInfo>())
+	OpenGLWindow::OpenGLWindow(int width, int height, bool caption_bar)
+		: Window(width, height, caption_bar), m_Info(new WindowInfo())
 	{
-		m_HasCaptionBar = caption_bar;
-
 		if (!glfwInit())
 		{
 			ACFT_LOG_FATAL("Failed to initialize glfw!");
@@ -66,14 +81,20 @@ namespace ACFT
 		}
 
 #if defined (ACFT_PLATFORM_WINDOWS)
+		HWND handle = glfwGetWin32Window(m_RawWindow);
+		m_Info->RawHandle = handle;
 		if (!caption_bar)
 		{
-			HWND handle = glfwGetWin32Window(m_RawWindow);
-
 			DWM_WINDOW_CORNER_PREFERENCE corner = DWMWCP_ROUND;
 			DwmSetWindowAttribute(handle, DWMWA_WINDOW_CORNER_PREFERENCE, &corner, sizeof(corner));
 
-			SetWindowPos(handle, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+			RECT screen_rect{};
+			SystemParametersInfo(SPI_GETWORKAREA, 0, &screen_rect, 0);
+
+			int pos_x = screen_rect.right / 2 - m_Width / 2;
+			int pos_y = screen_rect.bottom / 2 - m_Height / 2;
+			
+			SetWindowPos(handle, nullptr, pos_x, pos_y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_NOCOPYBITS);
 		}
 #endif
 
@@ -93,7 +114,7 @@ namespace ACFT
 		glfwSetKeyCallback(m_RawWindow, KeyCallback);
 		glfwSetFramebufferSizeCallback(m_RawWindow, WindowResizeCallback);
 
-		glfwSetWindowUserPointer(m_RawWindow, m_Info.get());
+		glfwSetWindowUserPointer(m_RawWindow, m_Info);
 
 		glfwGetWindowContentScale(m_RawWindow, &m_Info->ScaleX, &m_Info->ScaleY);
 
@@ -104,6 +125,10 @@ namespace ACFT
 	{
 		glfwDestroyWindow(m_RawWindow);
 		WindowCount--;
+
+		if (m_Info)
+			delete m_Info;
+
 		if (WindowCount == 0)
 			glfwTerminate();
 	}
@@ -187,12 +212,11 @@ namespace ACFT
 		
 		if (info.Dragging)
 		{
-			HWND hwnd = glfwGetWin32Window(window);
 			POINT cursor_pos;
 			GetCursorPos(&cursor_pos);
 			int new_window_x = info.WindowStartX + (cursor_pos.x - info.DragStartX);
 			int new_window_y = info.WindowStartY + (cursor_pos.y - info.DragStartY);
-			SetWindowPos(hwnd, NULL, new_window_x, new_window_y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_NOCOPYBITS);
+			SetWindowPos(info.RawHandle, nullptr, new_window_x, new_window_y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_NOCOPYBITS);
 		}
 #endif
 		EventManager::Global().DistributeEvent(Events::MOUSE_POS,
@@ -210,11 +234,10 @@ namespace ACFT
 
 		if (info.CanDrag && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
-			HWND hwnd = glfwGetWin32Window(window);
 			POINT cursor_pos;
 			GetCursorPos(&cursor_pos);
 			RECT window_rect;
-			GetWindowRect(hwnd, &window_rect);
+			GetWindowRect(info.RawHandle, &window_rect);
 			info.DragStartX = cursor_pos.x;
 			info.DragStartY = cursor_pos.y;
 			info.WindowStartX = window_rect.left;

@@ -27,7 +27,7 @@ namespace ACFT
 	Shader::Shader(const std::filesystem::path& shader_path, ShaderLang language, ShaderType type)
 		: m_Path(shader_path), m_Lang(language), m_Type(type)
 	{
-		m_Identifier = Renderer::GetRenderer()->MakeShader(m_Path, m_Lang, m_Type);
+		m_Identifier = Renderer::Get()->MakeShader(m_Path, m_Lang, m_Type);
 	}
 
 	Shader::Shader()
@@ -38,7 +38,7 @@ namespace ACFT
 		case RenderAPI::OpenGL:
 			m_Lang = ShaderLang::GLSL;
 			m_Type = ShaderType::glsl_mixed;
-			m_Identifier = Renderer::GetRenderer()->MakeBasicShader();
+			m_Identifier = Renderer::Get()->MakeBasicShader();
 			break;
 		default:
 			break;

@@ -15,14 +15,14 @@ import :OpenGLWindow;
 
 namespace ACFT
 {
-	Ref<Window> Window::InitWindow(bool caption_bar)
+	Ref<Window> Window::InitWindow(int width, int height, bool caption_bar)
 	{		
 		Ref<Window> window;
 		
 		switch (Config::GetRenderAPI())
 		{
 		case RenderAPI::OpenGL:
-			window = MakeRef<OpenGLWindow>(caption_bar);
+			window = MakeRef<OpenGLWindow>(width, height, caption_bar);
 			break;
 		default:
 			window = nullptr;
@@ -34,8 +34,8 @@ namespace ACFT
 				if (event->GetType() == Events::WINDOW_RESIZE)
 				{
 					auto info = *event->GetInfo<WindowSizeInfo>();
-					wd->SetWidth(info.width);
-					wd->SetHeight(info.height);
+					wd->m_Width = info.width;
+					wd->m_Height = info.height;
 				}
 			};
 		EventManager::Global().Subscribe(window, Events::WINDOW_RESIZE, resize_callback);

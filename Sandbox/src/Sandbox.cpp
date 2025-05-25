@@ -1,3 +1,8 @@
+#if defined (ACFT_PLATFORM_WINDOWS)
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
 #include "ACFTEngine.h"
 
 struct Pos
@@ -11,10 +16,10 @@ using namespace ACFT;
 class MyLayer : public Layer
 {
 public:
-	MyLayer(Ref<Window> window)
-		: m_Camera(MakeRef<OrthographicCamera>(window))
-		, r_Renderer(Renderer::GetRenderer())
-		, r_Window(r_Renderer->GetWindow())
+	MyLayer()
+		: r_Renderer(Renderer::Get())
+		, r_Window(Renderer::GetWindow())
+		, m_Camera(MakeRef<OrthographicCamera>(r_Window))
 	{
 		LoadPos();
 		
@@ -116,11 +121,12 @@ public:
 	Coroutine::TimestepTask<void> ShutdownProc()
 	{
 		float total_time = 0.0f;
-		while (total_time <= 1100.0f)
+		while (total_time <= 400.0f)
 		{
 			total_time += co_await Coroutine::TimestepTask<void>::TimestepAwaitable{};
-			r_Window->SetOpacity(1.0f - 0.7f * total_time / 1100.0f);
+			r_Window->SetOpacity(1.0f - 0.8f * total_time / 400.0f);
 		}
+		r_Window->SetOpacity(0.0f);
 		r_Window->MarkShouldClose();
 	}
 
@@ -136,9 +142,9 @@ public:
 private:
 	LockfreeQueue<Event> m_EventQueue;
 	Sprite m_Sprite;
-	Ref<OrthographicCamera> m_Camera;
 	Ref<Renderer> r_Renderer;
 	Ref<Window> r_Window;
+	Ref<OrthographicCamera> m_Camera;
 	Pos m_SpritePos;
 	int m_WindowXCache;
 	int m_WindowYCache;
@@ -149,37 +155,61 @@ private:
 	Coroutine::TimestepTask<void> m_ShutdownProc = ShutdownProc();
 };
 
+/* TODO
+* Add OnEvent for Application class.
+* Move program related logic from MyLayer to MyApp.
+*/
 class MyApp : public Application
 {
 public:
 	virtual void Init() override
 	{
-		m_Layers = LayerStack::Create();
-		m_Layers->PushLayer(MakeRef<MyLayer>(
-			Renderer::GetRenderer()->GetWindow()
-		));
+		r_Layers = Renderer::GetWindow()->GetLayerStack();
+		r_Layers->PushLayer(MakeRef<MyLayer>());
 	}
 
 	virtual void OnUpdate(float time_step) override
 	{
-		m_Layers->OnUpdate(time_step);
+		r_Layers->OnUpdate(time_step);
 	}
 
 	virtual void OnRender() override
 	{
-		m_Layers->OnRender();
+		r_Layers->OnRender();
 	}
 
 private:
-	Ref<LayerStack> m_Layers;
+	Ref<LayerStack> r_Layers;
 };
 
+#if defined (ACFT_PLATFORM_WINDOWS) && not defined (ACFT_ENABLE_LOG)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+{
+	{
+		using namespace ACFT::Config;
+		SetWindowIcon("resources/imgs/acft_icon.png");
+		SetWindowName("Sandbox");
+		UseFPSProfiler(false);
+		SetWindowSize(1660, 1000);
+	}
+
+	ACFT::Engine::CreateApplication<MyApp>();
+	return ACFT::Engine::Start();
+}
+#else
 int main(int argc, char** argv)
 {
-	ACFT::Config::SetWindowIcon("resources/imgs/acft_icon.png");
-	ACFT::Config::SetWindowName("Sandbox");
-	ACFT::Config::UseFPSProfiler(false);
+	{
+		using namespace ACFT::Config;
+		SetWindowIcon("resources/imgs/acft_icon.png");
+		SetWindowName("Sandbox");
+		UseFPSProfiler(false);
+		SetWindowSize(1660, 1000);
+	}
 
 	ACFT::Engine::CreateApplication<MyApp>();
 	return ACFT::Engine::Start(argc, argv);
 }
+#endif
+
+

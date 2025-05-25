@@ -65,6 +65,9 @@ namespace ACFT
 
 		void OnRender();
 
+		void Show() { m_Display = true; }
+		void Hide() { m_Display = false; }
+
 	private:
 		LayerStack() = default;
 		void DispatchEvent(Ref<Event> event);
@@ -72,5 +75,6 @@ namespace ACFT
 	private:
 		std::vector<Ref<Layer>> m_Layers;
 		std::mutex m_Mtx;
+		bool m_Display = true;
 	};
 }

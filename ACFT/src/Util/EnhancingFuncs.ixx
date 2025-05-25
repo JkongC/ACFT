@@ -106,6 +106,12 @@ namespace ACFT
 		using namespace TemplateHelper;
 		
 		export template<typename T, SpecializationOf<std::variant> Var>
+		bool IsType(Var&& variant)
+		{
+			return std::get_if<T>(variant) != nullptr;
+		}
+		
+		export template<typename T, SpecializationOf<std::variant> Var>
 		T ValueOr(Var&& variant, const T& alternative)
 		{
 			T* result = std::get_if<T>(&variant);

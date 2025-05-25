@@ -16,7 +16,7 @@ import :OpenGLRenderer;
 
 namespace ACFT
 {
-	Ref<Renderer>& Renderer::InitRenderer(Ref<Window> window)
+	Ref<Renderer>& Renderer::Init(Ref<Window> window)
 	{
 		std::lock_guard<std::mutex> lock(s_Mtx);
 
@@ -53,7 +53,7 @@ namespace ACFT
 		return s_Instance;
 	}
 
-	Ref<Renderer>& Renderer::GetRenderer()
+	Ref<Renderer>& Renderer::Get()
 	{
 		std::lock_guard<std::mutex> lock(s_Mtx);
 
@@ -71,8 +71,8 @@ namespace ACFT
 		s_Instance.reset();
 	}
 
-	Ref<Window> Renderer::GetWindow()
+	Ref<Window>& Renderer::GetWindow()
 	{
-		return m_Window;
+		return Renderer::Get()->m_Window;
 	}
 }

@@ -15,6 +15,21 @@ workspace "ACFT"
     buildoptions {
       "/utf-8"
     }
+
+  filter { "system:Windows" }
+    defines { "ACFT_PLATFORM_WINDOWS" }
+
+  filter { "configurations:Debug" }
+    defines { "NDEBUG", "ACFT_DEBUG", "ACFT_ENABLE_LOG" }
+    optimize "Off"
+  
+  filter { "configurations:Release" }
+    defines { "NDEBUG", "ACFT_ENABLE_LOG" }
+    optimize "Speed"
+
+  filter { "configurations:Dist" }
+    defines { "NDEBUG" }
+    optimize "Speed"
   
 project "ACFT"
   kind "StaticLib"
@@ -48,28 +63,8 @@ project "ACFT"
     "ACFT/vendor/entt/src"
   }
 
-  postbuildcommands {
-    "{MKDIR} ../bin/" .. outputdir .. "/Sandbox/",
-    "{COPYFILE} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox/%{cfg.buildtarget.name}"
-  }
-
   filter { "files:ACFT/src/Config/Config-Thread.ixx" }
     defines { "ACFT_RENDER_THREAD" }
-  
-  filter { "configurations:Debug" }
-    defines { "NDEBUG", "ACFT_DEBUG", "ACFT_ENABLE_LOG" }
-    optimize "Off"
-  
-  filter { "configurations:Release" }
-    defines { "NDEBUG", "ACFT_ENABLE_LOG" }
-    optimize "Speed"
-
-  filter { "configurations:Dist" }
-    defines { "NDEBUG" }
-    optimize "Speed"
-
-  filter { "system:Windows" }
-    defines { "ACFT_PLATFORM_WINDOWS" }
 
   filter { "toolset:msc*" }
     linkoptions { "/IGNORE:4006", "/IGNORE:4009" }
@@ -80,6 +75,10 @@ project "Sandbox"
   language "C++"
   location "Sandbox"
   targetdir "bin"
+
+  filter { "configurations:Dist" }
+    kind "WindowedApp"
+  filter {}
 
   files {
     "%{prj.name}/src/**.ixx",
