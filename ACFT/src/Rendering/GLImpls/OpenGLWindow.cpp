@@ -48,8 +48,8 @@ namespace ACFT
 	
 	GLFWimage icon_img[1];
 	
-	OpenGLWindow::OpenGLWindow(int width, int height, bool caption_bar)
-		: Window(width, height, caption_bar), m_Info(new WindowInfo())
+	OpenGLWindow::OpenGLWindow(int width, int height, bool customized_border, UserAreaRect user_area)
+		: Window(width, height, customized_border, user_area), m_Info(new WindowInfo())
 	{
 		if (!glfwInit())
 		{
@@ -61,7 +61,7 @@ namespace ACFT
 		glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
 		glfwWindowHint(GLFW_FOCUS_ON_SHOW, GL_TRUE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-		glfwWindowHint(GLFW_DECORATED, static_cast<int>(caption_bar));
+		glfwWindowHint(GLFW_DECORATED, static_cast<int>(!customized_border));
 
 		m_RawWindow = glfwCreateWindow(m_Width, m_Height, Config::GetWindowName().data(), nullptr, nullptr);
 		if (!m_RawWindow)
@@ -83,7 +83,7 @@ namespace ACFT
 #if defined (ACFT_PLATFORM_WINDOWS)
 		HWND handle = glfwGetWin32Window(m_RawWindow);
 		m_Info->RawHandle = handle;
-		if (!caption_bar)
+		if (customized_border)
 		{
 			DWM_WINDOW_CORNER_PREFERENCE corner = DWMWCP_ROUND;
 			DwmSetWindowAttribute(handle, DWMWA_WINDOW_CORNER_PREFERENCE, &corner, sizeof(corner));
@@ -109,8 +109,8 @@ namespace ACFT
 		ACFT_GL_LOG("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 
 		
-		glfwSetCursorPosCallback(m_RawWindow, caption_bar ? MousePosCallback : MousePosCallbackBorderless);
-		glfwSetMouseButtonCallback(m_RawWindow, caption_bar ? MouseButtonCallback : MouseButtonCallbackBorderless);
+		glfwSetCursorPosCallback(m_RawWindow, customized_border ? MousePosCallbackBorderless : MousePosCallback);
+		glfwSetMouseButtonCallback(m_RawWindow, customized_border ? MouseButtonCallbackBorderless : MouseButtonCallback);
 		glfwSetKeyCallback(m_RawWindow, KeyCallback);
 		glfwSetFramebufferSizeCallback(m_RawWindow, WindowResizeCallback);
 

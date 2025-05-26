@@ -16,6 +16,7 @@ namespace ACFT::Config
 	static inline std::string WINDOW_NAME = "AnotherCraft";
 	static inline int WINDOW_WIDTH = 1440;
 	static inline int WINDOW_HEIGHT = 960;
+	static inline UserAreaRect WINDOW_USER_AREA{};
 
 	static inline bool USE_FPS_PROFILER = false;
 	
@@ -101,6 +102,19 @@ namespace ACFT::Config
 	std::pair<int, int> GetWindowSize()
 	{
 		return { WINDOW_WIDTH, WINDOW_HEIGHT };
+	}
+
+	void SetWindowUserArea(UserAreaRect user_area)
+	{
+		if (!CONFIG_LOCKED)
+		{
+			WINDOW_USER_AREA = user_area;
+		}
+	}
+
+	UserAreaRect GetWindowUserArea()
+	{
+		return WINDOW_USER_AREA;
 	}
 
 	void UseFPSProfiler(bool use)

@@ -23,6 +23,7 @@ import :GLVertexBuffer;
 import :GLVertexArray;
 import :GLTexture;
 import :GLShader;
+import :GLFrameBuffer;
 
 #include "gldbg.h"
 
@@ -54,6 +55,8 @@ namespace ACFT
 
 		RenderAPI GetRenderAPI() override;
 
+		virtual void SetWindowDrawArea(WindowDrawArea area) override;
+
 		OpenGLRenderer();
 
 	protected:
@@ -62,6 +65,8 @@ namespace ACFT
 
 		RenderObjectIdentifier MakeShader(const std::filesystem::path& shader_path, ShaderLang language = ShaderLang::GLSL, ShaderType type = ShaderType::glsl_mixed) override;
 		RenderObjectIdentifier MakeBasicShader() override;
+
+		RenderObjectIdentifier MakeFrameBuffer(int width, int height) override;
 
 	private:
 		void InitContext();
@@ -92,6 +97,8 @@ namespace ACFT
 
 		std::unordered_map<GLuint, GLTexture> m_TextureCache;
 		std::unordered_map<GLuint, GLShader> m_ShaderCache;
+
+		std::unordered_map<GLuint, GLFrameBuffer> m_FrameBufferCache;
 		
 		Primitive m_CurrentPrimitive;
 

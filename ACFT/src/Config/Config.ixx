@@ -10,6 +10,12 @@ import Renderer;
 
 namespace ACFT::Config
 {	
+	/* Notice that these configurations are static.
+	* That is to say, they are only for initialization purpose.
+	* Be cautious when you want to rely on them in runtime logic.
+	* And, any valid modifications must be done before calling Engine::Start().
+	*/
+
 	export ACFT_API void LockConfig();
 	
 	export ACFT_API void SetRenderAPI(RenderAPI render_API);
@@ -29,6 +35,9 @@ namespace ACFT::Config
 
 	export ACFT_API void SetWindowSize(int width, int height);
 	export ACFT_API std::pair<int, int> GetWindowSize();
+
+	export ACFT_API void SetWindowUserArea(UserAreaRect user_area);
+	export ACFT_API UserAreaRect GetWindowUserArea();
 	
 	export ACFT_API void UseFPSProfiler(bool use);
 	export ACFT_API bool IsFPSProfilerUsed();

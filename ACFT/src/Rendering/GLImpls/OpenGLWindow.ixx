@@ -15,7 +15,7 @@ namespace ACFT
 	export class OpenGLWindow : public Window
 	{
 	public:
-		OpenGLWindow(int width, int height, bool caption_bar);
+		OpenGLWindow(int width, int height, bool customized_border, UserAreaRect user_area);
 		~OpenGLWindow();
 
 		virtual std::pair<int, int> GetPos() override;

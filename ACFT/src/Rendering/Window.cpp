@@ -15,14 +15,14 @@ import :OpenGLWindow;
 
 namespace ACFT
 {
-	Ref<Window> Window::InitWindow(int width, int height, bool caption_bar)
+	Ref<Window> Window::InitWindow(int width, int height, bool customized_border, UserAreaRect user_area)
 	{		
 		Ref<Window> window;
 		
 		switch (Config::GetRenderAPI())
 		{
 		case RenderAPI::OpenGL:
-			window = MakeRef<OpenGLWindow>(width, height, caption_bar);
+			window = MakeRef<OpenGLWindow>(width, height, customized_border, user_area);
 			break;
 		default:
 			window = nullptr;
@@ -45,7 +45,7 @@ namespace ACFT
 
 	void Window::SetUserArea(UserAreaRect area)
 	{
-		if (!m_HasCaptionBar)
+		if (m_CustomizedBorder)
 		{
 			m_UserArea = area;
 		}

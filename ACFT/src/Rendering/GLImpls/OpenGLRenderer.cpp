@@ -221,6 +221,38 @@ namespace ACFT
 		glDisable(GL_BLEND);
 	}
 
+	void OpenGLRenderer::SetWindowDrawArea(WindowDrawArea area)
+	{
+		if (area == WindowDrawArea::user)
+		{
+			UserAreaRect area = m_Window->GetUserArea();
+			int window_width = m_Window->GetWidth();
+			int window_height = m_Window->GetHeight();
+
+			int x, y, width, height;
+			if (area.use_percentage)
+			{
+				x = static_cast<int>(window_width * area.left);
+				y = static_cast<int>(window_height * area.bottom);
+				width = static_cast<int>(window_width - window_width * area.right - x);
+				height = static_cast<int>(window_height - window_height * area.top - y);
+			}
+			else
+			{
+				x = static_cast<int>(area.left);
+				y = static_cast<int>(area.bottom);
+				width = static_cast<int>(window_width - x - area.right);
+				height = static_cast<int>(window_height - y - area.top);
+			}
+
+			glViewport(x, y, width, height);
+		}
+		else
+		{
+			glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+		}
+	}
+
 	RenderObjectIdentifier OpenGLRenderer::MakeTexture(Ref<Atlas> atlas)
 	{
 		Scope<GLTexture> texture = MakeScope<GLTexture>(atlas);
@@ -250,6 +282,14 @@ namespace ACFT
 		Scope<GLShader> shader = MakeScope<GLShader>();
 		unsigned int id = VariantHelper::Value<unsigned int>(shader->GetIdentifier());
 		m_ShaderCache.try_emplace(id, std::move(*shader));
+		return id;
+	}
+
+	RenderObjectIdentifier OpenGLRenderer::MakeFrameBuffer(int width, int height)
+	{
+		Scope<GLFrameBuffer> fbo = MakeScope<GLFrameBuffer>(width, height);
+		unsigned int id = fbo->GetID();
+		m_FrameBufferCache.try_emplace(id, std::move(*fbo));
 		return id;
 	}
 }

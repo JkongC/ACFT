@@ -62,7 +62,7 @@ namespace ACFT
 	void Engine::InitWindow()
 	{
 		auto [width, height] = Config::GetWindowSize();
-		Engine::s_Window = Window::InitWindow(width, height, false);
+		Engine::s_Window = Window::InitWindow(width, height, true, Config::GetWindowUserArea());
 
 		AnnounceStage(windowReady);
 	}
@@ -70,7 +70,7 @@ namespace ACFT
 	void Engine::InitWindowAndDetachContext()
 	{
 		auto [width, height] = Config::GetWindowSize();
-		Engine::s_Window = Window::InitWindow(width, height, false);
+		Engine::s_Window = Window::InitWindow(width, height, true, Config::GetWindowUserArea());
 		Engine::s_Window->DetachContext();
 
 		AnnounceStage(windowReady);
