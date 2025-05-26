@@ -40,7 +40,7 @@ namespace ACFT
 		Ref<LayerStack> stack = Ref<LayerStack>(stack_ptr);
 		EventManager& event_manager = EventManager::Global();
 		auto callback = [stk = stack.get()](Ref<Event> event) -> void {stk->DispatchEvent(event);};
-		for (Ref<EventType> type : EventRegistry::GetAllTypes())
+		for (auto& type : EventRegistry::GetAllTypes())
 		{
 			event_manager.Subscribe(stack, type, callback);
 		}

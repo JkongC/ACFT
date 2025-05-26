@@ -22,11 +22,9 @@ namespace ACFT
 	public:
 		static int Start(int argc = 0, char** argv = nullptr);
 
-		template<typename T, typename... Args>
-		requires std::is_base_of_v<Application, T>
-		static void CreateApplication(Args&&... args)
+		static void BindApplication(Ref<Application> app)
 		{
-			Engine::s_App = MakeRef<T>(std::forward<Args>(args)...);
+			Engine::s_App = app;
 		}
 
 	private:

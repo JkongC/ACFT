@@ -42,4 +42,12 @@ namespace ACFT
 
 		return window;
 	}
+
+	void Window::SetUserArea(UserAreaRect area)
+	{
+		if (!m_HasCaptionBar)
+		{
+			m_UserArea = area;
+		}
+	}
 }

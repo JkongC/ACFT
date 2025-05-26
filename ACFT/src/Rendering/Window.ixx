@@ -15,6 +15,15 @@ namespace ACFT
 	{
 		normal = 0, input, crosshair, pointing_hand, h_resize, v_resize, nwse_resize, nesw_resize, all_resize
 	};
+
+	export struct UserAreaRect
+	{
+		float left = 0.0f;
+		float right = 0.0f;
+		float top = 0.0f;
+		float bottom = 0.0f;
+		bool use_percentage = false;
+	};
 	
 	export class Window
 	{
@@ -46,6 +55,9 @@ namespace ACFT
 		ACFT_API virtual void SetCursor(CursorType cursor) = 0;
 		ACFT_API virtual void SetDragAbility(bool allow_drag) = 0;
 
+		// Set user area of the window. Requires the window to be borderless.
+		ACFT_API virtual void SetUserArea(UserAreaRect area);
+
 		ACFT_API virtual void Minimize() = 0;
 		ACFT_API virtual void Maximize() = 0;
 
@@ -62,6 +74,7 @@ namespace ACFT
 		int m_Height;
 
 		bool m_HasCaptionBar;
+		UserAreaRect m_UserArea;
 
 		Ref<LayerStack> m_Layers;
 	};
