@@ -61,8 +61,15 @@ namespace ACFT
 		glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
 		glfwWindowHint(GLFW_FOCUS_ON_SHOW, GL_TRUE);
 		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 		glfwWindowHint(GLFW_DECORATED, static_cast<int>(!customized_border));
 
+		// Calculates where the window should be.
+		GLFWmonitor* primary = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(primary);
+		int pos_x = mode->width / 2 - m_Width / 2;
+		int pos_y = mode->height / 2 - m_Height / 2;
+		
 		m_RawWindow = glfwCreateWindow(m_Width, m_Height, Config::GetWindowName().data(), nullptr, nullptr);
 		if (!m_RawWindow)
 		{
@@ -70,6 +77,22 @@ namespace ACFT
 			ACFT_LOG_FATAL("Failed to initialize the window!");
 			exit(-1);
 		}
+
+		// Adjust the window's location, then show it.
+		glfwSetWindowPos(m_RawWindow, pos_x, pos_y);
+		glfwShowWindow(m_RawWindow);
+
+#if defined (ACFT_PLATFORM_WINDOWS)
+		HWND handle = glfwGetWin32Window(m_RawWindow);
+		m_Info->RawHandle = handle;
+		if (customized_border)
+		{
+			DWM_WINDOW_CORNER_PREFERENCE corner = DWMWCP_ROUND;
+			DwmSetWindowAttribute(handle, DWMWA_WINDOW_CORNER_PREFERENCE, &corner, sizeof(corner));
+			
+			SetWindowPos(handle, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_NOCOPYBITS);
+		}
+#endif
 
 		if (auto& icon = Config::GetWindowIcon();
 			icon.GetInternalData() != nullptr)
@@ -79,24 +102,6 @@ namespace ACFT
 			icon_img[0].height = icon.GetHeight();
 			glfwSetWindowIcon(m_RawWindow, 1, icon_img);
 		}
-
-#if defined (ACFT_PLATFORM_WINDOWS)
-		HWND handle = glfwGetWin32Window(m_RawWindow);
-		m_Info->RawHandle = handle;
-		if (customized_border)
-		{
-			DWM_WINDOW_CORNER_PREFERENCE corner = DWMWCP_ROUND;
-			DwmSetWindowAttribute(handle, DWMWA_WINDOW_CORNER_PREFERENCE, &corner, sizeof(corner));
-
-			RECT screen_rect{};
-			SystemParametersInfo(SPI_GETWORKAREA, 0, &screen_rect, 0);
-
-			int pos_x = screen_rect.right / 2 - m_Width / 2;
-			int pos_y = screen_rect.bottom / 2 - m_Height / 2;
-			
-			SetWindowPos(handle, nullptr, pos_x, pos_y, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE | SWP_NOCOPYBITS);
-		}
-#endif
 
 		glfwMakeContextCurrent(m_RawWindow);
 

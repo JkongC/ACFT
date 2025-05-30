@@ -11,11 +11,7 @@ import Window;
 namespace ACFT
 {
 	OrthographicCamera::OrthographicCamera()
-		: Camera(CameraType::ortho)
-	{ }
-	
-	OrthographicCamera::OrthographicCamera(Ref<Window> window)
-		: Camera(CameraType::ortho), m_XPos(window->GetWidth() / 2.0f), m_YPos(window->GetHeight() / 2.0f)
+		: Camera(CameraType::ortho), m_XPos(0.0f), m_YPos(0.0f)
 	{ }
 
 	std::pair<float, float> OrthographicCamera::GetPos() const
@@ -65,16 +61,39 @@ namespace ACFT
 		m_Scale *= scale;
 	}
 
-	glm::mat4 OrthographicCamera::GetVPMatrix(int window_width, int window_height) const
+	glm::mat4 OrthographicCamera::GetVPMatrix(float viewport_width, float viewport_height) const
 	{
-		auto proj = glm::ortho(m_XPos - (window_width / m_Scale) / 2.0f, m_XPos + (window_width / m_Scale) / 2.0f,
-			m_YPos - window_height / 2.0f, m_YPos + window_height / 2.0f);
+		auto proj = glm::ortho(m_XPos, m_XPos + viewport_width,
+			m_YPos, m_YPos + viewport_height);
 		auto scale = glm::scale(proj, glm::vec3(m_Scale, m_Scale, 1.0f));
 		return glm::rotate(scale, m_RotateAngle, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
-	std::pair<float, float> OrthographicCamera::WindowPosToCamPos(int window_width, int window_height, float xpos, float ypos)
+	std::pair<float, float> OrthographicCamera::WindowPosToWorldPos(Ref<Window>& window, float xpos, float ypos)
 	{
-		return {m_XPos + (xpos - window_width / 2.0f) / m_Scale, m_YPos - (ypos - window_height / 2.0f)};
+		if (window->BorderCustomized())
+		{
+			auto& user_area = window->GetUserArea();
+			float left, top, bottom;
+
+			if (user_area.use_percentage)
+			{
+				left = user_area.left * window->GetWidth();
+				top = user_area.top * window->GetHeight();
+				bottom = (1.0f - user_area.bottom) * window->GetHeight();
+			}
+			else
+			{
+				left = user_area.left;
+				top = user_area.top;
+				bottom = window->GetHeight() - user_area.bottom;
+			}
+
+			return { m_XPos + (xpos - left) / m_Scale, m_YPos + (bottom - ypos) / m_Scale };
+		}
+		else
+		{
+			return { m_XPos + xpos / m_Scale, m_YPos + (window->GetHeight() - ypos) / m_Scale };
+		}
 	}
 }

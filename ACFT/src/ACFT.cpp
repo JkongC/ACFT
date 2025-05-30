@@ -97,6 +97,8 @@ namespace ACFT
 		Engine::ReleaseApp();
 		Engine::ReleaseRenderer();
 
+		auto& f = Engine::s_Window;
+
 		AnnounceStage(rendererContextCleaned);
 	}
 

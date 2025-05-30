@@ -39,8 +39,6 @@ namespace ACFT
 
 		ACFT_API inline int GetHeight() const { return m_Height; }
 
-		ACFT_API inline Ref<LayerStack>& GetLayerStack() { return m_Layers; }
-
 		ACFT_API virtual std::pair<int, int> GetPos() = 0;
 		ACFT_API virtual void SetPos(int x, int y) = 0;
 
@@ -63,6 +61,11 @@ namespace ACFT
 		// Set user area of the window. Requires the window to be border-customized.
 		ACFT_API virtual void SetUserArea(UserAreaRect area);
 		ACFT_API virtual const UserAreaRect& GetUserArea() const { return m_UserArea; }
+		ACFT_API virtual std::pair<float, float> GetUserAreaSize();
+		ACFT_API virtual bool IsPosInUserArea(double x, double y);
+
+		ACFT_API std::pair<double, double> WindowPosToUserAreaPos(double x, double y);
+		ACFT_API std::pair<double, double> UserAreaPosToWindowPos(double x, double y);
 
 		ACFT_API virtual void Minimize() = 0;
 		ACFT_API virtual void Maximize() = 0;
@@ -73,7 +76,7 @@ namespace ACFT
 
 	protected:
 		Window(int width, int height, bool customized_border, UserAreaRect user_area) : m_Width(width), m_Height(height)
-			, m_CustomizedBorder(customized_border), m_UserArea(user_area), m_Layers(LayerStack::Create()) {}
+			, m_CustomizedBorder(customized_border), m_UserArea(user_area) {}
 
 	protected:
 		int m_Width;
@@ -81,7 +84,5 @@ namespace ACFT
 
 		bool m_CustomizedBorder;
 		UserAreaRect m_UserArea;
-
-		Ref<LayerStack> m_Layers;
 	};
 }

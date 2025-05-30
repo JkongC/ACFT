@@ -22,7 +22,7 @@ namespace ACFT
 	public:
 		CameraType GetType() const { return m_Type; }
 
-		virtual glm::mat4 GetVPMatrix(int window_width, int window_height) const = 0;
+		virtual glm::mat4 GetVPMatrix(float viewport_width, float viewport_height) const = 0;
 
 	protected:
 		Camera(CameraType type) : m_Type(type) {}
@@ -35,7 +35,6 @@ namespace ACFT
 	{
 	public:
 		OrthographicCamera();
-		OrthographicCamera(Ref<Window> window);
 
 		std::pair<float, float> GetPos() const;
 		void SetPos(float x, float y);
@@ -49,9 +48,9 @@ namespace ACFT
 		void SetScale(float scale);
 		void MultiplyScale(float scale);
 
-		std::pair<float, float> WindowPosToCamPos(int window_width, int window_height, float xpos, float ypos);
+		std::pair<float, float> WindowPosToWorldPos(Ref<Window>& window, float xpos, float ypos);
 
-		glm::mat4 GetVPMatrix(int window_width, int window_height) const override;
+		glm::mat4 GetVPMatrix(float viewport_width, float viewport_height) const override;
 
 	private:
 		float m_XPos = 0.0f;

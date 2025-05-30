@@ -26,12 +26,16 @@ namespace ACFT
 		return m_ConsumeEventTypes.contains(event_type);
 	}
 
-	
 	Ref<Layer> LayerStack::PopLayer()
 	{
 		Ref<Layer> layer = m_Layers.back();
 		m_Layers.pop_back();
 		return layer;
+	}
+
+	void LayerStack::RemoveAllLayers()
+	{
+		m_Layers.clear();
 	}
 
 	Ref<LayerStack> LayerStack::Create()

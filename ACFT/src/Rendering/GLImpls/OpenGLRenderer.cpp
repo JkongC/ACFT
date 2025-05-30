@@ -79,7 +79,8 @@ namespace ACFT
 			auto& [id, shader] = *it;
 			shader.Bind();
 
-			shader.SetUniformMat4f("mvp", m_SceneContext.camera->GetVPMatrix(m_Window->GetWidth(), m_Window->GetHeight()));
+			auto [vp_width, vp_height] = m_Window->GetUserAreaSize();
+			shader.SetUniformMat4f("mvp", m_SceneContext.camera->GetVPMatrix(vp_width, vp_height));
 		}
 
 		auto& vertices = tesselator.GetVertices();

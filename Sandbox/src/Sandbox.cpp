@@ -18,7 +18,7 @@ class MyLayer : public Layer
 public:
 	MyLayer()
 		: r_Renderer(Renderer::Get())
-		, m_Camera(MakeRef<OrthographicCamera>(Renderer::GetWindow()))
+		, m_Camera(MakeRef<OrthographicCamera>())
 	{
 		LoadPos();
 		
@@ -43,6 +43,8 @@ public:
 		r_Renderer->SetClearColor(0.5f, 0.8f, 0.9f, 1.0f);
 		r_Renderer->EnableVSync();
 		r_Renderer->EnableBlend();
+
+		m_Camera->SetScale(1.0f);
 	}
 
 	~MyLayer()
@@ -55,9 +57,7 @@ public:
 		using namespace ACFT::Serialization;
 		auto& window = Renderer::GetWindow();
 		auto pos_data = ACFT::DataFormat::ObjDataFile::Open("data/pos_data.ado");
-		Pos default_pos{};
-		std::tie(default_pos.x, default_pos.y) = m_Camera->WindowPosToCamPos(window->GetWidth(), window->GetHeight(),
-			200.0f, 200.0f);
+		Pos default_pos{ 200.0f, 200.0f };
 		m_SpritePos = Deserialize<Pos>(ACFT::Codecs::PLAIN_CODEC<Pos>, pos_data).Or(default_pos);
 	}
 
@@ -79,9 +79,9 @@ public:
 			{
 				//This is to ensure accurate position of the sprite.
 				auto [xpos, ypos] = GetCursorPos(window);
-				auto [cam_x, cam_y] = m_Camera->WindowPosToCamPos(window->GetWidth(), window->GetHeight(),
+				auto [cam_x, cam_y] = m_Camera->WindowPosToWorldPos(window,
 					static_cast<float>(xpos), static_cast<float>(ypos));
-				m_SpritePos = { cam_x, cam_y };
+				m_SpritePos = { static_cast<float>(cam_x), static_cast<float>(cam_y) };
 				ACFT_LOG_INFO("Sprite moved to pos [x = {0}, y = {1}]!", cam_x, cam_y);
 			}
 		}
@@ -110,6 +110,8 @@ public:
 
 	virtual void OnRender() override
 	{
+		r_Renderer->SetWindowDrawArea(WindowDrawArea::user);
+		
 		r_Renderer->BeginScene({ m_Camera });
 
 		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f, {});
@@ -120,7 +122,7 @@ public:
 private:
 	LockfreeQueue<Event> m_EventQueue;
 	Sprite m_Sprite;
-	Ref<Renderer> r_Renderer;
+	Ref<Renderer>& r_Renderer;
 	Ref<OrthographicCamera> m_Camera;
 	Pos m_SpritePos;
 };
@@ -130,8 +132,8 @@ class MyApp : public Application
 public:
 	virtual void Init() override
 	{
-		r_Layers = Renderer::GetWindow()->GetLayerStack();
-		r_Layers->PushLayer(MakeRef<MyLayer>());
+		m_Layers = LayerStack::Create();
+		m_Layers->PushLayer(MakeRef<MyLayer>());
 	}
 
 	virtual void OnEvent(Ref<Event> event) override
@@ -149,14 +151,14 @@ public:
 
 	virtual void OnUpdate(float time_step) override
 	{
-		r_Layers->OnUpdate(time_step);
+		m_Layers->OnUpdate(time_step);
 		if (!m_Running)
 			m_ShutdownProc(time_step);
 	}
 
 	virtual void OnRender() override
 	{
-		r_Layers->OnRender();
+		m_Layers->OnRender();
 	}
 
 	Coroutine::TimestepTask<void> ShutdownProc()
@@ -168,12 +170,11 @@ public:
 			total_time += co_await Coroutine::TimestepTask<void>::TimestepAwaitable{};
 			window->SetOpacity(1.0f - 0.8f * total_time / 400.0f);
 		}
-		window->SetOpacity(0.0f);
 		window->MarkShouldClose();
 	}
 
 private:
-	Ref<LayerStack> r_Layers;
+	Ref<LayerStack> m_Layers;
 	bool m_Running = true;
 	Coroutine::TimestepTask<void> m_ShutdownProc = ShutdownProc();
 };
@@ -187,6 +188,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		SetWindowName("Sandbox");
 		UseFPSProfiler(false);
 		SetWindowSize(1660, 1000);
+		SetWindowUserArea({ 10, 10, 80, 10, false });
 	}
 
 	ACFT::Engine::BindApplication(Application::Create<MyApp>());
@@ -201,6 +203,7 @@ int main(int argc, char** argv)
 		SetWindowName("Sandbox");
 		UseFPSProfiler(false);
 		SetWindowSize(1660, 1000);
+		SetWindowUserArea({ 10, 10, 80, 10, false });
 	}
 
 	ACFT::Engine::BindApplication(Application::Create<MyApp>());

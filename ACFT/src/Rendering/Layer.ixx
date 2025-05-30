@@ -57,6 +57,8 @@ namespace ACFT
 
 		Ref<Layer> PopLayer();
 
+		void RemoveAllLayers();
+
 		Ref<Layer> At(size_t index);
 
 		inline size_t GetSize() const { return m_Layers.size(); }
