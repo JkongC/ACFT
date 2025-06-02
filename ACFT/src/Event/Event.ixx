@@ -15,6 +15,7 @@ import <mutex>;
 import LockfreeQueue;
 import Types;
 import Log;
+import ACFT.ObjectPool;
 
 namespace ACFT
 {
@@ -208,11 +209,11 @@ namespace ACFT
 		template<typename... Infos>
 		void DistributeEvent(const Ref<EventType>& type, Infos&&... infos)
 		{
-			Ref<Event> event = MakeRef<Event>(type);
+			Ref<Event> event = AllocateMakeRef<Event>(EventManager::m_EventPool, type);
 			(event->AttachInfo<Infos>(std::forward<Infos>(infos)), ...);
 			DistributeEvent(event);
 		}
-		
+
 		template<typename Subscriber>
 		void Subscribe(Ref<Subscriber> subscriber, const Ref<EventType>& type, SubscriberFunc callback)
 		{
@@ -239,10 +240,13 @@ namespace ACFT
 		ACFT_API EventManager& operator=(const EventManager&) = delete;
 	
 	private:
+		using SubscriberMap = std::unordered_map<View<void>, SubscriberFunc>;
+
 		friend class Event;
-		LockfreeQueue<Event, Ref> m_EventQueue;
-		std::unordered_map<Ref<EventType>, std::unordered_map<View<void>, SubscriberFunc, ViewHash<void>, ViewEqual<void>>> m_Subscribers;
+		LockfreeQueue<Event, QueueNodeType::ref> m_EventQueue;
+		std::unordered_map<Ref<EventType>, SubscriberMap> m_Subscribers;
 		static inline entt::registry m_AllEvents;
+		static inline ObjectPool<Event> m_EventPool{1000};
 		std::mutex m_Mtx;
 	};
 

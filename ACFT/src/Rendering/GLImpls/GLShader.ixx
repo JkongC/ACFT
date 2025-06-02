@@ -38,7 +38,7 @@ namespace GLImplementations
 		void SetUniformMat4f(std::string_view name, const glm::mat4& matrix);
 		void SetUniformVec3f(std::string_view name, const glm::vec3& vec);
 
-		ACFT::RenderObjectIdentifier GetIdentifier();
+		RenderObjectIdentifier GetIdentifier();
 
 	private:
 		ShaderSources ParseShader();

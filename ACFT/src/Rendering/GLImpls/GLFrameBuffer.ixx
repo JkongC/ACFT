@@ -9,7 +9,6 @@ import Types;
 
 namespace GLImplementations
 {
-	using namespace ACFT;
 	export class GLFrameBuffer
 	{
 	public:

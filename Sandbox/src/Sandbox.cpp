@@ -18,6 +18,7 @@ class MyLayer : public Layer
 public:
 	MyLayer()
 		: r_Renderer(Renderer::Get())
+		, r_Window(Renderer::GetWindow())
 		, m_Camera(MakeRef<OrthographicCamera>())
 	{
 		LoadPos();
@@ -55,7 +56,6 @@ public:
 	void LoadPos()
 	{
 		using namespace ACFT::Serialization;
-		auto& window = Renderer::GetWindow();
 		auto pos_data = ACFT::DataFormat::ObjDataFile::Open("data/pos_data.ado");
 		Pos default_pos{ 200.0f, 200.0f };
 		m_SpritePos = Deserialize<Pos>(ACFT::Codecs::PLAIN_CODEC<Pos>, pos_data).Or(default_pos);
@@ -70,7 +70,6 @@ public:
 
 	virtual void OnEvent(Ref<Event> event) override
 	{
-		auto& window = Renderer::GetWindow();
 		const Ref<EventType>& type = event->GetType();
 		if (type == ACFT::Events::MOUSE_BUTTON)
 		{
@@ -78,8 +77,8 @@ public:
 			if (button.keycode == ACFT::Keys::MOUSE_LEFT && button.pressed == false)
 			{
 				//This is to ensure accurate position of the sprite.
-				auto [xpos, ypos] = GetCursorPos(window);
-				auto [cam_x, cam_y] = m_Camera->WindowPosToWorldPos(window,
+				auto [xpos, ypos] = GetCursorPos(r_Window);
+				auto [cam_x, cam_y] = m_Camera->WindowPosToWorldPos(r_Window,
 					static_cast<float>(xpos), static_cast<float>(ypos));
 				m_SpritePos = { static_cast<float>(cam_x), static_cast<float>(cam_y) };
 				ACFT_LOG_INFO("Sprite moved to pos [x = {0}, y = {1}]!", cam_x, cam_y);
@@ -92,13 +91,13 @@ public:
 			auto& pos = *event->GetInfo<MousePosInfo>();
 			if (pos.y <= DRAG_AREA)
 			{
-				window->SetCursor(CursorType::pointing_hand);
-				window->SetDragAbility(true);
+				r_Window->SetCursor(CursorType::pointing_hand);
+				r_Window->SetDragAbility(true);
 			}
 			else
 			{
-				window->SetCursor(CursorType::normal);
-				window->SetDragAbility(false);
+				r_Window->SetCursor(CursorType::normal);
+				r_Window->SetDragAbility(false);
 			}
 		}
 	}
@@ -123,6 +122,7 @@ private:
 	LockfreeQueue<Event> m_EventQueue;
 	Sprite m_Sprite;
 	Ref<Renderer>& r_Renderer;
+	Ref<Window> r_Window;
 	Ref<OrthographicCamera> m_Camera;
 	Pos m_SpritePos;
 };
@@ -158,6 +158,8 @@ public:
 
 	virtual void OnRender() override
 	{
+		if (!m_Running)
+			r_Window->SetOpacity(m_WindowOpacity.load(std::memory_order_relaxed));
 		m_Layers->OnRender();
 	}
 
@@ -168,14 +170,16 @@ public:
 		while (total_time <= 400.0f)
 		{
 			total_time += co_await Coroutine::TimestepTask<void>::TimestepAwaitable{};
-			window->SetOpacity(1.0f - 0.8f * total_time / 400.0f);
+			m_WindowOpacity.store(1.0f - 0.8f * total_time / 400.0f, std::memory_order_relaxed);
 		}
 		window->MarkShouldClose();
 	}
 
 private:
+	Ref<Window> r_Window = Renderer::GetWindow();
 	Ref<LayerStack> m_Layers;
 	bool m_Running = true;
+	std::atomic<float> m_WindowOpacity = 1.0f;
 	Coroutine::TimestepTask<void> m_ShutdownProc = ShutdownProc();
 };
 

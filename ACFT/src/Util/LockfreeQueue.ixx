@@ -6,12 +6,16 @@ import Node;
 
 namespace ACFT
 {
-	export template<typename T, template<typename> typename NodeType = Scope, size_t MaxSize = 0>
-		requires std::is_same_v<NodeType<T>, Ref<T>> || std::is_same_v<NodeType<T>, Scope<T>>
+	export enum QueueNodeType
+	{
+		scope = 0, ref
+	};
+	
+	export template<typename T, QueueNodeType NodeType = scope, size_t MaxSize = 0>
 	class LockfreeQueue
 	{
 		using InnerNodeType = std::conditional_t<
-			std::is_same_v<NodeType<T>, Ref<T>>,
+			NodeType == ref,
 			AtomicRefNode<T>,
 			AtomicScopeNode<T>>;
 	public:
@@ -47,7 +51,7 @@ namespace ACFT
 			if (MaxSize != 0 && m_Size >= MaxSize)
 				return;
 			
-			if constexpr (std::is_same_v<NodeType<T>, Ref<T>>)
+			if constexpr (std::is_same_v<InnerNodeType, Ref<T>>)
 			{
 				Push(MakeRef<T>(std::forward<Args...>(args)...));
 			}
@@ -59,7 +63,7 @@ namespace ACFT
 			m_Size++;
 		}
 
-		void Push(NodeType<T> item)
+		void Push(InnerNodeType item)
 		{
 			if (MaxSize != 0 && m_Size >= MaxSize)
 				return;
@@ -93,7 +97,7 @@ namespace ACFT
 			m_Size++;
 		}
 
-		std::optional<NodeType<T>> Pop()
+		std::optional<InnerNodeType> Pop()
 		{
 			InnerNodeType* old_head = nullptr;
 			InnerNodeType* old_tail = nullptr;
@@ -116,7 +120,7 @@ namespace ACFT
 					}
 					else
 					{
-						NodeType<T>& result = next->item;
+						InnerNodeType& result = next->item;
 						if (head.compare_exchange_weak(old_head, next))
 						{
 							delete old_head;
