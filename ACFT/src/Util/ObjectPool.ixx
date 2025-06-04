@@ -2,6 +2,8 @@ export module ACFT.ObjectPool;
 
 import <vector>;
 
+import Memory;
+
 namespace ACFT
 {	
 	struct _Default_Extend_Strategy
@@ -143,4 +145,7 @@ namespace ACFT
 		size_t m_PoolCapacity;
 		std::vector<bool> m_OccupyFlag;
 	};
+
+	export template<typename T>
+	using RefObjectPool = ObjectPool<MemoryTraitType<typename RefInplaceBlockTraits<T>::type>>;
 }

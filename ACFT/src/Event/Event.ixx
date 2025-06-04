@@ -15,6 +15,7 @@ import <mutex>;
 import LockfreeQueue;
 import Types;
 import Log;
+import Memory;
 import ACFT.ObjectPool;
 
 namespace ACFT
@@ -246,7 +247,7 @@ namespace ACFT
 		LockfreeQueue<Event, QueueNodeType::ref> m_EventQueue;
 		std::unordered_map<Ref<EventType>, SubscriberMap> m_Subscribers;
 		static inline entt::registry m_AllEvents;
-		static inline ObjectPool<Event> m_EventPool{1000};
+		static inline RefObjectPool<Event> m_EventPool{1000};
 		std::mutex m_Mtx;
 	};
 

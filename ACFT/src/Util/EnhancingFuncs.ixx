@@ -8,6 +8,10 @@ namespace ACFT
 {
 	namespace TemplateHelper
 	{
+		export struct ArgFlag {};
+
+		export constexpr ArgFlag arg_flag_v{};
+		
 		template<typename T>
 		struct primary
 		{
