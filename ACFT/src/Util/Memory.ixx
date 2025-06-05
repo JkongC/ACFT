@@ -34,7 +34,7 @@ using MemoryTraitType = MemoryTrait<T>::type;
 
 // An allocator manages a block of memory, including allocating it and releasing it.
 export template<typename T>
-concept Allocator = requires(T t, size_t n, std::decay_t<T>::value_type* ptr)
+concept Allocator = requires(T t, size_t n, std::decay_t<std::remove_reference_t<T>>::value_type * ptr)
 {
 	{ t.allocate(n) } -> std::convertible_to<typename std::decay_t<std::remove_reference_t<T>>::value_type*>;
 	t.deallocate(ptr, n);
@@ -59,7 +59,7 @@ struct AllocatorTraits
 // A deleter ends an object's lifecycle, but don' necessarily release the memory.
 // In other words, it's not operator delete's alias.
 export template<typename T>
-concept Deleter = requires(T t, std::decay_t<T>::value_type* ptr)
+concept Deleter = requires(T t, std::decay_t<std::remove_reference_t<T>>::value_type * ptr)
 {
 	t(ptr);
 };
@@ -71,19 +71,23 @@ struct DefaultAllocator
 
 	constexpr DefaultAllocator() = default;
 
-	T* allocate(size_t n)
+	T* allocate(size_t n) const
 	{
-		return ::operator new(sizeof(T), std::align_val_t{ alignof(T) });
+		return std::launder(
+			reinterpret_cast<T*>(
+				::operator new(sizeof(T), std::align_val_t{ alignof(T) })
+				)
+		);
 	}
 
-	void deallocate(T* ptr, size_t n)
+	void deallocate(T* ptr, size_t n) const
 	{
 		::operator delete(std::launder(ptr), std::align_val_t{ alignof(T) });
 	}
 };
 
 export template<typename T>
-constexpr DefaultAllocator default_allocator_v{};
+constinit DefaultAllocator<T> default_allocator_v{};
 
 export template<typename T>
 struct DefaultDeleter
@@ -92,7 +96,7 @@ struct DefaultDeleter
 
 	constexpr DefaultDeleter() = default;
 
-	void operator()(value_type* ptr) noexcept
+	void operator()(value_type* ptr) const noexcept
 	{
 		if constexpr (!std::is_trivially_destructible_v<value_type>)
 		{
@@ -102,7 +106,7 @@ struct DefaultDeleter
 };
 
 export template<typename T>
-constexpr DefaultDeleter default_deleter_v{};
+constinit DefaultDeleter<T> default_deleter_v{};
 
 export template<typename T>
 class Scope
@@ -223,7 +227,7 @@ struct std::hash<Scope<T>>
 {
 	using is_transparent = int;
 
-	size_t operator()(const Scope<T>& scope)
+	size_t operator()(const Scope<T>& scope) const noexcept
 	{
 		return std::hash<typename Scope<T>::value_type*>{}(scope.get());
 	}
@@ -273,7 +277,6 @@ struct _Ctrl_Base
 			DeleteThis();
 		}
 	}
-
 };
 
 template<typename T>
@@ -345,7 +348,7 @@ struct _Ctrl_Owning_Allocator : public _Ctrl_Base
 	_Ctrl_Owning_Allocator(T* ptr, const Alloc& allocator, Del* deleter = nullptr) : obj(ptr), alloc(new Alloc(allocator)), del(deleter) {}
 	_Ctrl_Owning_Allocator(T* ptr, Alloc&& allocator, Del* deleter = nullptr) : obj(ptr), alloc(new Alloc(std::move(allocator))), del(deleter) {}
 
-	virtual ~_Ctrl_Owning_Allocator() override 
+	virtual ~_Ctrl_Owning_Allocator() override
 	{
 		if (alloc != nullptr)
 			delete alloc;
@@ -394,6 +397,81 @@ struct RefInplaceBlockTraits
 	static constexpr std::ptrdiff_t obj_offset = offsetof(type, type::second);
 };
 
+template<typename T>
+class Ref;
+
+export template<typename U, Allocator Alloc, typename... Args>
+	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
+inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
+{
+	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
+	using Ctrl_Type = _Ctrl<U, DefaultAllocator<block_t>>;
+	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, DefaultAllocator<block_t>>;
+
+	char* block = reinterpret_cast<char*>(allocator.allocate(1));
+	U* obj_ptr = reinterpret_cast<U*>(block + RefInplaceBlockTraits<U>::obj_offset);
+
+	_Ctrl_Base* block_ptr;
+	if constexpr (std::is_lvalue_reference_v<Alloc>)
+	{
+		block_ptr = std::construct_at(reinterpret_cast<Ctrl_Type*>(block), obj_ptr, &allocator);
+	}
+	else
+	{
+		block_ptr = std::construct_at(reinterpret_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator));
+	}
+
+	std::construct_at(obj_ptr, std::forward<Args>(args)...);
+	Ref<U> ret{};
+	ret.m_Ctrl = block_ptr;
+	ret.m_Obj = obj_ptr;
+
+	return ret;
+}
+
+export template<typename U, Allocator Alloc, Deleter Del, typename... Args>
+	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
+inline Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept
+{
+	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
+	using Ctrl_Type = _Ctrl<U, DefaultAllocator<block_t>>;
+	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, DefaultAllocator<block_t>>;
+
+	char* block = reinterpret_cast<char*>(allocator.allocate(1));
+	U* obj_ptr = reinterpret_cast<U*>(block + RefInplaceBlockTraits<U>::obj_offset);
+
+	_Ctrl_Base* block_ptr;
+	if constexpr (std::is_lvalue_reference_v<Alloc>)
+	{
+		block_ptr = std::construct_at(reinterpret_cast<Ctrl_Type*>(block), obj_ptr, &allocator, &deleter);
+	}
+	else
+	{
+		block_ptr = std::construct_at(reinterpret_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator), &deleter);
+	}
+
+	std::construct_at(obj_ptr, std::forward<Args>(args)...);
+	Ref<U> ret{};
+	ret.m_Ctrl = block_ptr;
+	ret.m_Obj = obj_ptr;
+
+	return ret;
+}
+
+export template<typename U, typename... Args>
+inline Ref<U> MakeRef(Args&&... args)
+{
+	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
+	return AllocateMakeRef<U>(default_allocator_v<block_t>, std::forward<Args>(args)...);
+}
+
+export template<typename U, Deleter Del, typename... Args>
+inline Ref<U> MakeRef(Del& deleter, Args&&... args)
+{
+	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
+	return AllocateMakeRef<U>(default_allocator_v<block_t>, deleter, std::forward<Args>(args)...);
+}
+
 export template<typename T>
 class Ref
 {
@@ -421,31 +499,42 @@ public:
 		return lhs.m_Obj <=> nullptr;
 	}
 
-private:
 	friend class view_type;
 
-	template<typename T, Allocator Alloc, typename... Args>
-	friend Ref<T> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept;
+	/**
+	 * Use a allocator to manage memory allocation of the whole Ref.
+	 *
+	 * \param allocator An allocator that supports allocating a memory block that is suitable for the control block and the object.
+	 * \param ...args Arguments used to contruct the object.
+	 * \return The Ref made.
+	 */
+	template<typename U, Allocator Alloc, typename... Args>
+		requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
+	friend Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept;
 
-	template<typename T, Allocator Alloc, Deleter Del, typename... Args>
-	friend Ref<T> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept;
+	template<typename U, Allocator Alloc, Deleter Del, typename... Args>
+		requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
+	friend Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept;
 
-	template<typename T, typename... Args>
-	friend Ref<T> MakeRef(Args&&... args);
+	template<typename U, typename... Args>
+	friend Ref<U> MakeRef(Args&&... args);
 
-	template<typename T, Deleter Del, typename... Args>
-	friend Ref<T> MakeRef(Del& deleter, Args&&... args);
+	template<typename U, Deleter Del, typename... Args>
+	friend Ref<U> MakeRef(Del& deleter, Args&&... args);
 
 public:
+	Ref() noexcept : Ref(nullptr) {}
 	Ref(std::nullptr_t) noexcept : m_Obj(nullptr), m_Ctrl(nullptr) {}
 	explicit Ref(T* ptr) noexcept
 		: m_Obj(ptr), m_Ctrl(new _Ctrl_Small(ptr))
-	{ }
+	{
+	}
 
 	template<Deleter Del>
 	explicit Ref(T* ptr, Del& deleter)
 		: m_Obj(ptr), m_Ctrl(new _Ctrl(ptr, nullptr, &deleter))
-	{ }
+	{
+	}
 
 	Ref(const Ref<T>& other) noexcept
 		: m_Obj(other.m_Obj), m_Ctrl(other.m_Ctrl)
@@ -547,91 +636,14 @@ private:
 	_Ctrl_Base* m_Ctrl;
 };
 
-/**
-	 * Use a allocator to manage memory allocation of the whole Ref.
-	 *
-	 * \param allocator An allocator that supports allocating a memory block that is suitable for the control block and the object.
-	 * \param ...args Arguments used to contruct the object.
-	 * \return The Ref made.
-	 */
-export template<typename T, Allocator Alloc, typename... Args>
-	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<T>::type>>
-Ref<T> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
-{
-	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<T>::type>;
-	using Ctrl_Type = _Ctrl<T, default_allocator_v<block_t>>;
-	using Ctrl_A_Type = _Ctrl_Owning_Allocator<T, default_allocator_v<block_t>>;
 
-	char* block = static_cast<char*>(allocator.allocate(allocator, 1));
-	T* obj_ptr = static_cast<T*>(block + RefInplaceBlockTraits<T>::obj_offset);
-
-	if constexpr (std::is_lvalue_reference_v<Alloc>)
-	{
-
-		std::construct_at(static_cast<Ctrl_Type*>(block), obj_ptr, &allocator);
-	}
-	else
-	{
-		using Ctrl_Type = _Ctrl<T, default_allocator_v<block_t>>;
-		std::construct_at(static_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator));
-	}
-
-	std::construct_at(obj_ptr, std::forward<Args>(args)...);
-	Ref<T> ret{};
-	ret.m_Ctrl = static_cast<_Ctrl_Base*>(block);
-	ret.m_Obj = obj_ptr;
-
-	return ret;
-}
-
-export template<typename T, Allocator Alloc, Deleter Del, typename... Args>
-	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<T>::type>>
-Ref<T> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept
-{
-	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<T>::type>;
-	using Ctrl_Type = _Ctrl<T, default_allocator_v<block_t>>;
-	using Ctrl_A_Type = _Ctrl_Owning_Allocator<T, default_allocator_v<block_t>>;
-
-	char* block = static_cast<char*>(allocator.allocate(1));
-	T* obj_ptr = static_cast<T*>(block + RefInplaceBlockTraits<T>::obj_offset);
-
-	if constexpr (std::is_lvalue_reference_v<Alloc>)
-	{
-		std::construct_at(static_cast<Ctrl_Type*>(block), obj_ptr, &allocator, &deleter);
-	}
-	else
-	{
-		std::construct_at(static_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator), &deleter);
-	}
-
-	std::construct_at(obj_ptr, std::forward<Args>(args)...);
-	Ref<T> ret{};
-	ret.m_Ctrl = static_cast<_Ctrl_Base*>(block);
-	ret.m_Obj = obj_ptr;
-
-	return ret;
-}
-
-export template<typename T, typename... Args>
-Ref<T> MakeRef(Args&&... args)
-{
-	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<T>::type>;
-	return AllocateMakeRef<T, DefaultAllocator<block_t>>(default_allocator_v<block_t>, std::forward<Args>(args)...);
-}
-
-export template<typename T, Deleter Del, typename... Args>
-Ref<T> MakeRef(Del& deleter, Args&&... args)
-{
-	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<T>::type>;
-	return AllocateMakeRef<T, DefaultAllocator<block_t>, DefaultDeleter<T>>(default_allocator_v<block_t>, deleter, std::forward<Args>(args)...);
-}
 
 export template<typename T>
 struct std::hash<Ref<T>>
 {
 	using is_transparent = int;
 
-	size_t operator()(const Ref<T>& ref) noexcept
+	size_t operator()(const Ref<T>& ref) const noexcept
 	{
 		return std::hash<typename Ref<T>::value_type*>{}(ref.get());
 	}
@@ -648,7 +660,7 @@ public:
 		return lhs.m_Obj == rhs.m_Obj;
 	}
 
-	friend bool operator<=>(const View<T>&lhs, const View<T>&rhs) noexcept
+	friend bool operator<=>(const View<T>& lhs, const View<T>& rhs) noexcept
 	{
 		return lhs.m_Obj <=> rhs.m_Obj;
 	}
@@ -727,7 +739,6 @@ public:
 		m_Obj = nullptr;
 	}
 
-
 private:
 	_Ctrl_Base* m_Ctrl;
 	void* m_Obj;
@@ -736,7 +747,7 @@ private:
 export template<typename T>
 struct std::hash<View<T>>
 {
-	size_t operator()(const View<T>& view) const
+	size_t operator()(const View<T>& view) const noexcept
 	{
 		using value_t = View<T>::value_type;
 		std::hash<value_t*>{}(view.lock().get());
