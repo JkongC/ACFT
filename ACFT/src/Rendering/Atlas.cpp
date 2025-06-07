@@ -8,19 +8,17 @@ namespace ACFT
 {
 	Atlas::Atlas(int horizontal_textures, int vertical_textures)
 		: m_MaxHorizontalTextures(horizontal_textures), m_MaxVerticalTextures(vertical_textures)
-	{
-
-	}
+	{ }
 
 	Atlas::~Atlas()
 	{
-		
+		delete[] m_AtlasData;
 	}
 
 	void Atlas::InitAtlas(int channels)
 	{
-		this->m_AtlasData = MakeScope<unsigned char[]>(m_MaxHorizontalTextures * m_WidthPerTexture *
-			m_MaxVerticalTextures * m_HeightPerTexture * channels);
+		this->m_AtlasData = new unsigned char[m_MaxHorizontalTextures * m_WidthPerTexture *
+			m_MaxVerticalTextures * m_HeightPerTexture * channels];
 		this->m_Channels = channels;
 	}
 
@@ -108,7 +106,7 @@ namespace ACFT
 
 	const unsigned char* Atlas::GetInternalData()
 	{
-		return GetRawPtr(m_AtlasData);
+		return m_AtlasData;
 	}
 
 	int Atlas::GetTextureWidth()

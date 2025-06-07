@@ -114,6 +114,9 @@ class Scope
 public:
 	using value_type = T;
 
+	template<typename U>
+	friend class Ref;
+
 	friend bool operator==(const Scope<T>& lhs, const Scope<T>& rhs) noexcept
 	{
 		return lhs.m_Obj == rhs.m_Obj;
@@ -193,12 +196,13 @@ public:
 		return m_Obj != nullptr;
 	}
 
-	T& operator*() noexcept
+	template<typename U = std::enable_if_t<!std::is_void_v<T>>>
+	auto& operator*() const noexcept
 	{
 		return *m_Obj;
 	}
 
-	T* operator->() noexcept
+	T* operator->() const noexcept
 	{
 		return m_Obj;
 	}
@@ -234,10 +238,10 @@ struct std::hash<Scope<T>>
 };
 
 export template<typename T, typename... Args>
-Scope<T>&& MakeScope(Args&&... args)
+Scope<T> MakeScope(Args&&... args)
 {
 	T* raw_ptr = new T(std::forward<Args>(args)...);
-	return Scope(raw_ptr);
+	return Scope<T>{ raw_ptr };
 }
 
 struct _Ctrl_Base
@@ -405,8 +409,8 @@ export template<typename U, Allocator Alloc, typename... Args>
 inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
 {
 	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
-	using Ctrl_Type = _Ctrl<U, DefaultAllocator<block_t>>;
-	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, DefaultAllocator<block_t>>;
+	using Ctrl_Type = _Ctrl<U, std::decay_t<Alloc>, DefaultDeleter<U>>;
+	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, std::decay_t<Alloc>, DefaultDeleter<U>>;
 
 	char* block = reinterpret_cast<char*>(allocator.allocate(1));
 	U* obj_ptr = reinterpret_cast<U*>(block + RefInplaceBlockTraits<U>::obj_offset);
@@ -434,8 +438,8 @@ export template<typename U, Allocator Alloc, Deleter Del, typename... Args>
 inline Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept
 {
 	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
-	using Ctrl_Type = _Ctrl<U, DefaultAllocator<block_t>>;
-	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, DefaultAllocator<block_t>>;
+	using Ctrl_Type = _Ctrl<U, std::decay_t<Alloc>, std::decay_t<Del>>;
+	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, std::decay_t<Alloc>, std::decay_t<Del>>;
 
 	char* block = reinterpret_cast<char*>(allocator.allocate(1));
 	U* obj_ptr = reinterpret_cast<U*>(block + RefInplaceBlockTraits<U>::obj_offset);
@@ -499,7 +503,11 @@ public:
 		return lhs.m_Obj <=> nullptr;
 	}
 
-	friend class view_type;
+	template<typename U>
+	friend class View;
+
+	template<typename U>
+	friend class Ref;
 
 	/**
 	 * Use a allocator to manage memory allocation of the whole Ref.
@@ -568,11 +576,24 @@ public:
 		other.m_Ctrl = nullptr;
 	}
 
+	Ref(const View<T>& view)
+		: m_Obj(view.m_Obj), m_Ctrl(view.m_Ctrl)
+	{
+		if (m_Ctrl != nullptr)
+			m_Ctrl->Incref();
+	}
+
+	Ref(Scope<T>&& scope)
+		: Ref(scope.release())
+	{ }
+
 	Ref<T>& operator=(const Ref<T>& other) noexcept
 	{
 		m_Obj = other.m_Obj;
 		m_Ctrl = other.m_Ctrl;
 		m_Ctrl->Incref();
+
+		return *this;
 	}
 
 	Ref<T>& operator=(Ref<T>&& other) noexcept
@@ -581,6 +602,8 @@ public:
 		m_Ctrl = other.m_Ctrl;
 		other.m_Obj = nullptr;
 		other.m_Ctrl = nullptr;
+
+		return *this;
 	}
 
 	T* get() const noexcept
@@ -588,19 +611,21 @@ public:
 		return m_Obj;
 	}
 
-	T& operator*() noexcept
+	template<typename U = std::enable_if_t<!std::is_void_v<T>>>
+	auto& operator*() const noexcept
 	{
 		return *m_Obj;
 	}
 
-	T* operator->() noexcept
+	T* operator->() const noexcept
 	{
 		return m_Obj;
 	}
 
 	void reset() noexcept
 	{
-		swap(Ref<T>());
+		Ref<T> temp = Ref<T>();
+		swap(temp);
 	}
 
 	void reset(T* ptr) noexcept
@@ -636,8 +661,6 @@ private:
 	_Ctrl_Base* m_Ctrl;
 };
 
-
-
 export template<typename T>
 struct std::hash<Ref<T>>
 {
@@ -649,11 +672,23 @@ struct std::hash<Ref<T>>
 	}
 };
 
+export template<>
+struct std::hash<Ref<void>>
+{
+	size_t operator()(const Ref<void>& ref) const noexcept
+	{
+		return std::hash<std::nullptr_t>{}(nullptr);
+	}
+};
+
 export template<typename T>
 class View
 {
 public:
 	using value_type = T;
+
+	template<typename U>
+	friend class Ref;
 
 	friend bool operator==(const View<T>& lhs, const View<T>& rhs) noexcept
 	{
@@ -665,7 +700,8 @@ public:
 		return lhs.m_Obj <=> rhs.m_Obj;
 	}
 
-	View(const Ref<value_type>& ref)
+	template<typename U>
+	View(const Ref<U>& ref)
 		: m_Ctrl(ref.m_Ctrl), m_Obj(static_cast<void*>(ref.m_Obj))
 	{
 		m_Ctrl->Incweak();
@@ -689,6 +725,8 @@ public:
 		m_Ctrl = ref.m_Ctrl;
 		m_Obj = ref.m_Obj;
 		m_Ctrl->Incweak();
+
+		return *this;
 	}
 
 	View<T>& operator=(const View<T>& other)
@@ -696,6 +734,8 @@ public:
 		m_Ctrl = other.m_Ctrl;
 		m_Obj = other.m_Obj;
 		m_Ctrl->Incweak();
+
+		return *this;
 	}
 
 	void reset() noexcept
@@ -727,7 +767,8 @@ public:
 	Ref<value_type> lock() const noexcept
 	{
 		using ref_t = Ref<value_type>;
-		return expired() ? ref_t{} : ref_t{ static_cast<value_type*>(m_Obj), *m_Ctrl->allocator };
+		ref_t ref{};
+		return expired() ? ref_t{} : ref_t{ *this };
 	}
 
 	~View()
@@ -750,7 +791,16 @@ struct std::hash<View<T>>
 	size_t operator()(const View<T>& view) const noexcept
 	{
 		using value_t = View<T>::value_type;
-		std::hash<value_t*>{}(view.lock().get());
+		return std::hash<value_t*>{}(view.lock().get());
+	}
+};
+
+export template<>
+struct std::hash<View<void>>
+{
+	size_t operator()(const View<void>& view) const noexcept
+	{
+		return std::hash<std::nullptr_t>{}(nullptr);
 	}
 };
 

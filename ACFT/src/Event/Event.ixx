@@ -40,6 +40,16 @@ namespace ACFT
 		inline const std::string& GetName() const { return m_Name; }
 
 		ACFT_API ~EventType();
+
+		operator int() const
+		{
+			return static_cast<int>(m_Identifier);
+		}
+
+		friend bool operator==(const EventType& lhs, const EventType& rhs) noexcept
+		{
+			return lhs.m_Identifier == rhs.m_Identifier;
+		}
 	
 	private:
 		friend class EventRegistry;
@@ -186,6 +196,7 @@ namespace ACFT
 	};
 	
 	export using SubscriberFunc = std::function<void(Ref<Event>)>;
+	export using SubscriberMap = std::unordered_map<View<void>, SubscriberFunc>;
 	export class EventManager
 	{
 	public:
@@ -241,11 +252,10 @@ namespace ACFT
 		ACFT_API EventManager& operator=(const EventManager&) = delete;
 	
 	private:
-		using SubscriberMap = std::unordered_map<View<void>, SubscriberFunc>;
-
 		friend class Event;
+
 		LockfreeQueue<Event, QueueNodeType::ref> m_EventQueue;
-		std::unordered_map<Ref<EventType>, SubscriberMap> m_Subscribers;
+		std::unordered_map<int, SubscriberMap> m_Subscribers;
 		static inline entt::registry m_AllEvents;
 		static inline RefObjectPool<Event> m_EventPool{1000};
 		std::mutex m_Mtx;

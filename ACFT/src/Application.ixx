@@ -18,7 +18,7 @@ namespace ACFT
 	{
 	public:
 		template<typename T, typename... Args>
-		requires std::is_base_of_v<Application, T>
+			requires std::is_base_of_v<Application, T>
 		static Ref<Application> Create(Args&&... args)
 		{
 			Ref<Application> app = MakeRef<T>(std::forward<Args>(args)...);
@@ -28,7 +28,7 @@ namespace ACFT
 			{
 				event_manager.Subscribe(app, type, event_callback);
 			}
-
+			
 			return app;
 		}
 

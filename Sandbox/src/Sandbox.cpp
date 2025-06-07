@@ -132,6 +132,8 @@ class MyApp : public Application
 public:
 	virtual void Init() override
 	{
+		r_Window = Renderer::GetWindow();
+		
 		m_Layers = LayerStack::Create();
 		m_Layers->PushLayer(MakeRef<MyLayer>());
 	}
@@ -176,7 +178,7 @@ public:
 	}
 
 private:
-	Ref<Window> r_Window = Renderer::GetWindow();
+	Ref<Window> r_Window;
 	Ref<LayerStack> m_Layers;
 	bool m_Running = true;
 	std::atomic<float> m_WindowOpacity = 1.0f;

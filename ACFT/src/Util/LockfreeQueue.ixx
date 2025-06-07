@@ -18,6 +18,12 @@ namespace ACFT
 			NodeType == ref,
 			AtomicRefNode<T>,
 			AtomicScopeNode<T>>;
+
+		using PtrType = std::conditional_t<
+			NodeType == ref,
+			Ref<T>,
+			Scope<T>>;
+
 	public:
 		LockfreeQueue()
 		{
@@ -51,7 +57,7 @@ namespace ACFT
 			if (MaxSize != 0 && m_Size >= MaxSize)
 				return;
 			
-			if constexpr (std::is_same_v<InnerNodeType, Ref<T>>)
+			if constexpr (std::is_same_v<InnerNodeType, AtomicRefNode<T>>)
 			{
 				Push(MakeRef<T>(std::forward<Args...>(args)...));
 			}
@@ -63,7 +69,7 @@ namespace ACFT
 			m_Size++;
 		}
 
-		void Push(InnerNodeType item)
+		void Push(const PtrType& item)
 		{
 			if (MaxSize != 0 && m_Size >= MaxSize)
 				return;
@@ -97,7 +103,7 @@ namespace ACFT
 			m_Size++;
 		}
 
-		std::optional<InnerNodeType> Pop()
+		std::optional<PtrType> Pop()
 		{
 			InnerNodeType* old_head = nullptr;
 			InnerNodeType* old_tail = nullptr;
@@ -120,7 +126,7 @@ namespace ACFT
 					}
 					else
 					{
-						InnerNodeType& result = next->item;
+						PtrType& result = next->item;
 						if (head.compare_exchange_weak(old_head, next))
 						{
 							delete old_head;

@@ -42,7 +42,7 @@ namespace ACFT
 		ACFT_API int GetTotalHeight();
 
 	private:
-		Scope<unsigned char[]> m_AtlasData;
+		unsigned char* m_AtlasData;
 		int m_WidthPerTexture{ 0 };
 		int m_HeightPerTexture{ 0 };
 		int m_Channels{ 0 };

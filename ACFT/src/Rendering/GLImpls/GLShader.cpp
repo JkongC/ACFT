@@ -232,7 +232,7 @@ namespace GLImplementations
 		return location;
 	}
 
-	ACFT::RenderObjectIdentifier GLShader::GetIdentifier()
+	RenderObjectIdentifier GLShader::GetIdentifier()
 	{
 		return m_Identifier;
 	}
