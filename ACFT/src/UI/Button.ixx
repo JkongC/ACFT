@@ -1,12 +1,23 @@
 export module ACFT.Button;
 
-import ACFT.EnhancingFuncs;
 import <vector>;
 
-namespace ACFT
+import ACFT.UIAttributes;
+
+namespace ACFT::UI
 {
-	export class Button
+	export class Button : public UIElement<Button>
 	{
+	public:
+		Button();
+
+		void OnRenderImpl();
+
+		void OnEventImpl(const Ref<Event>& event);
+
+		void OnUpdateImpl(float time_step);
+
+	private:
 		
 	};
 }

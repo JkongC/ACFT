@@ -317,7 +317,7 @@ struct _Ctrl : public _Ctrl_Base
 
 	virtual void DestroyObject() override
 	{
-		if (alloc == nullptr)
+		if (del == nullptr)
 		{
 			delete obj;
 		}
@@ -360,7 +360,7 @@ struct _Ctrl_Owning_Allocator : public _Ctrl_Base
 
 	virtual void DestroyObject() override
 	{
-		if (alloc == nullptr)
+		if (del == nullptr)
 		{
 			delete obj;
 		}

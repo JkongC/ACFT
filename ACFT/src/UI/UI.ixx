@@ -1,10 +1,8 @@
 export module ACFT.UI;
 
+export import ACFT.Screen;
+
 namespace ACFT
 {
-	export template<typename Type>
-	class UIObject
-	{
-
-	};
+	
 }

@@ -1,29 +1,29 @@
 module ACFT.Screen;
 
-namespace ACFT
+namespace ACFT::UI
 {
 	bool Screen::ShouldRender() const
 	{
-		return m_Attr.should_render;
+		return m_ShouldRender;
 	}
 
 	void Screen::Show()
 	{
-		m_Attr.should_render = true;
+		m_ShouldRender = true;
 	}
 
 	void Screen::Hide()
 	{
-		m_Attr.should_render = false;
+		m_ShouldRender = false;
 	}
 
-	const ScreenLocation& Screen::GetLocation() const
+	const ElementRectLocation& Screen::GetLocation() const
 	{
-		return m_Attr.location;
+		return m_Location;
 	}
 
-	void Screen::SetLocation(ScreenLocation location)
+	void Screen::SetLocation(const ElementRectLocation& location)
 	{
-		m_Attr.location = location;
+		m_Location = location;
 	}
 }

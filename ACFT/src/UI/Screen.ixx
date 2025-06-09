@@ -5,30 +5,11 @@ import <vector>;
 import Types;
 import Layer;
 import Event;
+import ACFT.UIAttributes;
 import ACFT.Button;
 
-namespace ACFT
+namespace ACFT::UI
 {
-	export enum class ScreenLocationType
-	{
-		percent = 0, distance
-	};
-
-	export struct ScreenLocation
-	{
-		float left = 0.0f;
-		float right = 0.0f;
-		float top = 0.0f;
-		float bottom = 0.0f;
-		ScreenLocationType type;
-	};
-	
-	export struct ScreenAttributes
-	{
-		ScreenLocation location;
-		bool should_render;
-	};
-	
 	class Menu;
 	
 	export class Screen : public Layer
@@ -45,16 +26,17 @@ namespace ACFT
 		void Show();
 		void Hide();
 
-		const ScreenLocation& GetLocation() const;
-		void SetLocation(ScreenLocation location);
+		const ElementRectLocation& GetLocation() const;
+		void SetLocation(const ElementRectLocation& location);
 
 	protected:
-		ScreenAttributes m_Attr;
-
+		ElementRectLocation m_Location;
 		Screen* m_Parent = nullptr;
 
 		std::vector<Button> m_Buttons;
 		std::vector<Menu> m_Menus;
+
+		bool m_ShouldRender;
 	};
 
 	export class Menu : public Screen
