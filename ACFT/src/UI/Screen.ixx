@@ -7,40 +7,29 @@ import Layer;
 import Event;
 import ACFT.UIAttributes;
 import ACFT.Button;
+import ACFT.ScreenQuadTree;
 
 namespace ACFT::UI
 {
-	class Menu;
+	export class Screen : public UIElement
+	{
+	public:
+
+	private:
+		
+	};
 	
-	export class Screen : public Layer
+	export class Menu : public UIElement
 	{
 	public:
 		virtual void OnEvent(Ref<Event> event) = 0;
 		virtual void OnUpdate(float time_step) = 0;
 		virtual void OnRender() = 0;
 
-		virtual void OnOpen() = 0;
-		virtual void OnClose() = 0;
+		virtual void OnOpen() {}
+		virtual void OnClose() {}
 
-		bool ShouldRender() const;
-		void Show();
-		void Hide();
-
-		const ElementRectLocation& GetLocation() const;
-		void SetLocation(const ElementRectLocation& location);
-
-	protected:
-		ElementRectLocation m_Location;
-		Screen* m_Parent = nullptr;
-
-		std::vector<Button> m_Buttons;
-		std::vector<Menu> m_Menus;
-
-		bool m_ShouldRender;
-	};
-
-	export class Menu : public Screen
-	{
+	private:
 
 	};
 }

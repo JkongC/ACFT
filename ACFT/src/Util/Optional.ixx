@@ -177,6 +177,7 @@ private:
 		}
 	}
 
+private:
 	alignas(T) unsigned char m_Object[sizeof(T)];
 	bool m_Valid;
 };

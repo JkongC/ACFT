@@ -22,11 +22,11 @@ namespace ACFT
 	
 	export struct RenderPass
 	{
-		RenderOp pre_op;
-		RenderOp post_op;
 		Viewport viewport;
 		Ref<Camera> camera;
 		Ref<Tesselator> vertices;
+		RenderOp pre_op;
+		RenderOp post_op;
 	};
 
 	export struct RenderPipeline

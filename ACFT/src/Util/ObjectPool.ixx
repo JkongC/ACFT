@@ -1,6 +1,7 @@
 export module ACFT.ObjectPool;
 
 import <vector>;
+import <atomic>;
 
 import Memory;
 
@@ -20,12 +21,18 @@ namespace ACFT
 	concept PoolExtendStrategy = requires(size_t old) {
 		{ T::Extend(old) } -> std::convertible_to<size_t>;
 	};
+
+	export enum class ObjectPoolMode
+	{
+		single_threaded, multi_threaded
+	};
 	
-	export template<typename T, PoolExtendStrategy Ext = _Default_Extend_Strategy>
+	export template<typename T, ObjectPoolMode mode = ObjectPoolMode::single_threaded, PoolExtendStrategy Ext = _Default_Extend_Strategy>
 	class ObjectPool
 	{
 	public:
 		using value_type = std::decay_t<std::remove_reference_t<T>>;
+		using flags_type = std::conditional_t<mode == ObjectPoolMode::single_threaded, std::vector<bool>, std::vector<std::atomic<bool>>>;
 
 		static constexpr size_t DefaultCapacity = 1000;
 
@@ -55,9 +62,21 @@ namespace ACFT
 			
 			for (size_t i = 0; i < m_OccupyFlag.size(); i++)
 			{
-				if (!m_OccupyFlag.at(i))
+				if constexpr (mode == ObjectPoolMode::multi_threaded)
 				{
-					return GetMemoryPoint(i);
+					bool expected = false;
+					if (m_OccupyFlag.at(i).compare_exchange_strong(expected, true))
+					{
+						return GetMemoryPoint(i);
+					}
+				}
+				else
+				{
+					if (!m_OccupyFlag.at(i))
+					{
+						m_OccupyFlag.at(i) = true;
+						return GetMemoryPoint(i);
+					}
 				}
 			}
 
@@ -83,7 +102,16 @@ namespace ACFT
 
 			auto [in_pool, idx] = IsInPool(ptr);
 			if (in_pool)
-				m_OccupyFlag.at(idx) = false;
+			{
+				if constexpr (mode == ObjectPoolMode::multi_threaded)
+				{
+					m_OccupyFlag.at(idx).store(false, std::memory_order_release);
+				}
+				else
+				{
+					m_OccupyFlag.at(idx) = false;
+				}
+			}
 		}
 
 		template<typename U>
@@ -143,7 +171,7 @@ namespace ACFT
 	private:
 		std::vector<Chunk> m_MemoryPool;
 		size_t m_PoolCapacity;
-		std::vector<bool> m_OccupyFlag;
+		flags_type m_OccupyFlag;
 	};
 
 	export template<typename T>

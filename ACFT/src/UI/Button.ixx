@@ -2,20 +2,20 @@ export module ACFT.Button;
 
 import <vector>;
 
+import Event;
+import Types;
 import ACFT.UIAttributes;
 
 namespace ACFT::UI
 {
-	export class Button : public UIElement<Button>
+	export class Button : public UIElement
 	{
 	public:
 		Button();
 
-		void OnRenderImpl();
-
-		void OnEventImpl(const Ref<Event>& event);
-
-		void OnUpdateImpl(float time_step);
+		virtual void OnRender();
+		virtual void OnEvent(Ref<Event> event);
+		virtual void OnUpdate(float time_step);
 
 	private:
 		

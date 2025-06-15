@@ -20,7 +20,7 @@ struct TriComplex
 template<size_t Size, size_t Align>
 struct alignas(Align) _MemoryTraitBlock
 {
-	char padding[Size];
+	unsigned char padding[Size];
 };
 
 export template<typename T>
@@ -241,7 +241,7 @@ export template<typename T, typename... Args>
 Scope<T> MakeScope(Args&&... args)
 {
 	T* raw_ptr = new T(std::forward<Args>(args)...);
-	return Scope<T>{ raw_ptr };
+	return Scope<T>{raw_ptr};
 }
 
 struct _Ctrl_Base
@@ -404,6 +404,9 @@ struct RefInplaceBlockTraits
 template<typename T>
 class Ref;
 
+template<typename T>
+class EnableRefFromThis;
+
 export template<typename U, Allocator Alloc, typename... Args>
 	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
 inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
@@ -430,6 +433,11 @@ inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
 	ret.m_Ctrl = block_ptr;
 	ret.m_Obj = obj_ptr;
 
+	if constexpr (std::is_base_of_v<U, EnableRefFromThis<U>>)
+	{
+		static_cast<EnableRefFromThis<U>>(obj_ptr)->m_View = View<U>{ret};
+	}
+	
 	return ret;
 }
 
@@ -458,6 +466,11 @@ inline Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) n
 	Ref<U> ret{};
 	ret.m_Ctrl = block_ptr;
 	ret.m_Obj = obj_ptr;
+
+	if constexpr (std::is_base_of_v<U, EnableRefFromThis<U>>)
+	{
+		static_cast<EnableRefFromThis<U>>(obj_ptr)->m_View = View<U>{ ret };
+	}
 
 	return ret;
 }
@@ -535,14 +548,12 @@ public:
 	Ref(std::nullptr_t) noexcept : m_Obj(nullptr), m_Ctrl(nullptr) {}
 	explicit Ref(T* ptr) noexcept
 		: m_Obj(ptr), m_Ctrl(new _Ctrl_Small(ptr))
-	{
-	}
+	{ }
 
 	template<Deleter Del>
 	explicit Ref(T* ptr, Del& deleter)
 		: m_Obj(ptr), m_Ctrl(new _Ctrl(ptr, nullptr, &deleter))
-	{
-	}
+	{ }
 
 	Ref(const Ref<T>& other) noexcept
 		: m_Obj(other.m_Obj), m_Ctrl(other.m_Ctrl)
@@ -700,6 +711,10 @@ public:
 		return lhs.m_Obj <=> rhs.m_Obj;
 	}
 
+	View()
+		: m_Ctrl(nullptr), m_Obj(nullptr)
+	{ }
+
 	template<typename U>
 	View(const Ref<U>& ref)
 		: m_Ctrl(ref.m_Ctrl), m_Obj(static_cast<void*>(ref.m_Obj))
@@ -807,5 +822,46 @@ struct std::hash<View<void>>
 export template<typename T, Allocator Alloc>
 View<T> MakeView(Ref<T>&& ref)
 {
-	return View<T>(ref);
+	return View<T>{ref};
 }
+
+// This gives T the ability to get a Ref from its own. T must be constructed through MakeRef or AllocateMakeRef.
+export template<typename T>
+class EnableRefFromThis
+{
+protected:
+	Ref<T> RefFromThis() const
+	{
+		if (m_View.use_count() == 0)
+		{
+			return Ref<T>{};
+		}
+
+		return Ref<T>{m_View};
+	}
+
+	View<T> ViewFromThis() const
+	{
+		return View<T>{m_View};
+	}
+
+private:
+	friend T;
+
+	template<typename U, Allocator Alloc, typename... Args>
+	friend Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept;
+
+	template<typename U, Allocator Alloc, Deleter Del, typename... Args>
+	friend Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept;
+
+	template<typename U, typename... Args>
+	friend Ref<U> MakeRef(Args&&... args);
+
+	template<typename U, Deleter Del, typename... Args>
+	friend Ref<U> MakeRef(Del& deleter, Args&&... args);
+
+	EnableRefFromThis() = default;
+
+private:
+	View<T> m_View;
+};

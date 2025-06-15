@@ -1,6 +1,6 @@
 module ACFT.Button;
 
-namespace ACFT
+namespace ACFT::UI
 {
 	Button::Button()
 	{
