@@ -44,11 +44,17 @@ namespace ACFT::UI
 			{
 				if (dst_type == LocationType::percentage)
 				{
-
+					ret.left = rect.left / width;
+					ret.right = rect.right / width;
+					ret.top = rect.top / height;
+					ret.bottom = rect.bottom / height;
 				}
 				else
 				{
-
+					ret.left = rect.left;
+					ret.right = width - rect.left;
+					ret.top = rect.top;
+					ret.bottom = height - rect.bottom;
 				}
 			}
 			else if (rect.type == LocationType::percentage)
@@ -62,7 +68,10 @@ namespace ACFT::UI
 				}
 				else
 				{
-
+					ret.left = width * rect.left;
+					ret.right = width * (1.0f - rect.right);
+					ret.top = height * rect.top;
+					ret.bottom = height * 1.0f - (rect.bottom);
 				}
 			}
 			else
@@ -76,7 +85,10 @@ namespace ACFT::UI
 				}
 				else
 				{
-
+					ret.left = rect.left / width;
+					ret.right = 1.0f - (rect.right / width);
+					ret.top = rect.top / height;
+					ret.bottom = 1.0f - (rect.bottom / height);
 				}
 			}
 
@@ -188,14 +200,29 @@ namespace ACFT::UI
 			return m_LogicParent;
 		}
 
+		int GetDepth() const
+		{
+			return m_Depth;
+		}
+
+		void SetDepth(int depth)
+		{
+			m_Depth = depth;
+		}
+
 		virtual void OnEvent(Ref<Event> event) = 0;
 		virtual void OnRender() = 0;
 		virtual void OnUpdate(float time_step) = 0;
 
 	protected:
+		UIElement(Ref<UIElement> parent = nullptr, ElementLocationRect location = {}, int depth = 0)
+			: m_LogicParent(parent), m_Location(location), m_Depth(depth)
+		{ }
+
 		std::vector<Ref<UIElement>> m_LogicKids;
 		Ref<UIElement> m_LogicParent;
 		ElementLocationRect m_Location;
+		int m_Depth;
 		bool m_ShouldRender;
 	};
 }

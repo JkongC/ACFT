@@ -104,7 +104,7 @@ public:
 
 	T* TryGet() noexcept
 	{
-		return m_Valid ? reinterpret_cast<T*>(m_Object) : nullptr;
+		return m_Valid ? &m_Object : nullptr;
 	}
 
 	T& operator*()
@@ -114,7 +114,7 @@ public:
 			throw OptionalInvalid{};
 		}
 
-		return *reinterpret_cast<T*>(m_Object);
+		return m_Object;
 	}
 
 	T* operator->()
@@ -124,13 +124,13 @@ public:
 			throw OptionalInvalid{};
 		}
 
-		return reinterpret_cast<T*>(m_Object);
+		return &m_Object;
 	}
 
 private:
 	void DestroyCurrentObject() noexcept
 	{
-		std::destroy_at(reinterpret_cast<T*>(m_Object));
+		std::destroy_at(&m_Object);
 	}
 
 	template<typename U>
@@ -140,14 +140,14 @@ private:
 		if (m_Valid)
 			DestroyCurrentObject();
 		
-		std::construct_at(reinterpret_cast<T*>(m_Object), std::forward<U>(obj));
+		m_Object = std::construct_at(&m_Object, std::forward<U>(obj));
 		m_Valid = true;
 	}
 
 	void CopyFrom(const Optional& other) noexcept
 	{
 		if (other.m_Valid)
-			Fill(*reinterpret_cast<T*>(other.m_Object));
+			Fill(other.m_Object);
 		else
 		{
 			DestroyCurrentObject();
@@ -161,11 +161,11 @@ private:
 		{
 			if constexpr (std::is_move_constructible_v<T>)
 			{
-				Fill(std::move(*reinterpret_cast<T*>(other.m_Object)));
+				Fill(std::move(other.m_Object));
 			}
 			else
 			{
-				Fill(*reinterpret_cast<T*>(other.m_Object));
+				Fill(other.m_Object);
 			}
 
 			other.m_Valid = false;
@@ -178,6 +178,6 @@ private:
 	}
 
 private:
-	alignas(T) unsigned char m_Object[sizeof(T)];
+	T m_Object;
 	bool m_Valid;
 };

@@ -2,6 +2,9 @@ export module Memory;
 
 export import <memory>;
 
+import ACFT.EnhancingFuncs;
+using namespace ACFT::TemplateHelper;
+
 export template<typename F, typename S = F>
 struct BiComplex
 {
@@ -407,6 +410,12 @@ class Ref;
 template<typename T>
 class EnableRefFromThis;
 
+template<typename T>
+concept _Can_Enable_Ref_From_This = requires { typename T::_Erft_Type; } && std::convertible_to<T*, typename T::_Erft_Type*>;
+
+template<typename T>
+inline constexpr bool _Can_Enable_Ref_From_This_v = _Can_Enable_Ref_From_This<T>;
+
 export template<typename U, Allocator Alloc, typename... Args>
 	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
 inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
@@ -428,15 +437,16 @@ inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
 		block_ptr = std::construct_at(reinterpret_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator));
 	}
 
-	std::construct_at(obj_ptr, std::forward<Args>(args)...);
 	Ref<U> ret{};
 	ret.m_Ctrl = block_ptr;
 	ret.m_Obj = obj_ptr;
 
-	if constexpr (std::is_base_of_v<U, EnableRefFromThis<U>>)
+	if constexpr (_Can_Enable_Ref_From_This_v<U>)
 	{
-		static_cast<EnableRefFromThis<U>>(obj_ptr)->m_View = View<U>{ret};
+		static_cast<U::_Erft_Type*>(obj_ptr)->m_View = View<U>{ret};
 	}
+
+	std::construct_at(obj_ptr, std::forward<Args>(args)...);
 	
 	return ret;
 }
@@ -462,15 +472,16 @@ inline Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) n
 		block_ptr = std::construct_at(reinterpret_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator), &deleter);
 	}
 
-	std::construct_at(obj_ptr, std::forward<Args>(args)...);
 	Ref<U> ret{};
 	ret.m_Ctrl = block_ptr;
 	ret.m_Obj = obj_ptr;
 
-	if constexpr (std::is_base_of_v<U, EnableRefFromThis<U>>)
+	if constexpr (_Can_Enable_Ref_From_This_v<U>)
 	{
-		static_cast<EnableRefFromThis<U>>(obj_ptr)->m_View = View<U>{ ret };
+		static_cast<U::_Erft_Type*>(obj_ptr)->m_View = View<U>{ ret };
 	}
+
+	std::construct_at(obj_ptr, std::forward<Args>(args)...);
 
 	return ret;
 }
@@ -588,7 +599,7 @@ public:
 	}
 
 	Ref(const View<T>& view)
-		: m_Obj(view.m_Obj), m_Ctrl(view.m_Ctrl)
+		: m_Obj(reinterpret_cast<T*>(view.m_Obj)), m_Ctrl(view.m_Ctrl)
 	{
 		if (m_Ctrl != nullptr)
 			m_Ctrl->Incref();
@@ -701,6 +712,9 @@ public:
 	template<typename U>
 	friend class Ref;
 
+	template<typename U>
+	friend class View;
+
 	friend bool operator==(const View<T>& lhs, const View<T>& rhs) noexcept
 	{
 		return lhs.m_Obj == rhs.m_Obj;
@@ -719,17 +733,21 @@ public:
 	View(const Ref<U>& ref)
 		: m_Ctrl(ref.m_Ctrl), m_Obj(static_cast<void*>(ref.m_Obj))
 	{
-		m_Ctrl->Incweak();
+		if (m_Ctrl != nullptr)
+			m_Ctrl->Incweak();
 	}
 
-	View(const View<T>& other)
-		: m_Ctrl(other.m_Ctrl), m_Obj(static_cast<void*>(other.m_Obj))
+	template<typename U>
+	View(const View<U>& other)
+		: m_Ctrl(other.m_Ctrl), m_Obj(other.m_Obj)
 	{
-		m_Ctrl->Incweak();
+		if (m_Ctrl != nullptr)
+			m_Ctrl->Incweak();
 	}
 
-	View(View<T>&& other)
-		: m_Ctrl(other.m_Ctrl), m_Obj(static_cast<void*>(other.m_Obj))
+	template<typename U>
+	View(View<U>&& other)
+		: m_Ctrl(other.m_Ctrl), m_Obj(other.m_Obj)
 	{
 		other.m_Ctrl = nullptr;
 		other.m_Obj = nullptr;
@@ -739,16 +757,19 @@ public:
 	{
 		m_Ctrl = ref.m_Ctrl;
 		m_Obj = ref.m_Obj;
-		m_Ctrl->Incweak();
+		if (m_Ctrl != nullptr)
+			m_Ctrl->Incweak();
 
 		return *this;
 	}
 
-	View<T>& operator=(const View<T>& other)
+	template<typename U>
+	View<T>& operator=(const View<U>& other)
 	{
 		m_Ctrl = other.m_Ctrl;
 		m_Obj = other.m_Obj;
-		m_Ctrl->Incweak();
+		if (m_Ctrl != nullptr)
+			m_Ctrl->Incweak();
 
 		return *this;
 	}
@@ -829,6 +850,19 @@ View<T> MakeView(Ref<T>&& ref)
 export template<typename T>
 class EnableRefFromThis
 {
+public:
+	using _Erft_Type = EnableRefFromThis<T>;
+
+	EnableRefFromThis(const EnableRefFromThis<T>& other)
+		: m_View(other.m_View)
+	{ }
+
+	EnableRefFromThis<T>& operator=(const EnableRefFromThis<T>& other) noexcept
+	{
+		m_View = other.m_View;
+		return *this;
+	}
+
 protected:
 	Ref<T> RefFromThis() const
 	{
@@ -845,13 +879,15 @@ protected:
 		return View<T>{m_View};
 	}
 
-private:
-	friend T;
+	EnableRefFromThis() = default;
 
+private:
 	template<typename U, Allocator Alloc, typename... Args>
+		requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
 	friend Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept;
 
 	template<typename U, Allocator Alloc, Deleter Del, typename... Args>
+		requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
 	friend Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept;
 
 	template<typename U, typename... Args>
@@ -859,8 +895,6 @@ private:
 
 	template<typename U, Deleter Del, typename... Args>
 	friend Ref<U> MakeRef(Del& deleter, Args&&... args);
-
-	EnableRefFromThis() = default;
 
 private:
 	View<T> m_View;

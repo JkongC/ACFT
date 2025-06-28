@@ -30,7 +30,7 @@ namespace ACFT
 	std::counting_semaphore<fThreads> appReady{ 0 };
 	std::binary_semaphore rendererContextCleaned{ 0 };
 	std::binary_semaphore windowCleaned{ 0 };
-	std::atomic<bool> running = true;
+	bool running = true;
 
 	template<ptrdiff_t SignalCount>
 	void AnnounceStage(std::counting_semaphore<SignalCount>& stage)
@@ -62,7 +62,7 @@ namespace ACFT
 	void Engine::InitWindow()
 	{
 		auto [width, height] = Config::GetWindowSize();
-		Engine::s_Window = Window::InitWindow(width, height, true, Config::GetWindowUserArea());
+		Engine::s_Window = Window::InitWindow(width, height, false, Config::GetWindowUserArea());
 
 		AnnounceStage(windowReady);
 	}
@@ -70,7 +70,7 @@ namespace ACFT
 	void Engine::InitWindowAndDetachContext()
 	{
 		auto [width, height] = Config::GetWindowSize();
-		Engine::s_Window = Window::InitWindow(width, height, true, Config::GetWindowUserArea());
+		Engine::s_Window = Window::InitWindow(width, height, false, Config::GetWindowUserArea());
 		Engine::s_Window->DetachContext();
 
 		AnnounceStage(windowReady);

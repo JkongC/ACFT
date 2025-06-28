@@ -5,14 +5,27 @@ module;
 
 module Camera;
 
-import Types;
-import Window;
+import Renderer;
 
 namespace ACFT
 {
+	Camera::Camera(CameraType type)
+		: m_Type(type)
+	{
+		auto callback = [this](Ref<Event> event) -> void { this->OnEvent(event); };
+		Ref<Camera> self_ref = RefFromThis();
+		auto& event_manager = EventManager::Global();
+		for (auto& type : EventRegistry::GetAllTypes())
+		{
+			event_manager.Subscribe(self_ref, type, callback);
+		}
+	}
+	
 	OrthographicCamera::OrthographicCamera()
 		: Camera(CameraType::ortho), m_XPos(0.0f), m_YPos(0.0f)
-	{ }
+	{
+		
+	}
 
 	std::pair<float, float> OrthographicCamera::GetPos() const
 	{
@@ -95,5 +108,42 @@ namespace ACFT
 		{
 			return { m_XPos + xpos / m_Scale, m_YPos + (window->GetHeight() - ypos) / m_Scale };
 		}
+	}
+
+	void OrthographicCamera::OnEvent(Ref<Event> event)
+	{
+
+	}
+
+	PerspectiveCamera::PerspectiveCamera()
+		: Camera(CameraType::perspective)
+	{
+	}
+
+	void PerspectiveCamera::SetPos(glm::vec3 pos)
+	{
+		m_Pos = pos;
+	}
+
+	void PerspectiveCamera::SetFOV(float fov)
+	{
+		m_FOV = fov;
+	}
+
+	void PerspectiveCamera::SetYaw(float yaw)
+	{
+		m_Yaw = yaw;
+	}
+
+	void PerspectiveCamera::SetPitch(float pitch)
+	{
+		m_Pitch = pitch;
+	}
+
+	glm::mat4 PerspectiveCamera::GetVPMatrix(float viewport_width, float viewport_height) const
+	{
+		auto& window = Renderer::GetWindow();
+		float aspect = static_cast<float>(window->GetWidth()) / window->GetHeight();
+		return glm::perspective(m_FOV, aspect, 0.1f, 100.0f);
 	}
 }

@@ -194,7 +194,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		SetWindowName("Sandbox");
 		UseFPSProfiler(false);
 		SetWindowSize(1660, 1000);
-		SetWindowUserArea({ 10, 10, 80, 10, false });
+		//SetWindowUserArea({ 10, 10, 80, 10, false });
 	}
 
 	ACFT::Engine::BindApplication(Application::Create<MyApp>());
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
 		SetWindowName("Sandbox");
 		UseFPSProfiler(false);
 		SetWindowSize(1660, 1000);
-		SetWindowUserArea({ 10, 10, 80, 10, false });
+		//SetWindowUserArea({ 10, 10, 80, 10, false });
 	}
 
 	ACFT::Engine::BindApplication(Application::Create<MyApp>());

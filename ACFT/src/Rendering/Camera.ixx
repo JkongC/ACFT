@@ -8,6 +8,7 @@ export module Camera;
 import <utility>;
 
 import Types;
+import Event;
 import Window;
 
 namespace ACFT
@@ -17,15 +18,17 @@ namespace ACFT
 		ortho, perspective
 	};
 	
-	export class Camera
+	export class Camera : public EnableRefFromThis<Camera>
 	{
 	public:
 		CameraType GetType() const { return m_Type; }
 
 		virtual glm::mat4 GetVPMatrix(float viewport_width, float viewport_height) const = 0;
 
+		virtual void OnEvent(Ref<Event> event) = 0;
+
 	protected:
-		Camera(CameraType type) : m_Type(type) {}
+		Camera(CameraType type);
 
 	protected:
 		CameraType m_Type;
@@ -50,12 +53,40 @@ namespace ACFT
 
 		std::pair<float, float> WindowPosToWorldPos(Ref<Window>& window, float xpos, float ypos);
 
-		glm::mat4 GetVPMatrix(float viewport_width, float viewport_height) const override;
+		virtual glm::mat4 GetVPMatrix(float viewport_width, float viewport_height) const override;
+
+		virtual void OnEvent(Ref<Event> event) override;
 
 	private:
 		float m_XPos = 0.0f;
 		float m_YPos = 0.0f;
 		float m_RotateAngle = 0.0f;
 		float m_Scale = 1.0f;
+	};
+
+	export class PerspectiveCamera : public Camera
+	{
+	public:
+		PerspectiveCamera();
+
+		glm::vec3 GetPos() const { return m_Pos; }
+		void SetPos(glm::vec3 pos);
+
+		float GetFOV() const { return m_FOV; }
+		void SetFOV(float fov);
+
+		float GetYaw() const { return m_Yaw; }
+		void SetYaw(float yaw);
+
+		float GetPitch() const{ return m_Pitch; }
+		void SetPitch(float pitch);
+
+		virtual glm::mat4 GetVPMatrix(float viewport_width, float viewport_height) const override;
+
+	private:
+		glm::vec3 m_Pos = { 0.0f, 0.0f, 0.0f };
+		float m_FOV = 1.0;
+		float m_Yaw = 0.0f;
+		float m_Pitch = 0.0f;
 	};
 }

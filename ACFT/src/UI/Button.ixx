@@ -11,11 +11,11 @@ namespace ACFT::UI
 	export class Button : public UIElement
 	{
 	public:
-		Button();
+		Button(Ref<UIElement> parent = nullptr, ElementLocationRect location = {}, int depth = 0);
 
-		virtual void OnRender();
-		virtual void OnEvent(Ref<Event> event);
-		virtual void OnUpdate(float time_step);
+		virtual void OnRender() {};
+		virtual void OnEvent(Ref<Event> event) {};
+		virtual void OnUpdate(float time_step) {};
 
 	private:
 		
