@@ -2,6 +2,7 @@ export module LockfreeQueue;
 
 import <type_traits>;
 import <optional>;
+import Log;
 import Node;
 
 namespace ACFT
@@ -10,8 +11,13 @@ namespace ACFT
 	{
 		scope = 0, ref
 	};
+
+	export enum class QueueRejectStrategy
+	{
+		dispose_all, dispose_head
+	};
 	
-	export template<typename T, QueueNodeType NodeType = scope, size_t MaxSize = 0>
+	export template<typename T, QueueNodeType NodeType = scope, QueueRejectStrategy Str = QueueRejectStrategy::dispose_all, size_t MaxSize = 0>
 	class LockfreeQueue
 	{
 		using InnerNodeType = std::conditional_t<
@@ -55,7 +61,12 @@ namespace ACFT
 		void Emplace(Args&&... args)
 		{
 			if (MaxSize != 0 && m_Size >= MaxSize)
-				return;
+			{
+				if constexpr (Str == QueueRejectStrategy::dispose_all)
+					return;
+				else if (Str == QueueRejectStrategy::dispose_head)
+					Pop();
+			}
 			
 			if constexpr (std::is_same_v<InnerNodeType, AtomicRefNode<T>>)
 			{
@@ -72,7 +83,12 @@ namespace ACFT
 		void Push(const PtrType& item)
 		{
 			if (MaxSize != 0 && m_Size >= MaxSize)
-				return;
+			{
+				if constexpr (Str == QueueRejectStrategy::dispose_all)
+					return;
+				else if (Str == QueueRejectStrategy::dispose_head)
+					Pop();
+			}
 
 			InnerNodeType* new_node = new InnerNodeType(std::move(item));
 			InnerNodeType* old_tail = nullptr;
@@ -90,6 +106,7 @@ namespace ACFT
 						if (old_tail->next.compare_exchange_weak(old_next, new_node))
 						{
 							tail.compare_exchange_weak(old_tail, new_node);
+							m_Size++;
 							return;
 						}
 					}
@@ -99,8 +116,6 @@ namespace ACFT
 					}
 				}
 			}
-
-			m_Size++;
 		}
 
 		std::optional<PtrType> Pop()
@@ -130,13 +145,12 @@ namespace ACFT
 						if (head.compare_exchange_weak(old_head, next))
 						{
 							delete old_head;
+							m_Size--;
 							return std::move(result);
 						}
 					}
 				}
 			}
-
-			m_Size--;
 		}
 
 	private:

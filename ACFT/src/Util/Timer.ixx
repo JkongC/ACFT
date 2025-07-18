@@ -1,9 +1,7 @@
-module;
-
-#include <chrono>
-#include <functional>
-
 export module Timer;
+
+import <chrono>;
+import <functional>;
 
 export namespace ACFT
 {
@@ -62,7 +60,7 @@ export namespace ACFT
 		~ScopedTimer()
 		{
 			auto now = std::chrono::high_resolution_clock::now();
-			std::chrono::duration<Type, Period> elapsed = std::chrono::duration_cast<std::chrono::duration<Type, Period>>(now - this->m_Start);
+			auto elapsed = std::chrono::duration_cast<std::chrono::duration<Type, Period>>(now - this->m_Start);
 			this->m_Callback(elapsed.count());
 		}
 

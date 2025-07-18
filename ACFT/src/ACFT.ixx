@@ -11,6 +11,7 @@ export import Config;
 export import Atlas;
 export import Renderer;
 export import Utils;
+export import Timer;
 export import FPSProfiler;
 export import ACFT.Serialization;
 export import ACFT.CoTask;

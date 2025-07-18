@@ -420,20 +420,18 @@ export template<typename U, Allocator Alloc, typename... Args>
 	requires std::is_same_v<typename std::decay_t<Alloc>::value_type, MemoryTraitType<typename RefInplaceBlockTraits<U>::type>>
 inline Ref<U> AllocateMakeRef(Alloc&& allocator, Args&&... args) noexcept
 {
-	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
-	using Ctrl_Type = _Ctrl<U, std::decay_t<Alloc>, DefaultDeleter<U>>;
-	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, std::decay_t<Alloc>, DefaultDeleter<U>>;
-
-	char* block = reinterpret_cast<char*>(allocator.allocate(1));
+	unsigned char* block = reinterpret_cast<unsigned char*>(allocator.allocate(1));
 	U* obj_ptr = reinterpret_cast<U*>(block + RefInplaceBlockTraits<U>::obj_offset);
 
 	_Ctrl_Base* block_ptr;
 	if constexpr (std::is_lvalue_reference_v<Alloc>)
 	{
+		using Ctrl_Type = _Ctrl<U, std::decay_t<Alloc>, DefaultDeleter<U>>;
 		block_ptr = std::construct_at(reinterpret_cast<Ctrl_Type*>(block), obj_ptr, &allocator);
 	}
 	else
 	{
+		using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, std::decay_t<Alloc>, DefaultDeleter<U>>;
 		block_ptr = std::construct_at(reinterpret_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator));
 	}
 
@@ -456,19 +454,19 @@ export template<typename U, Allocator Alloc, Deleter Del, typename... Args>
 inline Ref<U> AllocateMakeRef(Alloc&& allocator, Del& deleter, Args&&... args) noexcept
 {
 	using block_t = MemoryTraitType<typename RefInplaceBlockTraits<U>::type>;
-	using Ctrl_Type = _Ctrl<U, std::decay_t<Alloc>, std::decay_t<Del>>;
-	using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, std::decay_t<Alloc>, std::decay_t<Del>>;
 
-	char* block = reinterpret_cast<char*>(allocator.allocate(1));
+	unsigned char* block = reinterpret_cast<unsigned char*>(allocator.allocate(1));
 	U* obj_ptr = reinterpret_cast<U*>(block + RefInplaceBlockTraits<U>::obj_offset);
 
 	_Ctrl_Base* block_ptr;
 	if constexpr (std::is_lvalue_reference_v<Alloc>)
 	{
+		using Ctrl_Type = _Ctrl<U, std::decay_t<Alloc>, std::decay_t<Del>>;
 		block_ptr = std::construct_at(reinterpret_cast<Ctrl_Type*>(block), obj_ptr, &allocator, &deleter);
 	}
 	else
 	{
+		using Ctrl_A_Type = _Ctrl_Owning_Allocator<U, std::decay_t<Alloc>, std::decay_t<Del>>;
 		block_ptr = std::construct_at(reinterpret_cast<Ctrl_A_Type*>(block), obj_ptr, std::forward<Alloc>(allocator), &deleter);
 	}
 

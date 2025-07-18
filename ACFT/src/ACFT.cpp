@@ -135,6 +135,9 @@ namespace ACFT
 	{
 		ThreadFeatures::SetRenderThread();
 		
+		if constexpr (!Config::CompileTime::IsEventThreadUsed())
+			Engine::InitWindow();
+			
 		Engine::InitRendererContext();
 		Engine::InitApp();
 
@@ -145,6 +148,9 @@ namespace ACFT
 
 			if (Config::IsFPSProfilerUsed())
 				FPSProfiler::RecordFrame();
+
+			if constexpr (!Config::CompileTime::IsEventThreadUsed())
+				s_Window->PollEvents();
 		}
 
 		Engine::CleanRendererContext();
@@ -171,12 +177,7 @@ namespace ACFT
 		}
 
 		if constexpr (IsRenderThreadUsed())
-		{
-			if constexpr (!IsEventThreadUsed())
-			{
-				Engine::InitWindowAndDetachContext();
-			}
-			
+		{		
 			ThreadManager::CreateThread(Threads::RENDER, true, Engine::RenderThreadFunc);
 			ThreadManager::DetachThread(Threads::RENDER);
 		}
@@ -215,8 +216,6 @@ namespace ACFT
 				{
 					app->OnRender();
 				}
-
-				window->PollEvents();
 			}
 
 			running = false;

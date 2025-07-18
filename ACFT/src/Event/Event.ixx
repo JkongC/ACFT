@@ -12,6 +12,7 @@ import <string>;
 import <array>;
 import <mutex>;
 
+import Config.Thread;
 import LockfreeQueue;
 import Types;
 import Log;
@@ -254,10 +255,12 @@ namespace ACFT
 	private:
 		friend class Event;
 
+		static constexpr ObjectPoolMode s_PoolMode = Config::CompileTime::GetFunctionalThreadCount() == 0 ? ObjectPoolMode::single_threaded : ObjectPoolMode::multi_threaded;
+
 		LockfreeQueue<Event, QueueNodeType::ref> m_EventQueue;
 		std::unordered_map<int, SubscriberMap> m_Subscribers;
 		static inline entt::registry m_AllEvents;
-		static inline RefObjectPool<Event> m_EventPool{1000};
+		static inline RefObjectPool<Event, s_PoolMode> m_EventPool{1000};
 		std::mutex m_Mtx;
 	};
 

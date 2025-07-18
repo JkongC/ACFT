@@ -2,8 +2,10 @@ export module ACFT.ObjectPool;
 
 import <vector>;
 import <atomic>;
+import <shared_mutex>;
 
 import Memory;
+import Log;
 
 namespace ACFT
 {	
@@ -32,7 +34,7 @@ namespace ACFT
 	{
 	public:
 		using value_type = std::decay_t<std::remove_reference_t<T>>;
-		using flags_type = std::conditional_t<mode == ObjectPoolMode::single_threaded, std::vector<bool>, std::vector<std::atomic<bool>>>;
+		using flags_type = std::conditional_t<mode == ObjectPoolMode::single_threaded, std::vector<bool>, std::vector<unsigned char>>;
 
 		static constexpr size_t DefaultCapacity = 1000;
 
@@ -59,18 +61,30 @@ namespace ACFT
 			{
 				return nullptr;
 			}
-			
-			for (size_t i = 0; i < m_OccupyFlag.size(); i++)
+
+			if constexpr (mode == ObjectPoolMode::multi_threaded)
 			{
-				if constexpr (mode == ObjectPoolMode::multi_threaded)
+				std::lock_guard<std::shared_mutex> lock(m_Mtx);
+
+				for (size_t i = 0; i < m_OccupyFlag.size(); i++)
 				{
-					bool expected = false;
-					if (m_OccupyFlag.at(i).compare_exchange_strong(expected, true))
+					std::atomic_ref<unsigned char> flag(m_OccupyFlag.at(i));
+					unsigned char expected = 0;
+					if (flag.compare_exchange_strong(expected, 1))
 					{
+						ACFT_LOG_TRACE("Allocating: {}", i);
 						return GetMemoryPoint(i);
 					}
 				}
-				else
+
+				size_t old_capacity = m_PoolCapacity;
+				m_PoolCapacity = Ext::Extend(m_PoolCapacity);
+				m_OccupyFlag.resize(m_PoolCapacity, false);
+				auto& chunk = m_MemoryPool.emplace_back(m_PoolCapacity - old_capacity);
+			}
+			else
+			{
+				for (size_t i = 0; i < m_OccupyFlag.size(); i++)
 				{
 					if (!m_OccupyFlag.at(i))
 					{
@@ -78,14 +92,14 @@ namespace ACFT
 						return GetMemoryPoint(i);
 					}
 				}
+
+				size_t old_capacity = m_PoolCapacity;
+				m_PoolCapacity = Ext::Extend(m_PoolCapacity);
+				m_OccupyFlag.resize(m_PoolCapacity, false);
+				auto& chunk = m_MemoryPool.emplace_back(m_PoolCapacity - old_capacity);
 			}
-
-			size_t old_capacity = m_PoolCapacity;
-			m_PoolCapacity = Ext::Extend(m_PoolCapacity);
-			m_OccupyFlag.resize(m_PoolCapacity, false);
-			auto& chunk = m_MemoryPool.emplace_back(m_PoolCapacity - old_capacity);
-
-			return GetMemoryPoint(old_capacity);
+			
+			return allocate(n);
 		}
 
 		void deallocate(value_type* ptr, size_t n)
@@ -105,7 +119,10 @@ namespace ACFT
 			{
 				if constexpr (mode == ObjectPoolMode::multi_threaded)
 				{
-					m_OccupyFlag.at(idx).store(false, std::memory_order_release);
+					std::lock_guard<std::shared_mutex> lock(m_Mtx);
+					std::atomic_ref<unsigned char> flag(m_OccupyFlag.at(idx));
+				 	flag.store(0, std::memory_order_release);
+					ACFT_LOG_TRACE("Deallocating: {}", idx);
 				}
 				else
 				{
@@ -125,15 +142,27 @@ namespace ACFT
 		{
 			value_type* start;
 			size_t capacity;
-			Chunk* next = nullptr;
 
 			Chunk(size_t capacity)
 				: start(static_cast<T*>(::operator new(capacity * sizeof(value_type), std::align_val_t{ alignof(T) }))), capacity(capacity)
 			{ }
 
+			Chunk(const Chunk&) = delete;
+			
+			Chunk(Chunk&& chunk) noexcept
+				: start(chunk.start), capacity(chunk.capacity)
+			{
+				chunk.start = nullptr;
+				chunk.capacity = 0;
+			}
+
 			~Chunk()
 			{
-				::operator delete(static_cast<void*>(start), std::align_val_t{ alignof(T) });
+				if (start != nullptr)
+					::operator delete(static_cast<void*>(start), std::align_val_t{alignof(T)});
+
+				start = nullptr;
+				capacity = 0;
 			}
 		};
 
@@ -159,7 +188,7 @@ namespace ACFT
 			{
 				if (ptr - chunk.start >= 0 && chunk.start + chunk.capacity - ptr >= 0)
 				{
-					return { true, (ptr - chunk.start) / sizeof(T) };
+					return { true, (ptr - chunk.start) };
 				}
 				
 				prev_idx += chunk.capacity;
@@ -172,8 +201,9 @@ namespace ACFT
 		std::vector<Chunk> m_MemoryPool;
 		size_t m_PoolCapacity;
 		flags_type m_OccupyFlag;
+		std::shared_mutex m_Mtx;
 	};
 
-	export template<typename T>
-	using RefObjectPool = ObjectPool<MemoryTraitType<typename RefInplaceBlockTraits<T>::type>>;
+	export template<typename T, ObjectPoolMode mode = ObjectPoolMode::single_threaded, PoolExtendStrategy Ext = _Default_Extend_Strategy>
+	using RefObjectPool = ObjectPool<MemoryTraitType<typename RefInplaceBlockTraits<T>::type>, mode, Ext>;
 }

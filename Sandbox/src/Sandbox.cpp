@@ -110,8 +110,10 @@ public:
 	virtual void OnRender() override
 	{
 		r_Renderer->SetWindowDrawArea(WindowDrawArea::user);
-		
-		r_Renderer->BeginScene({ m_Camera });
+
+		SceneContext sctx;
+		sctx.camera = m_Camera;
+		r_Renderer->BeginScene(sctx);
 
 		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f, {});
 

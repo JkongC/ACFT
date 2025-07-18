@@ -14,6 +14,7 @@ import Log;
 import Window;
 import Camera;
 import Event;
+import Timer;
 import LockfreeQueue;
 import :GLVertexArray;
 import :GLIndexBuilder;
@@ -169,6 +170,7 @@ namespace ACFT
 			vbo.Clear();
 		}
 
+		ACFT_LOG_TRACE("Queue size: {}", m_EventQueue.GetSize());
 		if (auto event_opt = m_EventQueue.Pop())
 		{
 			Ref<Event> event = event_opt.value();

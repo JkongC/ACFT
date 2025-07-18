@@ -90,7 +90,7 @@ namespace ACFT
 		SceneContext m_SceneContext;
 		RenderContext m_RenderContextCache;
 
-		LockfreeQueue<Event, QueueNodeType::ref, 500> m_EventQueue;
+		LockfreeQueue<Event, QueueNodeType::ref, QueueRejectStrategy::dispose_head, 100> m_EventQueue;
 
 	private:
 		static inline Ref<Renderer> s_Instance = nullptr;
