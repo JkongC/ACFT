@@ -39,16 +39,16 @@ namespace ACFT
 		static constexpr size_t DefaultCapacity = 1000;
 
 		ObjectPool()
-			: m_MemoryPool(), m_PoolCapacity(DefaultCapacity), m_OccupyFlag(DefaultCapacity, false)
-		{
-			m_MemoryPool.emplace_back(DefaultCapacity);
-		}
+			: m_MemoryPool(DefaultCapacity)
+			, m_PoolCapacity(DefaultCapacity)
+			, m_OccupyFlag(DefaultCapacity, false)
+		{ }
 
 		ObjectPool(size_t capacity)
-			: m_MemoryPool(), m_PoolCapacity(capacity), m_OccupyFlag(capacity, false)
-		{
-			m_MemoryPool.emplace_back(capacity);
-		}
+			: m_MemoryPool(capacity)
+			, m_PoolCapacity(capacity)
+			, m_OccupyFlag(capacity, false)
+		{ }
 
 		value_type* allocate(size_t n)
 		{
@@ -64,23 +64,18 @@ namespace ACFT
 
 			if constexpr (mode == ObjectPoolMode::multi_threaded)
 			{
-				std::lock_guard<std::shared_mutex> lock(m_Mtx);
-
 				for (size_t i = 0; i < m_OccupyFlag.size(); i++)
 				{
 					std::atomic_ref<unsigned char> flag(m_OccupyFlag.at(i));
 					unsigned char expected = 0;
-					if (flag.compare_exchange_strong(expected, 1))
+					if (flag.compare_exchange_strong(expected,
+						1, 
+						std::memory_order_acq_rel, 
+						std::memory_order_acquire))
 					{
-						ACFT_LOG_TRACE("Allocating: {}", i);
 						return GetMemoryPoint(i);
 					}
 				}
-
-				size_t old_capacity = m_PoolCapacity;
-				m_PoolCapacity = Ext::Extend(m_PoolCapacity);
-				m_OccupyFlag.resize(m_PoolCapacity, false);
-				auto& chunk = m_MemoryPool.emplace_back(m_PoolCapacity - old_capacity);
 			}
 			else
 			{
@@ -92,14 +87,9 @@ namespace ACFT
 						return GetMemoryPoint(i);
 					}
 				}
-
-				size_t old_capacity = m_PoolCapacity;
-				m_PoolCapacity = Ext::Extend(m_PoolCapacity);
-				m_OccupyFlag.resize(m_PoolCapacity, false);
-				auto& chunk = m_MemoryPool.emplace_back(m_PoolCapacity - old_capacity);
 			}
 			
-			return allocate(n);
+			return static_cast<T*>(::operator new(sizeof(T)));
 		}
 
 		void deallocate(value_type* ptr, size_t n)
@@ -119,15 +109,17 @@ namespace ACFT
 			{
 				if constexpr (mode == ObjectPoolMode::multi_threaded)
 				{
-					std::lock_guard<std::shared_mutex> lock(m_Mtx);
 					std::atomic_ref<unsigned char> flag(m_OccupyFlag.at(idx));
 				 	flag.store(0, std::memory_order_release);
-					ACFT_LOG_TRACE("Deallocating: {}", idx);
 				}
 				else
 				{
 					m_OccupyFlag.at(idx) = false;
 				}
+			}
+			else
+			{
+				::operator delete(ptr);
 			}
 		}
 
@@ -144,7 +136,10 @@ namespace ACFT
 			size_t capacity;
 
 			Chunk(size_t capacity)
-				: start(static_cast<T*>(::operator new(capacity * sizeof(value_type), std::align_val_t{ alignof(T) }))), capacity(capacity)
+				: start(
+					static_cast<T*>(::operator new(capacity * sizeof(value_type), std::align_val_t{ alignof(T) }))
+				)
+				, capacity(capacity)
 			{ }
 
 			Chunk(const Chunk&) = delete;
@@ -168,14 +163,9 @@ namespace ACFT
 
 		value_type* GetMemoryPoint(size_t idx)
 		{
-			for (Chunk& chunk : m_MemoryPool)
+			if (m_MemoryPool.capacity >= idx + 1)
 			{
-				if (chunk.capacity >= idx + 1)
-				{
-					return chunk.start + idx;
-				}
-
-				idx -= chunk.capacity;
+				return m_MemoryPool.start + idx;
 			}
 
 			return nullptr;
@@ -183,25 +173,18 @@ namespace ACFT
 
 		std::pair<bool, size_t> IsInPool(T* ptr)
 		{
-			size_t prev_idx = 0;
-			for (Chunk& chunk : m_MemoryPool)
+			if (ptr - m_MemoryPool.start >= 0 && m_MemoryPool.start + m_MemoryPool.capacity - ptr >= 0)
 			{
-				if (ptr - chunk.start >= 0 && chunk.start + chunk.capacity - ptr >= 0)
-				{
-					return { true, (ptr - chunk.start) };
-				}
-				
-				prev_idx += chunk.capacity;
+				return { true, (ptr - m_MemoryPool.start) };
 			}
 
 			return { false, 0 };
 		}
 
 	private:
-		std::vector<Chunk> m_MemoryPool;
+		Chunk m_MemoryPool;
 		size_t m_PoolCapacity;
 		flags_type m_OccupyFlag;
-		std::shared_mutex m_Mtx;
 	};
 
 	export template<typename T, ObjectPoolMode mode = ObjectPoolMode::single_threaded, PoolExtendStrategy Ext = _Default_Extend_Strategy>
