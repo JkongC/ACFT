@@ -5,9 +5,9 @@ module;
 
 module UUID;
 
-std::random_device random_device;
-std::mt19937_64 rd_engine(random_device());
-std::uniform_int_distribution<uint64_t> dist(0, UINT64_MAX);
+static std::random_device random_device;
+static std::mt19937_64 rd_engine(random_device());
+static std::uniform_int_distribution<uint64_t> dist(0, UINT64_MAX);
 
 namespace ACFT
 {
@@ -25,6 +25,12 @@ namespace ACFT
 		: pack(other.pack)
 	{ }
 
+	UUID::UUID(UUID&& other) noexcept
+		: pack(other.pack)
+	{
+		other.pack.high = 0;
+	}
+
 	bool UUID::operator==(const UUID& other) const
 	{
 		return (pack.low == other.pack.low) && (pack.high == other.pack.high);
@@ -33,5 +39,23 @@ namespace ACFT
 	bool UUID::operator!=(const UUID& other) const
 	{
 		return (pack.low != other.pack.low) || (pack.high != other.pack.high);
+	}
+
+	UUID& UUID::operator=(const UUID& other) noexcept
+	{
+		pack = other.pack;
+		return *this;
+	}
+
+	UUID& UUID::operator=(UUID&& other) noexcept
+	{
+		pack = other.pack;
+		other.pack.high = 0;
+		return *this;
+	}
+
+	UUID::operator bool() const noexcept
+	{
+		return pack.high != 0;
 	}
 }

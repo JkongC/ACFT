@@ -34,7 +34,7 @@ namespace ACFT
 		InitContext();
 	}
 	
-	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator, RenderContext context)
+	void OpenGLRenderer::DrawTesselator(const Tesselator& tesselator)
 	{
 		bool immediate_draw = false;
 		
@@ -56,22 +56,9 @@ namespace ACFT
 
 		vao.Bind();
 		vbo.Bind();
-		
-		if (context.shader == nullptr && !m_UsingBasicShader)
-		{
-			m_RenderContextCache.shader = ShaderLib::GetBasicShader();
-			m_UsingBasicShader = true;
-			immediate_draw = true;
-		}
-		else if (context.shader != nullptr && context.shader != m_RenderContextCache.shader)
-		{
-			m_RenderContextCache.shader = context.shader;
-			m_UsingBasicShader = false;
-			immediate_draw = true;
-		}
 
 		GLuint shader_id;
-		RenderObjectIdentifier _id = m_RenderContextCache.shader->GetIdentifier();
+		RenderObjectIdentifier _id = m_RenderContext.shader->GetIdentifier();
 		shader_id = VariantHelper::ValueOr<unsigned int>(_id, 0);
 
 		if (auto it = m_ShaderCache.find(shader_id); 
@@ -81,7 +68,7 @@ namespace ACFT
 			shader.Bind();
 
 			auto [vp_width, vp_height] = m_Window->GetUserAreaSize();
-			shader.SetUniformMat4f("mvp", m_SceneContext.camera->GetVPMatrix(vp_width, vp_height));
+			shader.SetUniformMat4f("mvp", m_RenderContext.camera->GetVPMatrix(vp_width, vp_height));
 		}
 
 		auto& vertices = tesselator.GetVertices();
@@ -98,10 +85,10 @@ namespace ACFT
 		}
 	}
 
-	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context)
+	void OpenGLRenderer::DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height)
 	{
 		auto& texture = sprite.GetCurrentImage();
-		if (auto* idptr = std::get_if<unsigned int>(&texture.m_Identifier))
+		if (auto* idptr = std::get_if<unsigned int>(&texture.identifier))
 		{
 			unsigned int atlas_texture_id = *idptr;
 
@@ -123,13 +110,94 @@ namespace ACFT
 				.Pos(xpos + width, ypos, 0.0f)
 				.UVCoords(uv.max_u, uv.max_v);
 
-			DrawTesselator(tesselator, context);
+			DrawTesselator(tesselator);
 		}
 		else
 		{
 			ACFT_LOG_WARN("[Renderer] Trying to draw a sprite without a texture!");
 		}
 			
+	}
+
+	void OpenGLRenderer::DrawPipeline(Ref<RenderPipeline> pipeline)
+	{
+		using namespace VariantHelper;
+		
+		if (!pipeline)
+			return;
+		
+		for (auto& pip : *pipeline)
+		{
+			if (!pip.passes)
+				continue;
+
+			if (pip.shader)
+			{
+				m_RenderContext.shader = pip.shader;
+			}
+
+			for (auto& pass : *pip.passes)
+			{
+				if (pass.viewport)
+				{
+					auto& [x, y, w, h] = *pass.viewport;
+					glViewport(x, y, w, h);
+				}
+				
+				if (pass.texture)
+				{
+					auto& t = *pass.texture;
+					GLTexture::Bind(ValueOr<unsigned int>(pass.texture->identifier, 0));
+				}
+
+				switch (pass.pre_op)
+				{
+				case RenderOp::clear_all:
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					break;
+				case RenderOp::clear_color:
+					glClear(GL_COLOR_BUFFER_BIT);
+					break;
+				case RenderOp::clear_depth:
+					glClear(GL_DEPTH_BUFFER_BIT);
+					break;
+				}
+
+				if (pass.camera)
+				{
+					m_RenderContext.camera = pass.camera;
+				}
+
+				if (IsType<Ref<Tesselator>>(pass.object))
+				{
+					if (auto tes = ValueOr<Ref<Tesselator>>(pass.object, {}))
+					{
+						DrawTesselator(*tes);
+					}
+				}
+				else if (IsType<RenderPass::SpriteDrawInfo>(pass.object))
+				{
+					auto& [sprite, x, y, w, h] = Value<RenderPass::SpriteDrawInfo>(pass.object);
+					if (sprite)
+					{
+						DrawSprite(*sprite, x, y, w, h);
+					}
+				}
+
+				switch (pass.post_op)
+				{
+				case RenderOp::clear_all:
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					break;
+				case RenderOp::clear_color:
+					glClear(GL_COLOR_BUFFER_BIT);
+					break;
+				case RenderOp::clear_depth:
+					glClear(GL_DEPTH_BUFFER_BIT);
+					break;
+				}
+			}
+		}
 	}
 
 	RenderAPI OpenGLRenderer::GetRenderAPI()
@@ -150,9 +218,8 @@ namespace ACFT
 		InitBuffers<Primitive::cube>(basic_layout);
 	}
 
-	void OpenGLRenderer::BeginScene(SceneContext context)
+	void OpenGLRenderer::BeginScene()
 	{
-		m_SceneContext = context;
 		Clear();
 	}
 
@@ -170,7 +237,6 @@ namespace ACFT
 			vbo.Clear();
 		}
 
-		ACFT_LOG_TRACE("Queue size: {}", m_EventQueue.GetSize());
 		if (auto event_opt = m_EventQueue.Pop())
 		{
 			Ref<Event> event = event_opt.value();

@@ -75,4 +75,14 @@ namespace ACFT
 	{
 		return Renderer::Get()->m_Window;
 	}
+
+	void Renderer::SetCamera(Ref<Camera> cam)
+	{
+		m_RenderContext.camera = cam;
+	}
+
+	void Renderer::SetShader(Ref<Shader> sha)
+	{
+		m_RenderContext.shader = sha;
+	}
 }

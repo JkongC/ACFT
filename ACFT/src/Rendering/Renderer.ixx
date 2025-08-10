@@ -17,23 +17,13 @@ export import Shader;
 import Event;
 import LockfreeQueue;
 import Atlas;
+import ACFT.RenderPipeline;
 
 namespace ACFT
 {
 	export enum class RenderAPI
 	{
 		OpenGL
-	};
-
-	export struct SceneContext
-	{
-		Ref<Camera> camera = nullptr;
-	};
-
-	export struct RenderContext
-	{
-		ModelMatrix model_mat = ModelMatrix(1.0f);
-		Ref<Shader> shader = nullptr;
 	};
 
 	export class Renderer
@@ -44,10 +34,14 @@ namespace ACFT
 		ACFT_API static Ref<Window>& GetWindow();
 		ACFT_API static void CleanRenderer();
 
-		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator, RenderContext context = {}) = 0;
-		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context = {}) = 0;
+		ACFT_API void SetCamera(Ref<Camera> cam);
+		ACFT_API void SetShader(Ref<Shader> sha);
 
-		ACFT_API virtual void BeginScene(SceneContext context) = 0;
+		ACFT_API virtual void DrawTesselator(const Tesselator& tesselator) = 0;
+		ACFT_API virtual void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height) = 0;
+		ACFT_API virtual void DrawPipeline(Ref<RenderPipeline> pipeline) = 0;
+
+		ACFT_API virtual void BeginScene() = 0;
 		ACFT_API virtual void EndScene() = 0;
 
 		ACFT_API virtual void SetClearColor(float r, float g, float b, float a) = 0;
@@ -87,10 +81,13 @@ namespace ACFT
 
 	protected:
 		Ref<Window> m_Window;
-		SceneContext m_SceneContext;
-		RenderContext m_RenderContextCache;
+		struct
+		{
+			Ref<Camera> camera;
+			Ref<Shader> shader;
+		} m_RenderContext;
 
-		LockfreeQueue<Event, QueueNodeType::ref, QueueRejectStrategy::dispose_head, 100> m_EventQueue;
+		LockfreeQueue<Event, QueueNodeType::ref, QueueRejectStrategy::dispose_head, 30> m_EventQueue;
 
 	private:
 		static inline Ref<Renderer> s_Instance = nullptr;

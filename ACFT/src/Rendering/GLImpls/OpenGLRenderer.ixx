@@ -15,7 +15,6 @@ import Types;
 import Renderer;
 import Tesselator;
 import Atlas;
-import UUID;
 import Window;
 import Shader;
 import Log;
@@ -35,10 +34,11 @@ namespace ACFT
 	export class OpenGLRenderer : public Renderer
 	{
 	public:
-		void DrawTesselator(const Tesselator& tesselator, RenderContext context) override;
-		void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height, RenderContext context) override;
+		void DrawTesselator(const Tesselator& tesselator) override;
+		void DrawSprite(const Sprite& sprite, float xpos, float ypos, float width, float height) override;
+		void DrawPipeline(Ref<RenderPipeline> pipeline) override;
 
-		void BeginScene(SceneContext context) override;
+		void BeginScene() override;
 		void EndScene() override;
 
 		void SetClearColor(float r, float g, float b, float a) override;

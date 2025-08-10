@@ -60,33 +60,29 @@ namespace ACFT
 		export struct ordered
 		{ };
 		
-		export template<typename Storage>
-			requires requires{ typename Storage::value_type; }
-		struct UnorderedRemove
-		{
-			static bool operator()(Storage& storage, typename Storage::iterator it)
-			{
-				return false;
-			}
-			
-			static_assert(false, "This kind of storage is not supported.");
-		};
-
 		export template<typename T>
-		struct UnorderedRemove<std::vector<T>>
-		{
-			static bool operator()(std::vector<T>& storage, std::vector<T>::iterator it)
-			{
-				if (it == storage.end())
-					return false;
-				
-				T& del_item = *it;
-				std::swap(del_item, storage.back());
-				storage.pop_back();
+		concept IsVector = TemplateHelper::SpecializationOf<T, std::vector>;
 
-				return true;
-			}
-		};
+		/**
+		 * Remove an element, regardless of the total order of all elements.
+		 * 
+		 * \tparam Storage The container type, supports only std::vector for now.
+		 * \param storage The container.
+		 * \param it The iterator pointing to the element to be removed.
+		 * \return Whether this function succeeds.
+		 */
+		export template<typename Storage>
+			requires IsVector<Storage>
+		bool UnorderedRemove(Storage& storage, typename Storage::iterator it)
+		{
+			if (it == storage.end())
+				return false;
+
+			std::swap(*it, storage.back());
+			storage.pop_back();
+
+			return true;
+		}
 
 		export template<typename Storage, typename Order_Type = unordered>
 			requires requires{ typename Storage::iterator; } &&
@@ -95,7 +91,7 @@ namespace ACFT
 		{
 			if constexpr (std::is_same_v<Order_Type, ordered>)
 			{
-				static_assert(false, "Ordered remove is not implemented.");
+				static_assert(false && sizeof(Order_Type), "Ordered remove is not implemented.");
 				return false;
 			}
 			else
@@ -139,9 +135,9 @@ namespace ACFT
 		}
 
 		export template<typename T, SpecializationOf<std::variant> Var>
-		T Value(Var&& variant)
+		T& Value(Var&& variant) noexcept
 		{
-			return ValueOr<T>(std::forward<Var>(variant), T{});
+			return std::get<T>(variant);
 		}
 	}
 }

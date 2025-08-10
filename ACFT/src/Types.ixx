@@ -79,7 +79,7 @@ Scope<T1> ScopeCast(Scope<T2>&& scope)
 }
 
 export template<PtrWrapper Wrapper>
-PtrWrapperTraits<Wrapper>::ele_type* GetRawPtr(const Wrapper& wrapper)
+typename PtrWrapperTraits<Wrapper>::ele_type* GetRawPtr(const Wrapper& wrapper)
 {
 	if constexpr (Is_View<Wrapper>)
 	{

@@ -142,6 +142,7 @@ public:
 
 	Scope() noexcept : m_Obj(nullptr) {}
 	explicit Scope(T* ptr) noexcept : m_Obj(ptr) {}
+	Scope(std::nullptr_t) noexcept : m_Obj(nullptr) {}
 	Scope(const Scope<T>&) = delete;
 	Scope(Scope<T>&& other) noexcept
 		: m_Obj(other.m_Obj)
@@ -622,6 +623,15 @@ public:
 		m_Ctrl = other.m_Ctrl;
 		other.m_Obj = nullptr;
 		other.m_Ctrl = nullptr;
+
+		return *this;
+	}
+
+	Ref<T>& operator=(std::nullptr_t) noexcept
+	{
+		m_Obj = nullptr;
+		m_Ctrl->Decref();
+		m_Ctrl = nullptr;
 
 		return *this;
 	}

@@ -15,9 +15,15 @@ namespace ACFT
 	public:
 		UUID();
 		UUID(const UUID&);
+		UUID(UUID&&) noexcept;
 
 		bool operator==(const UUID& other) const;
 		bool operator!=(const UUID& other) const;
+
+		UUID& operator=(const UUID& other) noexcept;
+		UUID& operator=(UUID&& other) noexcept;
+
+		operator bool() const noexcept;
 
 	private:
 		friend struct std::hash<UUID>;

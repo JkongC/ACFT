@@ -29,6 +29,6 @@ namespace ACFT
 	export struct Texture
 	{
 		TextureInfo info;
-		RenderObjectIdentifier m_Identifier;
+		RenderObjectIdentifier identifier;
 	};
 }

@@ -77,7 +77,7 @@ namespace GLImplementations
 
 		template<typename T>
 		void Push(unsigned int count) {
-			static_assert(false);
+			static_assert(false && sizeof(T), "Cannot push this type of data.");
 		}
 
 		template<>
