@@ -103,6 +103,15 @@ namespace ACFT
 			return &p_Vector->at(m_Idx);
 		}
 
+		/**
+		 * Checks if the reference is safe to access, regardless the consistency of
+		 * the object itself.
+		 */
+		operator bool() const noexcept
+		{
+			return p_Vector != nullptr && m_Idx < p_Vector->size();
+		}
+
 		void SetVectorPointer(std::vector<T>* p)
 		{
 			p_Vector = p;

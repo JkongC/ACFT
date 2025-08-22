@@ -225,4 +225,77 @@ namespace ACFT::UI
 		int m_Depth;
 		bool m_ShouldRender;
 	};
+
+	export template<typename T>
+	struct DataBond
+	{
+		T* data;
+
+		void BindTo(T* p_data) noexcept
+		{
+			data = p_data;
+		}
+
+		void UnBind() noexcept
+		{
+			data = nullptr;
+		}
+		
+		void SetData(const T& new_data) noexcept
+		{
+			*data = new_data;
+		}
+
+		void GetData() const noexcept
+		{
+			return *data;
+		}
+
+		void Increment() noexcept
+		{
+			if constexpr (requires(T obj) { ++obj; })
+			{
+				++(*obj);
+			}
+		}
+
+		void Decrement() noexcept
+		{
+			if constexpr (requires(T obj) { --obj; })
+			{
+				--(*obj);
+			}
+		}
+
+		T FetchAddAtomic(const T& arg, std::memory_order mem_order = std::memory_order_seq_cst) noexcept
+		{
+			if constexpr (requires(std::atomic_ref<T> obj) { obj++; })
+			{
+				std::atomic_ref<T> atomic_data{ *data };
+				return atomic_data.fetch_add(arg, mem_order);
+			}
+			else
+			{
+				return T{};
+			}
+		}
+
+		T FetchSubAtomic(const T& arg, std::memory_order mem_order = std::memory_order_seq_cst) noexcept
+		{
+			if constexpr (requires(std::atomic_ref<T> obj) { obj--; })
+			{
+				std::atomic_ref<T> atomic_data{ *data };
+				return atomic_data.fetch_sub(arg, mem_order);
+			}
+			else
+			{
+				return T{};
+			}
+		}
+
+		operator bool() const noexcept
+		{
+			return data != nullptr;
+		}
+	};
 }

@@ -11,6 +11,7 @@ import Texture;
 import Sprite;
 import UUID;
 import ACFT.VectorRef;
+import ACFT.FrameBuffer;
 
 namespace ACFT
 {
@@ -33,15 +34,16 @@ namespace ACFT
 		struct SpriteDrawInfo
 		{
 			Ref<Sprite> sprite;
-			int x;
-			int y;
-			int width;
-			int height;
+			float x;
+			float y;
+			float width;
+			float height;
 		};
 		
 		std::variant<Ref<Tesselator>, SpriteDrawInfo> object;
 		Ref<Camera> camera = nullptr;
 		Ref<Texture> texture = nullptr;
+		Ref<FrameBuffer> frame_buffer = nullptr;
 		UUID id{};
 		Viewport viewport;
 		RenderOp pre_op;
@@ -57,7 +59,7 @@ namespace ACFT
 			object = tesselator;
 		}
 
-		void SetRenderObject(Ref<Sprite> sprite, int x, int y, int width, int height)
+		void SetRenderObject(Ref<Sprite> sprite, float x, float y, float width, float height)
 		{
 			if (!sprite)
 				return;
@@ -90,31 +92,26 @@ namespace ACFT
 				&passes,
 				passes.size() - 1,
 				pass.id,
-				[](const RenderPass& p, const UUID& id) -> bool
-				{
-					return p.id == id;
-				}
+				s_PassVerifyFunc
 			);
 		}
 
 		VectorRef<RenderPass, UUID> InsertPass(const RenderPass& prev, RenderPass pass)
 		{
-			for (auto it = passes.begin(); it != passes.end(); ++it)
+			auto it = passes.begin();
+			for (; it != passes.end(); ++it)
 			{
 				if (prev == *it)
-				{
-					auto inserted_it = passes.insert(++it, pass);
-					return VectorRef<RenderPass, UUID>(
-						&passes,
-						inserted_it - passes.begin(),
-						pass.id,
-						[](const RenderPass& p, const UUID& id) -> bool
-						{
-							return p.id == id;
-						}
-					);
-				}
+					break;
 			}
+
+			auto inserted_it = passes.insert(++it, pass);
+			return VectorRef<RenderPass, UUID>(
+				&passes,
+				inserted_it - passes.begin(),
+				pass.id,
+				s_PassVerifyFunc
+			);
 		}
 
 		void RemovePass(const RenderPass& pass)
@@ -169,5 +166,11 @@ namespace ACFT
 		{
 			return Iterator{ nullptr };
 		}
+
+	private:
+		static inline const auto s_PassVerifyFunc = [](const RenderPass& p, const UUID& id) -> bool
+			{
+				return p.id == id;
+			};
 	};
 }

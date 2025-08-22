@@ -111,11 +111,9 @@ public:
 	{
 		r_Renderer->SetWindowDrawArea(WindowDrawArea::user);
 
-		SceneContext sctx;
-		sctx.camera = m_Camera;
-		r_Renderer->BeginScene(sctx);
+		r_Renderer->BeginScene();
 
-		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f, {});
+		r_Renderer->DrawSprite(m_Sprite, m_SpritePos.x, m_SpritePos.y, 150.0f, 150.0f);
 
 		r_Renderer->EndScene();
 	}

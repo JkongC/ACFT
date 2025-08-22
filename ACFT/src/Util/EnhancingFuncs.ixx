@@ -11,35 +11,44 @@ namespace ACFT
 		export struct ArgFlag {};
 
 		export constexpr ArgFlag arg_flag_v{};
+
+		template<typename T, template<typename...> typename Primary>
+		struct _IsPrimary
+		{
+			static constexpr bool value = false;
+		};
+
+		template<template<typename...> typename T, template<typename...> typename Primary, typename... Args>
+		struct _IsPrimary<T<Args...>, Primary>
+		{
+			static constexpr bool value = std::same_as<T<Args...>, Primary<Args...>>;
+		};
+
+		template<typename T, template<typename...> typename Primary>
+		constexpr bool _IsPrimary_v = _IsPrimary<T, Primary>::value;
+
+		template<typename T1, typename T2>
+		struct _SamePrimary
+		{
+			static constexpr bool value = false;
+		};
+
+		template<template<typename...> typename T1, typename... Args1, template<typename...> typename T2, typename... Args2>
+		struct _SamePrimary<T1<Args1...>, T2<Args2...>>
+		{
+			static constexpr bool value = std::same_as<T1<Args1...>, T2<Args1...>>;
+		};
+
+		template<typename T1, typename T2>
+		constexpr bool _SamePrimary_v = _SamePrimary<T1, T2>::value;
 		
-		template<typename T>
-		struct primary
-		{
-			using type = void;
-		};
-
-		template<typename R>
-		struct primary<R&> : primary<R> {};
-
-		template<typename R>
-		struct primary<R&&> : primary<R> {};
-
-		template<template<typename> typename T, typename... Args>
-		struct primary<T<Args...>>
-		{
-			using type = std::decay_t<T<void>>;
-		};
-
-		template<typename T>
-		using primary_t = primary<T>::type;
-
-		export template<typename T, template<typename> typename Primary>
-		concept SpecializationOf = std::is_same_v<primary_t<T>, Primary<void>>;
+		export template<typename T, template<typename...> typename Primary>
+		concept SpecializationOf = _IsPrimary_v<std::remove_all_extents_t<T>, Primary>;
 
 		export template<typename T1, typename T2>
-		concept OfSamePrimary = std::is_same_v<primary_t<T1>, primary_t<T2>>;
+		concept OfSamePrimary = _SamePrimary_v<T1, T2>;
 
-		export template<typename T, template<typename> typename Primary>
+		export template<typename T, template<typename...> typename Primary>
 		constexpr bool IsSpecializationOf()
 		{
 			return SpecializationOf<T, Primary>;
@@ -108,7 +117,7 @@ namespace ACFT
 		export template<typename T, SpecializationOf<std::variant> Var>
 		bool IsType(Var&& variant)
 		{
-			return std::get_if<T>(variant) != nullptr;
+			return std::get_if<T>(&variant) != nullptr;
 		}
 		
 		export template<typename T, SpecializationOf<std::variant> Var>

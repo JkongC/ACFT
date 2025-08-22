@@ -128,19 +128,16 @@ namespace ACFT
 		
 		for (auto& pip : *pipeline)
 		{
-			if (!pip.passes)
-				continue;
-
 			if (pip.shader)
 			{
 				m_RenderContext.shader = pip.shader;
 			}
 
-			for (auto& pass : *pip.passes)
+			for (auto& pass : pip.passes)
 			{
-				if (pass.viewport)
+				if (pass.viewport.x != -1)
 				{
-					auto& [x, y, w, h] = *pass.viewport;
+					auto& [x, y, w, h] = pass.viewport;
 					glViewport(x, y, w, h);
 				}
 				
