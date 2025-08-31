@@ -255,7 +255,7 @@ namespace ACFT::UI
 		{
 			if constexpr (requires(T obj) { ++obj; })
 			{
-				++(*obj);
+				++(*data);
 			}
 		}
 
@@ -263,7 +263,7 @@ namespace ACFT::UI
 		{
 			if constexpr (requires(T obj) { --obj; })
 			{
-				--(*obj);
+				--(*data);
 			}
 		}
 

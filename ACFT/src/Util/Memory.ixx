@@ -5,21 +5,6 @@ export import <memory>;
 import ACFT.EnhancingFuncs;
 using namespace ACFT::TemplateHelper;
 
-export template<typename F, typename S = F>
-struct BiComplex
-{
-	F first;
-	S second;
-};
-
-export template<typename F, typename S = F, typename T = S>
-struct TriComplex
-{
-	F first;
-	S second;
-	T third;
-};
-
 template<size_t Size, size_t Align>
 struct alignas(Align) _MemoryTraitBlock
 {
@@ -394,7 +379,7 @@ class View;
 struct _CtrlMemoryTrait : public _Ctrl<int, DefaultAllocator<int>, DefaultDeleter<int>> {};
 
 template<typename T>
-using _RefInplaceBlockTypeTrait = BiComplex<_CtrlMemoryTrait, T>;
+using _RefInplaceBlockTypeTrait = Complex<_CtrlMemoryTrait, T>;
 
 // Only makes sense when using AllocateMakeRef, which receives customized allocator.
 export template<typename T>
@@ -402,7 +387,7 @@ struct RefInplaceBlockTraits
 {
 	using type = _RefInplaceBlockTypeTrait<T>;
 	static constexpr size_t size = sizeof(type);
-	static constexpr std::ptrdiff_t obj_offset = offsetof(type, type::second);
+	static constexpr std::ptrdiff_t obj_offset = IndexedOffsetOf<type, 2>();
 };
 
 template<typename T>

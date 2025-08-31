@@ -12,6 +12,8 @@ namespace ACFT
 
 		export constexpr ArgFlag arg_flag_v{};
 
+		//About template primary
+		//----------------------------------------------------------------------------------
 		template<typename T, template<typename...> typename Primary>
 		struct _IsPrimary
 		{
@@ -59,6 +61,62 @@ namespace ACFT
 		{
 			return OfSamePrimary<T1, T2>;
 		}
+
+		//About struct
+		//------------------------------------------------------------------------
+		export template<typename T1, typename... Ts>
+		struct Complex
+		{
+			T1 o;
+			Complex<Ts...> c;
+		};
+
+		export template<typename T>
+		struct Complex<T>
+		{
+			T o;
+		};
+
+		/**
+		 * Given a specific Complex type, calculate the offset of its element.
+		 * 
+		 * @tparam Comp A specific Complex type.
+		 * @tparam index The element index, starts from 1.
+		 */
+		export template<SpecializationOf<Complex> Comp, int index>
+		constexpr std::ptrdiff_t IndexedOffsetOf()
+		{
+			static_assert(index >= 1, "Index must at least be 1.");
+			
+			if constexpr (index == 1)
+				return 0;
+			else
+			{
+				static_assert(requires(Comp complex) { complex.c; }, "Index exceeded.");
+				return offsetof(Comp, Comp::c) + IndexedOffsetOf<decltype(Comp::c), index - 1>();
+			}
+		}
+
+		/**
+		 * Given a specific Complex instance, get its element.
+		 *
+		 * @param complex The Complex instance.
+		 * @tparam index The element index, starts from 1.
+		 */
+		export template<int index, SpecializationOf<Complex> Comp>
+		decltype(auto) IndexedGetMember(Comp& complex)
+		{
+			static_assert(index >= 1, "Index must at least be 1.");
+
+			if (index == 1)
+				return complex.o;
+			else
+			{
+				static_assert(requires(Comp comp) { comp.c; }, "Index exceeded.");
+				return IndexedGetMember(complex.c, index - 1);
+			}
+		}
+
 	}
 	
 	namespace StorageHelper
