@@ -11,14 +11,6 @@ import ACFT.ScreenQuadTree;
 
 namespace ACFT::UI
 {
-	export class Screen : public UIElement
-	{
-	public:
-
-	private:
-		
-	};
-	
 	export class Menu : public UIElement
 	{
 	public:

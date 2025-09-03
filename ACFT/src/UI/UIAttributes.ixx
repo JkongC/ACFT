@@ -3,6 +3,7 @@ export module ACFT.UIAttributes;
 import Types;
 import Event;
 import Renderer;
+import UUID;
 
 namespace ACFT::UI
 {
@@ -223,7 +224,7 @@ namespace ACFT::UI
 		Ref<UIElement> m_LogicParent;
 		ElementLocationRect m_Location;
 		int m_Depth;
-		bool m_ShouldRender;
+		bool m_ShouldRender = true;
 	};
 
 	export template<typename T>
@@ -269,7 +270,7 @@ namespace ACFT::UI
 
 		T FetchAddAtomic(const T& arg, std::memory_order mem_order = std::memory_order_seq_cst) noexcept
 		{
-			if constexpr (requires(std::atomic_ref<T> obj) { obj++; })
+			if constexpr (requires(std::atomic_ref<T> obj) { ++obj; })
 			{
 				std::atomic_ref<T> atomic_data{ *data };
 				return atomic_data.fetch_add(arg, mem_order);
@@ -282,7 +283,7 @@ namespace ACFT::UI
 
 		T FetchSubAtomic(const T& arg, std::memory_order mem_order = std::memory_order_seq_cst) noexcept
 		{
-			if constexpr (requires(std::atomic_ref<T> obj) { obj--; })
+			if constexpr (requires(std::atomic_ref<T> obj) { --obj; })
 			{
 				std::atomic_ref<T> atomic_data{ *data };
 				return atomic_data.fetch_sub(arg, mem_order);

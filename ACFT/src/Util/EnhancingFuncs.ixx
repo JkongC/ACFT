@@ -104,11 +104,11 @@ namespace ACFT
 		 * @tparam index The element index, starts from 1.
 		 */
 		export template<int index, SpecializationOf<Complex> Comp>
-		decltype(auto) IndexedGetMember(Comp& complex)
+		constexpr decltype(auto) IndexedGetMember(Comp& complex)
 		{
 			static_assert(index >= 1, "Index must at least be 1.");
 
-			if (index == 1)
+			if constexpr (index == 1)
 				return complex.o;
 			else
 			{
