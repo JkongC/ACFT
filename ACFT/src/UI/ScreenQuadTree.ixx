@@ -6,7 +6,7 @@ import <vector>;
 import Types;
 import Event;
 import Input;
-import ACFT.UIAttributes;
+import ACFT.UIBase;
 
 namespace ACFT::UI
 {

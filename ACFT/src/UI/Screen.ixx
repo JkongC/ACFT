@@ -5,7 +5,7 @@ import <vector>;
 import Types;
 import Layer;
 import Event;
-import ACFT.UIAttributes;
+import ACFT.UIBase;
 import ACFT.Button;
 import ACFT.ScreenQuadTree;
 

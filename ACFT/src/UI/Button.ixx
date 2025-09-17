@@ -4,7 +4,7 @@ import <vector>;
 
 import Event;
 import Types;
-import ACFT.UIAttributes;
+import ACFT.UIBase;
 
 namespace ACFT::UI
 {
