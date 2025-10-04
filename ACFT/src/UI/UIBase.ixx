@@ -114,14 +114,20 @@ namespace ACFT::UI
 			m_ShouldRender = true;
 		}
 
-		const Maths::Rect& GetLocation() const
+		const Maths::PositionRect& GetLocation() const
 		{
 			return m_Location;
 		}
 
-		void SetLocation(const Maths::Rect& location)
+		void SetLocation(const Maths::PositionRect& location)
 		{
 			m_Location = location;
+		}
+
+		template<Maths::PositionType Dst>
+		void CastLocationType(float area_width, float area_height)
+		{
+			m_Location.CastTo<Dst>(area_width, area_height);
 		}
 
 		void AddKidElement(Ref<UIElement> ele)
@@ -149,20 +155,20 @@ namespace ACFT::UI
 		virtual void OnUpdate(float time_step) = 0;
 
 	protected:
-		UIElement(Ref<UIElement> parent = nullptr, Maths::Rect location = {}, int depth = 0)
+		UIElement(Ref<UIElement> parent = nullptr, Maths::PositionRect location = {}, int depth = 0)
 			: m_LogicParent(parent), m_Location(location), m_Depth(depth)
 		{
 		}
 
 		std::vector<Ref<UIElement>> m_LogicKids;
 		Ref<UIElement> m_LogicParent;
-		Maths::Rect m_Location;
+		Maths::PositionRect m_Location;
 		int m_Depth;
 		bool m_ShouldRender = true;
 	};
 
 	export template<typename T>
-		struct DataBond
+	struct DataBond
 	{
 		T* data;
 
@@ -181,7 +187,7 @@ namespace ACFT::UI
 			*data = new_data;
 		}
 
-		void GetData() const noexcept
+		T& GetData() const noexcept
 		{
 			return *data;
 		}

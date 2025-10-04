@@ -14,7 +14,7 @@ namespace ACFT::UI
 	class Button;
 	class Menu;
 
-	export enum class QuadArea : int
+	export enum class QuadArea
 	{
 		top_left = 0, top_right, bottom_left, bottom_right 
 	};
@@ -22,7 +22,7 @@ namespace ACFT::UI
 	export class ScreenQuadTreeNode
 	{
 	public:
-		ScreenQuadTreeNode(UIAreaRect area);
+		ScreenQuadTreeNode(Maths::Rect area);
 		ScreenQuadTreeNode(const ScreenQuadTreeNode& parent, QuadArea area);
 
 		void AddElement(Ref<UIElement>& element);
@@ -37,7 +37,7 @@ namespace ACFT::UI
 	private:
 		std::array<Scope<ScreenQuadTreeNode>, 4> m_Children;
 		std::vector<Ref<UIElement>> m_Elements;
-		UIAreaRect m_Area;
+		Maths::Rect m_Area;
 		unsigned int m_ElementCount = 0;
 		ScreenQuadTreeNode* m_Parent = nullptr;
 		bool m_Leaf = false;

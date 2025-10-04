@@ -1,6 +1,10 @@
 export module ACFT.Maths.Rectangle;
 
 import <concepts>;
+import <array>;
+import <string_view>;
+
+#include "Reflection.h"
 
 namespace ACFT::Maths
 {
@@ -12,30 +16,19 @@ namespace ACFT::Maths
 		float right;
 	};
 
-	namespace PositionType
+	export bool CheckRectCollision(const Rect& r1, const Rect& r2)
 	{
-		export struct Position
-		{
-			static constexpr int type_id = 1;
-		};
-
-		export struct BorderDistance
-		{
-			static constexpr int type_id = 2;
-		};
-
-		export struct ScreenRatio
-		{
-			static constexpr int type_id = 3;
-		};
+		return !(r1.top > r2.bottom || r1.bottom < r2.top) && !(r1.right < r2.left || r1.left > r2.right);
 	}
+
+	CREATE_ENUM(PositionType, position, border_dist, screen_ratio)
 	
-	export template<typename From, typename To>
-		requires (!std::is_same_v<From, To>)
+	export template<PositionType From, PositionType To>
+		requires (From != To)
 	Rect PositionRectCast(const Rect& src, float area_width, float area_height);
 
 	export template<>
-	Rect PositionRectCast<PositionType::Position, PositionType::BorderDistance>(const Rect& src, float area_width, float area_height)
+	Rect PositionRectCast<PositionType::position, PositionType::border_dist>(const Rect& src, float area_width, float area_height)
 	{
 		return {
 			src.top,
@@ -46,7 +39,7 @@ namespace ACFT::Maths
 	}
 
 	export template<>
-	Rect PositionRectCast<PositionType::BorderDistance, PositionType::Position>(const Rect& src, float area_width, float area_height)
+	Rect PositionRectCast<PositionType::border_dist, PositionType::position>(const Rect& src, float area_width, float area_height)
 	{
 		return {
 			src.top,
@@ -57,7 +50,7 @@ namespace ACFT::Maths
 	}
 
 	export template<>
-	Rect PositionRectCast<PositionType::Position, PositionType::ScreenRatio>(const Rect& src, float area_width, float area_height)
+	Rect PositionRectCast<PositionType::position, PositionType::screen_ratio>(const Rect& src, float area_width, float area_height)
 	{
 		return {
 			src.top / area_height,
@@ -68,7 +61,7 @@ namespace ACFT::Maths
 	}
 
 	export template<>
-	Rect PositionRectCast<PositionType::ScreenRatio, PositionType::Position>(const Rect& src, float area_width, float area_height)
+	Rect PositionRectCast<PositionType::screen_ratio, PositionType::position>(const Rect& src, float area_width, float area_height)
 	{
 		return {
 			src.top * area_height,
@@ -79,7 +72,7 @@ namespace ACFT::Maths
 	}
 
 	export template<>
-	Rect PositionRectCast<PositionType::BorderDistance, PositionType::ScreenRatio>(const Rect& src, float area_width, float area_height)
+	Rect PositionRectCast<PositionType::border_dist, PositionType::screen_ratio>(const Rect& src, float area_width, float area_height)
 	{
 		return {
 			src.top / area_height,
@@ -90,7 +83,7 @@ namespace ACFT::Maths
 	}
 
 	export template<>
-	Rect PositionRectCast<PositionType::ScreenRatio, PositionType::BorderDistance>(const Rect& src, float area_width, float area_height)
+	Rect PositionRectCast<PositionType::screen_ratio, PositionType::border_dist>(const Rect& src, float area_width, float area_height)
 	{
 		return {
 			src.top * area_height,
@@ -99,69 +92,72 @@ namespace ACFT::Maths
 			area_width - src.right * area_width
 		};
 	}
+
+	export Rect PositionRectCast(const Rect& src, PositionType dst_type, float area_width, float area_height)
+	{
+		switch (dst_type)
+		{
+		case ACFT::Maths::PositionType::position:
+			break;
+		case ACFT::Maths::PositionType::border_dist:
+			break;
+		case ACFT::Maths::PositionType::screen_ratio:
+			break;
+		default:
+			break;
+		}
+	}
 	
-	template<typename PosType>
-	struct _PositionRectBase : public Rect
-	{
-		using type = PosType;
-		
-		_PositionRectBase() = default;
-		_PositionRectBase(const _PositionRectBase<PosType>&) = default;
-		_PositionRectBase(const Rect& r) : Rect(r) {}
-
-		template<typename PosType2>
-		_PositionRectBase(const _PositionRectBase<PosType2>& other, float area_width, float area_height)
-		{
-			auto& [top, bottom, left, right] = PositionRectCast<PosType2, PosType>(other, area_width, area_height);
-		}
-	};
-
-	export template<typename PosType>
-	struct PositionRect : public _PositionRectBase<PosType>
-	{
-		// These using declarations are to solve the problem that the compiler can't find identifiers from the base class.
-		using typename _PositionRectBase<PosType>::type;
-		using _PositionRectBase<PosType>::top;
-		using _PositionRectBase<PosType>::bottom;
-		using _PositionRectBase<PosType>::left;
-		using _PositionRectBase<PosType>::right;
-		
-		PositionRect() = default;
-		PositionRect(const PositionRect&) = default;
-		PositionRect(const Rect& r) : _PositionRectBase<PosType>(r) {}
-
-		template<typename PosType2>
-		PositionRect<PosType2> CastTo(float area_width, float area_height) const
-		{
-			return PositionRectCast<type, PosType2>(*this, area_width, area_height);
-		}
-
-		bool CheckCollisionWith(const PositionRect<type>& other)
-		{
-			bool horizontal = other.left > right || other.right < left;
-			bool vertical = other.top > bottom || other.bottom < top;
-			return !horizontal && !vertical;
-		}
-	};
-
-	export template<>
-	struct PositionRect<PositionType::BorderDistance> : public _PositionRectBase<PositionType::BorderDistance>
+	export struct PositionRect : public Rect
 	{
 		PositionRect() = default;
 		PositionRect(const PositionRect&) = default;
-		PositionRect(const Rect& r) : _PositionRectBase<type>(r) {}
+		PositionRect(PositionType type) : Rect(), m_Type(type) {}
+		PositionRect(const Rect& r) : Rect(r) {}
+		PositionRect(const Rect& r, PositionType type) : Rect(r), m_Type(type) {}
 
-		template<typename PosType2>
-		PositionRect<PosType2> CastTo(float area_width, float area_height) const
+		PositionType GetType() const { return m_Type; }
+
+		bool IsSameType(const PositionRect& other) const
 		{
-			return PositionRectCast<type, PosType2>(*this, area_width, area_height);
+			return m_Type == other.m_Type;
 		}
 
-		bool CheckCollisionWith(const PositionRect<type>& other, float area_width, float area_height) const
+		Rect& AsRect(this PositionRect& self)
 		{
-			bool horizontal = other.left > area_width - right || area_width - other.right < left;
-			bool vertical = other.top > area_height - bottom || area_height - other.bottom < top;
-			return !horizontal && !vertical;
+			return static_cast<Rect&>(self);
 		}
+
+		PositionRect& operator=(this PositionRect& self, const Rect& r)
+		{
+			auto& [top, bottom, left, right] = r;
+			return self;
+		}
+
+		template<PositionType Dst>
+		void CastTo(this PositionRect& self, float area_width, float area_height)
+		{
+			if (m_Type == Dst)
+				return;
+			
+			switch (m_Type)
+			{
+			case PositionType::position:
+				AsRect() = PositionRectCast<PositionType::position, Dst>(self, area_width, area_height);
+				break;
+			case PositionType::border_dist:
+				AsRect() = PositionRectCast<PositionType::border_dist, Dst>(self, area_width, area_height);
+				break;
+			case PositionType::screen_ratio:
+				AsRect() = PositionRectCast<PositionType::screen_ratio, Dst>(self, area_width, area_height);
+				break;
+			default:
+				break;
+			}
+
+			m_Type = Dst;
+		}
+	private:
+		PositionType m_Type = PositionType::position;
 	};
 }

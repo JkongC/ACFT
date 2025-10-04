@@ -2,8 +2,8 @@ export module Memory;
 
 export import <memory>;
 
-import ACFT.EnhancingFuncs;
-using namespace ACFT::TemplateHelper;
+import TemplateHelper.Type;
+using namespace TemplateHelper::Type;
 
 template<size_t Size, size_t Align>
 struct alignas(Align) _MemoryTraitBlock
